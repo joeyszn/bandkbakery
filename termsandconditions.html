@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alan+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         /* Terms page styles (match privacy policy) */
         .privacy-hero {
@@ -30,7 +31,7 @@
         }
 
         .privacy-hero p {
-            font-size: 18px;
+            font-size: 14px;
             color: rgba(255, 255, 255, 0.9);
             margin-top: 16px;
             max-width: 600px;
@@ -45,6 +46,10 @@
 
         .policy-section { margin-bottom: 80px; }
         .policy-section:last-child { margin-bottom: 40px; }
+        .policy-section ul, .policy-section ol {
+                margin-bottom: 16px;
+                margin-left: 24px;
+            }
 
         .policy-section h2 {
             font-family: "Alan Sans", sans-serif;
@@ -65,7 +70,7 @@
             margin-bottom: 14px;
         }
 
-        .policy-section p, .policy-section li { font-size:15px; line-height:1.75; color:var(--black); margin-bottom:16px; }
+        .policy-section p, .policy-section li { font-size:14px; line-height:1.75; color:var(--black); margin-bottom:16px; }
 
         .info-card { background: var(--cream); border-left:4px solid var(--yellow); padding:20px; border-radius:12px; margin:28px 0; }
 
@@ -73,15 +78,54 @@
         .toc { background:#fff; padding:24px; border-radius:12px; height:fit-content; position:sticky; top:100px; border-left:4px solid var(--yellow); box-shadow:0 2px 8px rgba(82,47,28,0.08); }
         .toc h3 { font-family:"Alan Sans", sans-serif; font-size:14px; font-weight:600; color:var(--brown); text-transform:uppercase; margin-bottom:18px; }
         .toc ul { list-style:none; }
-        .toc a { color:var(--black); text-decoration:none; display:block; padding:6px 0; transition:color 200ms ease; }
+        .toc a { color:var(--black); text-decoration:none; font-size: 14px; display:block; padding:6px 0; transition:color 200ms ease; }
         .toc a:hover { color:var(--brown); font-weight:600; }
 
         .back-to-top { display:inline-block; color:var(--brown); text-decoration:none; margin-top:40px; padding:10px 20px; border:2px solid var(--brown); border-radius:12px; transition:200ms ease; font-weight:600; font-size:14px; }
         .back-to-top:hover { background-color:var(--brown); color:#fff; }
 
-        @media (max-width:1024px){ .toc-container{grid-template-columns:1fr; gap:40px;} .toc{position:static; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); height:auto; border-left:none; border-top:4px solid var(--yellow); padding:18px; margin-bottom:40px;} .toc h3{grid-column:1/-1;} }
-        @media (max-width:768px){ .privacy-hero{padding:80px 20px 60px;} .privacy-content{padding:50px 20px;} .policy-section h2{font-size:26px;} .toc{display:none;} }
-        @media (max-width:480px){ .privacy-hero{padding:60px 16px 50px; min-height:320px;} .privacy-hero h1{font-size:28px;} .privacy-content{padding:40px 16px;} }
+        @media (max-width:1024px){
+            .toc-container{
+                grid-template-columns:1fr;
+                gap:40px;
+            }
+            .toc{
+                position:static; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); height:auto; border-left:none; border-top:4px solid var(--yellow); padding:18px; margin-bottom:40px;
+            }
+            .toc h3{grid-column:1/-1;}
+        }
+
+        @media (max-width:768px){
+            .privacy-hero{
+                padding:80px 20px 60px;
+            }
+            .privacy-content{
+                padding:50px 20px;
+            }
+            .policy-section h2{
+                font-size:22px;
+            }
+            .toc{
+                display:none;
+            }
+        }
+
+        @media (max-width:480px){
+            .privacy-hero{
+                padding:135px 16px 50px;
+                min-height:320px;
+            }
+            .privacy-hero h1{
+                font-size:28px;
+            }
+            .privacy-content{
+                padding:40px 16px;
+            }
+            .policy-section ul, .policy-section ol {
+                margin-bottom: 16px;
+                margin-left: 24px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -150,7 +194,7 @@
                 <section class="policy-section" id="handmade">
                     <h2>Handmade &amp; Made-to-Order Policy</h2>
                     <p>All of our products are handmade and prepared to order. Because our items are crafted in small batches, slight variations in appearance, weight, and ingredients may occur. We pride ourselves on artisanal quality and individualized attention to each order.</p>
-                    <p>Please review product descriptions carefully for ingredient details, portion sizes, and special handling instructions.</p>
+                    <!-- <p>Please review product descriptions carefully for ingredient details, portion sizes, and special handling instructions.</p> -->
                 </section>
 
                 <section class="policy-section" id="preparation">
@@ -170,7 +214,7 @@
                 <section class="policy-section" id="orders">
                     <h2>Ordering, Pickup &amp; Delivery</h2>
                     <h3>How to Order</h3>
-                    <p>Orders are accepted via our website order form and contact forms. Required information includes your name, email, phone number, delivery/pickup address, desired pickup/delivery date, and order details.</p>
+                    <p>Orders are accepted via our website order form and contact forms. Required information includes your name, email, phone number, delivery/pickup address, and order details.</p>
 
                     <h3>Pickup</h3>
                     <p>Pickup orders must be collected during the scheduled pickup window. If you cannot collect during that time, please contact us to reschedule. Uncollected orders may be discarded or donated for safety reasons.</p>
@@ -200,7 +244,7 @@
                     <h3>Refund Policy</h3>
                     <p>Refunds are provided at our discretion. If an item is defective, incorrect, or not as described, please contact us immediately at <strong>bronxkaren1@gmail.com</strong> with your order number and photos where applicable. We will assess the issue and may offer a replacement, store credit, or refund.</p>
                     <div class="info-card">
-                        <p>⏱️ <strong>Timing:</strong> Refund or replacement requests should be made within 7 days of pickup or delivery where practical.</p>
+                        <p><strong>Timing:</strong> Refund or replacement requests should be made within 7 days of pickup or delivery where practical.</p>
                     </div>
                 </section>
 
@@ -272,6 +316,8 @@
         </iframe>
         </div>
     </div>
+
+    <p style="max-width:980px;margin:18px auto 0;text-align:center;line-height:1.7;color:var(--brown);font-weight:500;font-size:14px;">The B&K Bakery, Bruce Klein as the Veteran CFO, and Karen Klein are registered and operate under Cottage Permit Class B issued by the County of Santa Clara under Permit # PT0505378.</p>
 
     <div class="footer-bottom">
         <p class="footer-copy">©2026. The B&KERY | The B and K Bakery.</p>
