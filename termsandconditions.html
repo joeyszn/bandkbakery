@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms &amp; Conditions | The B & K Bakery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alan+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Terms page styles (match privacy policy) */
+        .privacy-hero {
+            background: var(--brown);
+            padding: 165px 50px 80px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 380px;
+        }
+
+        .privacy-hero h1 {
+            font-family: "Alan Sans", sans-serif;
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .privacy-hero p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 16px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .privacy-content {
+            background: var(--beige);
+            padding: 80px 50px;
+            margin: 0 auto;
+        }
+
+        .policy-section { margin-bottom: 80px; }
+        .policy-section:last-child { margin-bottom: 40px; }
+
+        .policy-section h2 {
+            font-family: "Alan Sans", sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--brown);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid var(--yellow);
+        }
+
+        .policy-section h3 {
+            font-family: "Alan Sans", sans-serif;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--brown);
+            margin-top: 28px;
+            margin-bottom: 14px;
+        }
+
+        .policy-section p, .policy-section li { font-size:15px; line-height:1.75; color:var(--black); margin-bottom:16px; }
+
+        .info-card { background: var(--cream); border-left:4px solid var(--yellow); padding:20px; border-radius:12px; margin:28px 0; }
+
+        .toc-container { display:grid; grid-template-columns:280px 1fr; gap:60px; align-items:start; }
+        .toc { background:#fff; padding:24px; border-radius:12px; height:fit-content; position:sticky; top:100px; border-left:4px solid var(--yellow); box-shadow:0 2px 8px rgba(82,47,28,0.08); }
+        .toc h3 { font-family:"Alan Sans", sans-serif; font-size:14px; font-weight:600; color:var(--brown); text-transform:uppercase; margin-bottom:18px; }
+        .toc ul { list-style:none; }
+        .toc a { color:var(--black); text-decoration:none; display:block; padding:6px 0; transition:color 200ms ease; }
+        .toc a:hover { color:var(--brown); font-weight:600; }
+
+        .back-to-top { display:inline-block; color:var(--brown); text-decoration:none; margin-top:40px; padding:10px 20px; border:2px solid var(--brown); border-radius:12px; transition:200ms ease; font-weight:600; font-size:14px; }
+        .back-to-top:hover { background-color:var(--brown); color:#fff; }
+
+        @media (max-width:1024px){ .toc-container{grid-template-columns:1fr; gap:40px;} .toc{position:static; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); height:auto; border-left:none; border-top:4px solid var(--yellow); padding:18px; margin-bottom:40px;} .toc h3{grid-column:1/-1;} }
+        @media (max-width:768px){ .privacy-hero{padding:80px 20px 60px;} .privacy-content{padding:50px 20px;} .policy-section h2{font-size:26px;} .toc{display:none;} }
+        @media (max-width:480px){ .privacy-hero{padding:60px 16px 50px; min-height:320px;} .privacy-hero h1{font-size:28px;} .privacy-content{padding:40px 16px;} }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header" aria-label="Site header">
+    <nav aria-label="Main navigation">
+        <div class="logo" aria-label="B&KERY Home">
+        <a href="index.html"><img src="Logo.png" width="120" alt="The B&KERY logo"></a>
+        </div>
+        <div class="nav-actions">
+        <a href="index.html#menu" class="btn btn-outline">Menu</a>
+        <a href="index.html?openOrder=true" class="btn btn-brown">Place order</a>
+        </div>
+        <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        </button>
+    </nav>
+    <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+        <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+        <a href="index.html#menu" class="btn btn-outline">Menu</a>
+        <a href="index.html?openOrder=true" class="btn btn-brown">Place order</a>
+    </div>
+    <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
+    </header>
+
+    <div id="progress-bar"></div>
+
+    <!-- Hero -->
+    <section class="privacy-hero">
+        <div>
+            <h1>Terms &amp; Conditions</h1>
+            <p>Please read these terms carefully before placing an order or using our website.</p>
+        </div>
+    </section>
+
+    <!-- Main -->
+    <main class="privacy-content">
+        <div class="toc-container">
+            <aside class="toc">
+                <h3>Contents</h3>
+                <ul>
+                    <li><a href="#scope">Scope & Acceptance</a></li>
+                    <li><a href="#handmade">Handmade & Made-to-Order</a></li>
+                    <li><a href="#preparation">Preparation Time</a></li>
+                    <li><a href="#service-area">Service Area</a></li>
+                    <li><a href="#orders">Ordering, Pickup & Delivery</a></li>
+                    <li><a href="#pricing">Pricing & Availability</a></li>
+                    <li><a href="#cancellations">Cancellations & Refunds</a></li>
+                    <li><a href="#liability">Liability & Limitations</a></li>
+                    <li><a href="#ip">Intellectual Property</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </aside>
+
+            <div>
+                <section class="policy-section" id="scope">
+                    <h2>Scope & Acceptance</h2>
+                    <p>These Terms &amp; Conditions govern your use of The B &amp; K Bakery website and any orders placed with us. By accessing our site or placing an order you agree to be bound by these terms. If you do not agree, please do not use our services.</p>
+                    <div class="info-card">
+                        <p>📜 <strong>Note:</strong> These terms form a contract between you and The B &amp; K Bakery for the purchase of handmade baked goods and related services.</p>
+                    </div>
+                </section>
+
+                <section class="policy-section" id="handmade">
+                    <h2>Handmade &amp; Made-to-Order Policy</h2>
+                    <p>All of our products are handmade and prepared to order. Because our items are crafted in small batches, slight variations in appearance, weight, and ingredients may occur. We pride ourselves on artisanal quality and individualized attention to each order.</p>
+                    <p>Please review product descriptions carefully for ingredient details, portion sizes, and special handling instructions.</p>
+                </section>
+
+                <section class="policy-section" id="preparation">
+                    <h2>Preparation Time</h2>
+                    <p>We require a minimum of 2 days (48 hours) preparation time for most custom and made-to-order items. This lead time allows us to source fresh ingredients and craft your order with care.</p>
+                    <ul>
+                        <li>Rush orders may be possible subject to availability and an additional fee.</li>
+                        <li>Estimated ready-for-pickup or delivery times will be provided after order confirmation.</li>
+                    </ul>
+                </section>
+
+                <section class="policy-section" id="service-area">
+                    <h2>Service Area</h2>
+                    <p>The B &amp; K Bakery currently accepts orders for delivery and pickup within the state of California only. If you submit an address outside our service area we will contact you to discuss options and may cancel the order if delivery is not possible.</p>
+                </section>
+
+                <section class="policy-section" id="orders">
+                    <h2>Ordering, Pickup &amp; Delivery</h2>
+                    <h3>How to Order</h3>
+                    <p>Orders are accepted via our website order form and contact forms. Required information includes your name, email, phone number, delivery/pickup address, desired pickup/delivery date, and order details.</p>
+
+                    <h3>Pickup</h3>
+                    <p>Pickup orders must be collected during the scheduled pickup window. If you cannot collect during that time, please contact us to reschedule. Uncollected orders may be discarded or donated for safety reasons.</p>
+
+                    <h3>Delivery</h3>
+                    <p>Delivery is available within our California service area. Delivery windows are estimates; customers will be notified if we expect delays. We are not responsible for delays caused by third-party delivery partners or circumstances beyond our control.</p>
+
+                    <h3>Customer Responsibilities</h3>
+                    <ul>
+                        <li>Provide accurate contact and delivery information.</li>
+                        <li>Ensure someone is available to receive the order at the delivery address during the scheduled window.</li>
+                        <li>Notify us of any known food allergies or dietary restrictions when placing your order.</li>
+                    </ul>
+                </section>
+
+                <section class="policy-section" id="pricing">
+                    <h2>Pricing &amp; Product Availability</h2>
+                    <p>Prices listed on the website are in USD and are subject to change. We make reasonable efforts to ensure pricing accuracy, but errors may occur. If an item is priced incorrectly we will attempt to contact you to confirm the order at the correct price or cancel the order and issue a full refund.</p>
+                    <p>Product availability is limited by our small-batch production. Items may sell out or be temporarily unavailable; we will notify you promptly if this affects your order.</p>
+                </section>
+
+                <section class="policy-section" id="cancellations">
+                    <h2>Cancellations, Changes &amp; Refunds</h2>
+                    <h3>Cancellations &amp; Changes</h3>
+                    <p>Because our products are made-to-order, cancellations or significant changes requested within 48 hours of the scheduled preparation time may not be accepted. We will evaluate each request and do our best to accommodate you, subject to ingredient purchases and production status.</p>
+
+                    <h3>Refund Policy</h3>
+                    <p>Refunds are provided at our discretion. If an item is defective, incorrect, or not as described, please contact us immediately at <strong>bronxkaren1@gmail.com</strong> with your order number and photos where applicable. We will assess the issue and may offer a replacement, store credit, or refund.</p>
+                    <div class="info-card">
+                        <p>⏱️ <strong>Timing:</strong> Refund or replacement requests should be made within 7 days of pickup or delivery where practical.</p>
+                    </div>
+                </section>
+
+                <section class="policy-section" id="liability">
+                    <h2>Liability &amp; Limitations</h2>
+                    <p>To the fullest extent permitted by law, The B &amp; K Bakery's liability for any claim arising out of or relating to your order is limited to the purchase price of the affected products. We are not liable for indirect, incidental, or consequential damages.</p>
+                    <p>We are not responsible for allergic reactions where customers have not disclosed allergies or where cross-contact occurs during production.</p>
+                </section>
+
+                <section class="policy-section" id="ip">
+                    <h2>Intellectual Property</h2>
+                    <p>All content on this site, including images, text, recipes, and design elements, is the property of The B &amp; K Bakery or its licensors and is protected by copyright and other intellectual property laws. You may not reproduce or distribute our content without prior written consent.</p>
+                </section>
+
+                <section class="policy-section" id="contact">
+                    <h2>Contact &amp; Dispute Resolution</h2>
+                    <p>For questions about these Terms or to report issues with an order, please contact us:</p>
+                    <div class="info-card">
+                        <p><strong>Email:</strong> bronxkaren1@gmail.com<br><strong>Service Area:</strong> California</p>
+                    </div>
+                    <p>We strive to resolve customer concerns quickly and amicably. If a dispute cannot be resolved informally, parties agree to pursue mediation before seeking litigation.</p>
+                    <p><strong>Last Updated:</strong> May 20, 2026</p>
+                </section>
+
+                <a href="#scope" class="back-to-top">↑ Back to Top</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer" aria-label="Site footer">
+    <div class="footer-top">
+        <div class="footer-info">
+        <div class="footer-logo logo" aria-label="B&KERY">
+            <a href="index.html"><img src="Logo.png" width="120" alt="The B&KERY logo"></a>
+        </div>
+        <p class="footer-tagline">Homemade Bakery in Santa Clara</p>
+
+        <div class="footer-detail-block">
+            <p class="footer-label">Opening hours:</p>
+            <div class="footer-text">
+            <p>Tuesday - Sunday: 11:00 AM - 4:00 PM</p>
+            </div>
+        </div>
+
+        <div class="footer-detail-block">
+            <p class="footer-label">Phone:</p>
+            <p class="footer-text"><a href="tel:4088571968" style="color:inherit;text-decoration:none">(408) 857-1968</a></p>
+        </div>
+
+        <div class="footer-detail-block">
+            <p class="footer-label">Location:</p>
+            <div class="footer-text">
+            <p>The B&amp;K Bakery</p>
+            <p>Community Clubhouse</p>
+            <p>WOODBRIDGE MOBILE HOME PARK</p>
+            <p>3051 Towers Lane&comma; San Jose&comma; CA 95121</p>
+            </div>
+        </div>
+        </div>
+
+        <div class="footer-map" aria-label="Map showing bakery location in San Jose, California">
+        <iframe
+            title="B&KERY Location Map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3165.8000000!2d-121.8180063!3d37.3066031!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1sWoodbridge+Mobile+Homes!2s0x808e328115011a4f%3A0xe65d52bbbcc88e3!5e0!3m2!1sen!2sus!4v1716048000000!5m2!1sen!2sus"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p class="footer-copy">©2026. The B&KERY | The B and K Bakery.</p>
+        <p class="footer-designer">Designed by <a href="https://www.linkedin.com/company/redanaagency/" target="_blank" rel="noopener">Redana</a></p>
+        <div class="footer-links">
+        <a href="privacypolicy.html">Privacy Policy</a>
+        <span>|</span>
+        <a href="termsandconditions.html">Terms &amp; Conditions</a>
+        </div>
+    </div>
+    </footer>
+
+    <script>
+        function initMobileMenu(){
+            const toggle=document.querySelector('.mobile-menu-toggle');
+            const panel=document.querySelector('.mobile-menu-panel');
+            const backdrop=document.querySelector('.mobile-menu-backdrop');
+            if(!toggle) return;
+            toggle.addEventListener('click',()=>{ panel.classList.add('open'); backdrop.classList.add('open'); });
+            const closeBtn=document.querySelector('.mobile-menu-close');
+            if(closeBtn) closeBtn.addEventListener('click',()=>{ panel.classList.remove('open'); backdrop.classList.remove('open'); });
+            backdrop.addEventListener('click',()=>{ panel.classList.remove('open'); backdrop.classList.remove('open'); });
+        }
+
+        window.addEventListener('scroll',()=>{
+            const scrollTop=window.scrollY;
+            const docHeight=document.documentElement.scrollHeight-window.innerHeight;
+            const scrollPercent=(scrollTop/docHeight)*100;
+            document.getElementById('progress-bar').style.width=scrollPercent+'%';
+        });
+
+        document.querySelectorAll('.toc a').forEach(link=>{ link.addEventListener('click',(e)=>{ e.preventDefault(); const target=document.querySelector(link.getAttribute('href')); if(target) target.scrollIntoView({behavior:'smooth', block:'start'}); }); });
+
+        document.addEventListener('DOMContentLoaded', initMobileMenu);
+    </script>
+</body>
+</html>

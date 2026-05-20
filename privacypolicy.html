@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | The B & K Bakery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alan+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Privacy Policy specific styles */
+        .privacy-hero {
+            background: var(--brown);
+            padding: 165px 50px 80px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 380px;
+        }
+
+        .privacy-hero h1 {
+            font-family: "Alan Sans", sans-serif;
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .privacy-hero p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 16px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .privacy-content {
+            background: var(--beige);
+            padding: 80px 50px;
+            /* max-width: 900px; */
+            margin: 0 auto;
+        }
+
+        .policy-section {
+            margin-bottom: 80px;
+        }
+
+        .policy-section:last-child {
+            margin-bottom: 40px;
+        }
+
+        .policy-section h2 {
+            font-family: "Alan Sans", sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--brown);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid var(--yellow);
+        }
+
+        .policy-section h3 {
+            font-family: "Alan Sans", sans-serif;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--brown);
+            margin-top: 28px;
+            margin-bottom: 14px;
+        }
+
+        .policy-section p {
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--black);
+            margin-bottom: 16px;
+        }
+
+        .policy-section ul,
+        .policy-section ol {
+            margin-bottom: 16px;
+            margin-left: 24px;
+        }
+
+        .policy-section li {
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--black);
+            margin-bottom: 10px;
+        }
+
+        .policy-section strong {
+            color: var(--brown);
+            font-weight: 600;
+        }
+
+        .info-card {
+            background: var(--cream);
+            border-left: 4px solid var(--yellow);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 28px 0;
+        }
+
+        .info-card p {
+            margin: 0;
+            color: var(--brown);
+            font-weight: 500;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .toc-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .toc {
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            border-left: 4px solid var(--yellow);
+            box-shadow: 0 2px 8px rgba(82, 47, 28, 0.08);
+        }
+
+        .toc h3 {
+            font-family: "Alan Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--brown);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 18px;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin-bottom: 12px;
+        }
+
+        .toc a {
+            color: var(--black);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 200ms ease;
+            display: block;
+            padding: 6px 0;
+        }
+
+        .toc a:hover {
+            color: var(--brown);
+            font-weight: 600;
+        }
+
+        .back-to-top {
+            display: inline-block;
+            color: var(--brown);
+            text-decoration: none;
+            margin-top: 40px;
+            padding: 10px 20px;
+            border: 2px solid var(--brown);
+            border-radius: 12px;
+            transition: 200ms ease;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .back-to-top:hover {
+            background-color: var(--brown);
+            color: #fff;
+        }
+
+        @media (max-width: 1024px) {
+            .toc-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .toc {
+                position: static;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                height: auto;
+                border-left: none;
+                border-top: 4px solid var(--yellow);
+                padding: 18px;
+                margin-bottom: 40px;
+            }
+
+            .toc h3 {
+                grid-column: 1 / -1;
+                margin-bottom: 14px;
+            }
+
+            .toc a {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .privacy-hero {
+                padding: 80px 20px 60px;
+            }
+
+            .privacy-content {
+                padding: 50px 20px;
+            }
+
+            .policy-section h2 {
+                font-size: 26px;
+            }
+
+            .policy-section h3 {
+                font-size: 17px;
+            }
+
+            .toc {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .privacy-hero {
+                padding: 60px 16px 50px;
+                min-height: 320px;
+            }
+
+            .privacy-hero h1 {
+                font-size: 28px;
+            }
+
+            .privacy-hero p {
+                font-size: 14px;
+            }
+
+            .privacy-content {
+                padding: 40px 16px;
+            }
+
+            .policy-section {
+                margin-bottom: 60px;
+            }
+
+            .policy-section h2 {
+                font-size: 22px;
+            }
+
+            .policy-section h3 {
+                font-size: 16px;
+            }
+
+            .policy-section p,
+            .policy-section li {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header" aria-label="Site header">
+    <nav aria-label="Main navigation">
+        <div class="logo" aria-label="B&KERY Home">
+        <a href="index.html"><img src="Logo.png" width="120" alt="The B&KERY logo"></a>
+        </div>
+        <div class="nav-actions">
+        <a href="index.html#menu" class="btn btn-outline">Menu</a>
+        <a href="index.html?openOrder=true" class="btn btn-brown">Place order</a>
+        </div>
+        <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        </button>
+    </nav>
+    <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+        <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+        <a href="index.html#menu" class="btn btn-outline">Menu</a>
+        <a href="index.html?openOrder=true" class="btn btn-brown">Place order</a>
+    </div>
+    <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
+    </header>
+
+    <div id="progress-bar"></div>
+
+
+    <!-- Hero Section -->
+    <section class="privacy-hero">
+        <div>
+            <h1>Privacy Policy</h1>
+            <p>Your privacy and trust are important to us. Learn how we handle your information.</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="privacy-content">
+        <div class="toc-container">
+            <!-- Table of Contents -->
+            <aside class="toc">
+                <h3>Contents</h3>
+                <ul>
+                    <li><a href="#information-collected">Information Collected</a></li>
+                    <li><a href="#how-we-use">How We Use Your Data</a></li>
+                    <li><a href="#order-handling">Order & Contact Forms</a></li>
+                    <li><a href="#email-communication">Email Communications</a></li>
+                    <li><a href="#cookies">Cookies & Sessions</a></li>
+                    <li><a href="#third-party">Third-Party Services</a></li>
+                    <li><a href="#data-protection">Data Protection</a></li>
+                    <li><a href="#your-rights">Your Rights</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </aside>
+
+            <!-- Content -->
+            <div>
+                <!-- Information Collected -->
+                <section class="policy-section" id="information-collected">
+                    <h2>Information We Collect</h2>
+                    
+                    <p>At The B & K Bakery, we are committed to being transparent about how we collect and use information. Here are the types of information we gather:</p>
+
+                    <h3>Information You Provide Directly</h3>
+                    <p>When you interact with us through our website, contact forms, or when placing an order, we collect the following personal information:</p>
+                    <ul>
+                        <li><strong>Contact Information:</strong> Your full name, email address, and phone number</li>
+                        <li><strong>Delivery Information:</strong> Your complete mailing address (currently limited to California)</li>
+                        <li><strong>Order Details:</strong> Specific preferences, dietary restrictions, customization requests, and special occasion information</li>
+                        <li><strong>Payment Information:</strong> Billing address and payment method (processed securely through third-party payment processors)</li>
+                        <li><strong>Communication Preferences:</strong> Your preferred method of contact and consent preferences</li>
+                    </ul>
+
+                    <h3>Information Collected Automatically</h3>
+                    <p>When you visit our website, we automatically collect certain information:</p>
+                    <ul>
+                        <li><strong>Browser Information:</strong> Browser type, operating system, and device type</li>
+                        <li><strong>Usage Information:</strong> Pages visited, time spent on our site, links clicked, and referral source</li>
+                        <li><strong>IP Address:</strong> Your internet protocol address (used for security and analytics)</li>
+                        <li><strong>Cookies & Session Data:</strong> To enhance your browsing experience and remember your preferences</li>
+                    </ul>
+
+                    <h3>Information About Your Orders</h3>
+                    <p>To fulfill your baked goods orders effectively, we maintain:</p>
+                    <ul>
+                        <li>Order history and previous selections</li>
+                        <li>Preparation timeline and status updates</li>
+                        <li>Delivery or pickup details</li>
+                        <li>Special requests and ingredient preferences</li>
+                    </ul>
+
+                    <div class="info-card">
+                        <p>💡 <strong>Important Note:</strong> We only collect information necessary to serve you better. We never require unnecessary personal data to browse our website or view our menu.</p>
+                    </div>
+                </section>
+
+                <!-- How We Use Your Data -->
+                <section class="policy-section" id="how-we-use">
+                    <h2>How We Use Your Information</h2>
+
+                    <p>Your information is used exclusively to enhance your experience with The B & K Bakery and ensure we serve you delicious, customized baked goods. Here's how we use the data you provide:</p>
+
+                    <h3>Order Fulfillment & Delivery</h3>
+                    <ul>
+                        <li>Process and prepare your orders with proper attention to special requests</li>
+                        <li>Confirm order details and prepare timeline (2 days preparation required)</li>
+                        <li>Arrange delivery or schedule pickup appointments</li>
+                        <li>Contact you with order updates and delivery confirmations</li>
+                        <li>Send payment invoices and receipts</li>
+                    </ul>
+
+                    <h3>Communication & Customer Service</h3>
+                    <ul>
+                        <li>Respond to your inquiries and customer support requests</li>
+                        <li>Send order confirmations and status updates</li>
+                        <li>Address any concerns or issues with orders</li>
+                        <li>Request feedback on your experience</li>
+                    </ul>
+
+                    <h3>Marketing & Promotional Communications</h3>
+                    <ul>
+                        <li>Share new menu items and seasonal offerings (only if you've opted in)</li>
+                        <li>Send special promotions and exclusive deals to our valued customers</li>
+                        <li>Announce bakery events or new services</li>
+                        <li>You can unsubscribe from marketing emails at any time</li>
+                    </ul>
+
+                    <h3>Website & Analytics Improvement</h3>
+                    <ul>
+                        <li>Understand how customers use our website</li>
+                        <li>Improve our website functionality and user experience</li>
+                        <li>Monitor for security threats and fraudulent activity</li>
+                        <li>Analyze browsing patterns to enhance our menu offerings</li>
+                    </ul>
+
+                    <h3>What We Do NOT Do With Your Information</h3>
+                    <ul>
+                        <li>We <strong>do not</strong> sell or rent your personal information to third parties</li>
+                        <li>We <strong>do not</strong> share your email address for marketing purposes without consent</li>
+                        <li>We <strong>do not</strong> use cookies for tracking outside our website</li>
+                        <li>We <strong>do not</strong> retain payment card information on our servers</li>
+                    </ul>
+
+                    <div class="info-card">
+                        <p>🍰 <strong>Our Commitment:</strong> Your information helps us craft handmade baked goods with care and precision. Every detail you share helps us create the perfect order for you.</p>
+                    </div>
+                </section>
+
+                <!-- Order & Contact Forms -->
+                <section class="policy-section" id="order-handling">
+                    <h2>Order & Contact Form Handling</h2>
+
+                    <p>Our order and contact forms are designed to be simple and secure. Here's how we handle the information you submit:</p>
+
+                    <h3>Order Form Data</h3>
+                    <p>When you submit an order through our website, we collect:</p>
+                    <ul>
+                        <li>Your name and contact details</li>
+                        <li>Delivery address (must be within California)</li>
+                        <li>Order specifications and customization requests</li>
+                        <li>Preferred delivery or pickup date (minimum 2 days from order date)</li>
+                        <li>Any special dietary requirements or allergies</li>
+                    </ul>
+
+                    <h3>Data Security & Encryption</h3>
+                    <ul>
+                        <li>All form submissions are transmitted over encrypted HTTPS connections</li>
+                        <li>Sensitive information is protected with industry-standard security measures</li>
+                        <li>Payment processing is handled by PCI-DSS compliant third-party providers</li>
+                        <li>We do not store complete credit card information on our servers</li>
+                    </ul>
+
+                    <h3>Form Data Retention</h3>
+                    <ul>
+                        <li>Order information is retained for 2 years for recordkeeping and warranty purposes</li>
+                        <li>Contact form inquiries are kept for 1 year unless you request deletion</li>
+                        <li>You may request complete deletion of your data at any time</li>
+                    </ul>
+
+                    <h3>Service Area Limitation</h3>
+                    <p>The B & K Bakery currently operates within California only. When placing orders, delivery addresses must be within California state boundaries. If you provide a non-California address, we will contact you to clarify or cancel the order.</p>
+
+                    <div class="info-card">
+                        <p>✓ <strong>Verification:</strong> We may verify your phone number and address to ensure accurate delivery of your order.</p>
+                    </div>
+                </section>
+
+                <!-- Email Communications -->
+                <section class="policy-section" id="email-communication">
+                    <h2>Email Communications</h2>
+
+                    <p>Email is one of our primary ways to keep you updated about your orders and maintain connection with The B & K Bakery.</p>
+
+                    <h3>Types of Emails You'll Receive</h3>
+                    <ul>
+                        <li><strong>Transactional Emails:</strong> Order confirmations, preparation updates, delivery notifications, and receipts</li>
+                        <li><strong>Marketing Emails:</strong> New menu announcements, seasonal specials, and promotional offers (only if you've opted in)</li>
+                        <li><strong>Service Emails:</strong> Important account information, policy updates, and service announcements</li>
+                    </ul>
+
+                    <h3>Managing Your Email Preferences</h3>
+                    <ul>
+                        <li>Every marketing email includes an unsubscribe link at the bottom</li>
+                        <li>You can update your preferences on your account page</li>
+                        <li>You can contact us directly at <strong>bronxkaren1@gmail.com</strong> to adjust your preferences</li>
+                        <li>You'll continue to receive transactional order emails even if unsubscribed from marketing</li>
+                    </ul>
+
+                    <h3>Email Frequency</h3>
+                    <p>We respect your inbox and send emails only when necessary:</p>
+                    <ul>
+                        <li>Marketing emails: No more than once per week</li>
+                        <li>Order updates: As needed for your specific order</li>
+                        <li>Announcements: Only for major updates or seasonal offerings</li>
+                    </ul>
+                </section>
+
+                <!-- Cookies & Sessions -->
+                <section class="policy-section" id="cookies">
+                    <h2>Cookies & Session Management</h2>
+
+                    <p>Our website uses cookies and session data to provide you with a better browsing experience. We keep this minimal and transparent.</p>
+
+                    <h3>Types of Cookies We Use</h3>
+                    <ul>
+                        <li><strong>Essential Cookies:</strong> Required for website functionality (shopping cart, login, security)</li>
+                        <li><strong>Performance Cookies:</strong> Help us understand how you use our site to improve it</li>
+                        <li><strong>Preference Cookies:</strong> Remember your choices (language, theme preferences)</li>
+                    </ul>
+
+                    <h3>What We Don't Do</h3>
+                    <ul>
+                        <li>We do not use tracking cookies that follow you across other websites</li>
+                        <li>We do not share cookie data with advertising networks</li>
+                        <li>We do not sell your browsing data to third parties</li>
+                    </ul>
+
+                    <h3>Managing Cookies</h3>
+                    <p>You can control cookies through your browser settings:</p>
+                    <ul>
+                        <li>Clear cookies at any time from your browser settings</li>
+                        <li>Disable cookies for our site specifically</li>
+                        <li>Enable "Do Not Track" in your browser preferences</li>
+                        <li>Note: Disabling essential cookies may affect site functionality</li>
+                    </ul>
+
+                    <h3>Session Data</h3>
+                    <p>When you visit our website, we store temporary session information to:</p>
+                    <ul>
+                        <li>Keep you logged in to your account</li>
+                        <li>Store items in your shopping cart</li>
+                        <li>Remember your browsing activity during your visit</li>
+                        <li>Session data expires when you close your browser or after 24 hours of inactivity</li>
+                    </ul>
+                </section>
+
+                <!-- Third-Party Services -->
+                <section class="policy-section" id="third-party">
+                    <h2>Third-Party Services & Partners</h2>
+
+                    <p>To serve you better, we work with trusted partners and service providers. Here's how your information is handled:</p>
+
+                    <h3>Payment Processing</h3>
+                    <p>Your payment information is processed by secure third-party payment providers (such as Stripe, Square, or similar). These providers:</p>
+                    <ul>
+                        <li>Meet PCI-DSS compliance standards for payment security</li>
+                        <li>Do not share payment information with us</li>
+                        <li>Have their own privacy policies governing data handling</li>
+                        <li>Are contractually obligated to protect your financial information</li>
+                    </ul>
+
+                    <h3>Delivery & Logistics Partners</h3>
+                    <p>If you choose delivery, we may share your address with local delivery services only for:</p>
+                    <ul>
+                        <li>Fulfilling your order delivery</li>
+                        <li>Tracking and confirming delivery status</li>
+                        <li>These partners maintain confidentiality agreements with us</li>
+                    </ul>
+
+                    <h3>Email Service Provider</h3>
+                    <p>We use an email service to send you order updates and marketing communications:</p>
+                    <ul>
+                        <li>Your email is stored securely on their servers</li>
+                        <li>They follow GDPR and data protection regulations</li>
+                        <li>They never share your email with other businesses</li>
+                    </ul>
+
+                    <h3>Analytics Services</h3>
+                    <p>We may use analytics tools to understand website usage:</p>
+                    <ul>
+                        <li>No personally identifiable information is shared</li>
+                        <li>Analytics focus on aggregate trends, not individual behavior</li>
+                        <li>You can opt out of analytics tracking</li>
+                    </ul>
+
+                    <h3>Our Data Sharing Principles</h3>
+                    <ul>
+                        <li>We only share data when necessary to fulfill your order or service</li>
+                        <li>All partners are contractually obligated to protect your privacy</li>
+                        <li>You will always know if data is shared with third parties</li>
+                        <li>We never sell customer information to unrelated businesses</li>
+                    </ul>
+
+                    <div class="info-card">
+                        <p>🔒 <strong>Partner Vetting:</strong> We carefully vet all service partners to ensure they meet our privacy and security standards.</p>
+                    </div>
+                </section>
+
+                <!-- Data Protection -->
+                <section class="policy-section" id="data-protection">
+                    <h2>Data Protection & Security</h2>
+
+                    <p>Your privacy and security are paramount to us. We implement comprehensive measures to protect your information.</p>
+
+                    <h3>Security Measures</h3>
+                    <ul>
+                        <li><strong>SSL/TLS Encryption:</strong> All data transmitted to and from our website is encrypted</li>
+                        <li><strong>Secure Servers:</strong> Our servers are protected with firewalls and intrusion detection</li>
+                        <li><strong>Access Controls:</strong> Only authorized personnel can access customer information</li>
+                        <li><strong>Regular Updates:</strong> We maintain current security patches and software updates</li>
+                        <li><strong>Backup Systems:</strong> Your data is regularly backed up to secure locations</li>
+                    </ul>
+
+                    <h3>Password Protection</h3>
+                    <p>If you create an account with us:</p>
+                    <ul>
+                        <li>Choose a strong, unique password</li>
+                        <li>Never share your password with anyone</li>
+                        <li>We store passwords using encryption and hashing techniques</li>
+                        <li>We will never ask for your password via email</li>
+                    </ul>
+
+                    <h3>Data Breaches</h3>
+                    <p>In the unlikely event of a data breach, we are committed to:</p>
+                    <ul>
+                        <li>Notifying affected individuals promptly</li>
+                        <li>Working with authorities to investigate</li>
+                        <li>Taking steps to prevent future incidents</li>
+                        <li>Providing guidance on protecting your personal information</li>
+                    </ul>
+
+                    <h3>Data Retention</h3>
+                    <ul>
+                        <li>We retain your information only as long as necessary</li>
+                        <li>Order information: 2 years (for tax and warranty purposes)</li>
+                        <li>Marketing list data: Until you unsubscribe</li>
+                        <li>Customer account data: Until you request deletion</li>
+                        <li>Website analytics: 90 days aggregated, no personal data</li>
+                    </ul>
+
+                    <h3>International Data Transfer</h3>
+                    <p>As a California-based bakery, The B & K Bakery complies with U.S. data protection laws and California's consumer privacy regulations. Your information is not transferred internationally.</p>
+
+                    <div class="info-card">
+                        <p>🛡️ <strong>Continuous Improvement:</strong> We regularly review and update our security practices to stay ahead of emerging threats.</p>
+                    </div>
+                </section>
+
+                <!-- Your Rights -->
+                <section class="policy-section" id="your-rights">
+                    <h2>Your Privacy Rights</h2>
+
+                    <p>We believe data privacy is a fundamental right. Here are the rights you have regarding your personal information:</p>
+
+                    <h3>Right to Access</h3>
+                    <p>You have the right to request a copy of all personal information we hold about you:</p>
+                    <ul>
+                        <li>Request your data in a readable format</li>
+                        <li>Receive information about how we use your data</li>
+                        <li>Understand who has access to your information</li>
+                    </ul>
+
+                    <h3>Right to Correction</h3>
+                    <p>You have the right to correct inaccurate information:</p>
+                    <ul>
+                        <li>Update your contact information anytime</li>
+                        <li>Correct order preferences or delivery details</li>
+                        <li>Fix any errors in your account information</li>
+                    </ul>
+
+                    <h3>Right to Deletion</h3>
+                    <p>You can request that we delete your information (subject to legal requirements):</p>
+                    <ul>
+                        <li>Request deletion of marketing records</li>
+                        <li>Ask us to remove your account entirely</li>
+                        <li>Note: We may retain order records for tax purposes (up to 2 years)</li>
+                        <li>After deletion, we cannot restore the information</li>
+                    </ul>
+
+                    <h3>Right to Opt-Out</h3>
+                    <ul>
+                        <li>Unsubscribe from marketing emails at any time</li>
+                        <li>Disable cookies in your browser settings</li>
+                        <li>Request not to receive promotional communications</li>
+                        <li>You'll still receive transactional order updates</li>
+                    </ul>
+
+                    <h3>Right to Data Portability</h3>
+                    <p>You can request that we transfer your data to another service:</p>
+                    <ul>
+                        <li>Receive your data in a structured, machine-readable format</li>
+                        <li>Use your information with other service providers</li>
+                    </ul>
+
+                    <h3>Right to Lodge a Complaint</h3>
+                    <p>If you believe your privacy rights have been violated, you have the right to:</p>
+                    <ul>
+                        <li>Contact us directly to resolve the issue</li>
+                        <li>Lodge a complaint with California privacy authorities</li>
+                        <li>Seek legal recourse if necessary</li>
+                    </ul>
+
+                    <h3>How to Exercise Your Rights</h3>
+                    <p>To exercise any of these rights, simply reach out to us with your request:</p>
+                    <div class="info-card">
+                        <p><strong>Email:</strong> bronxkaren1@gmail.com<br><strong>Include:</strong> Your name, order number (if applicable), and specific request</p>
+                    </div>
+                    <p>We will respond to your request within 30 days in accordance with applicable law.</p>
+                </section>
+
+                <!-- Contact Information -->
+                <section class="policy-section" id="contact">
+                    <h2>Contact & Privacy Questions</h2>
+
+                    <p>We're happy to answer any questions about our privacy practices or help you manage your personal information.</p>
+
+                    <h3>Get In Touch</h3>
+                    <div class="info-card">
+                        <p>
+                            <strong>Email:</strong> bronxkaren1@gmail.com<br>
+                            <strong>Business Location:</strong> Santa Clara, CA (Community Clubhouse)<br>
+                            <strong>Service Area:</strong> California (currently)<br>
+                            <strong>Response Time:</strong> We aim to respond to privacy inquiries within 2 business days
+                        </p>
+                    </div>
+
+                    <h3>What We Can Help With</h3>
+                    <ul>
+                        <li>Questions about this Privacy Policy</li>
+                        <li>Requests to access your personal information</li>
+                        <li>Deletion or correction of your data</li>
+                        <li>Unsubscribing from marketing communications</li>
+                        <li>Concerns about privacy practices</li>
+                        <li>Complaints or feedback about data handling</li>
+                    </ul>
+
+                    <h3>Policy Updates</h3>
+                    <p>We may update this Privacy Policy periodically to reflect:</p>
+                    <ul>
+                        <li>Changes in our data practices</li>
+                        <li>New legal or regulatory requirements</li>
+                        <li>Feedback from our valued customers</li>
+                        <li>Expansion to new service areas</li>
+                    </ul>
+                    <p>We will notify you of significant changes via email. Your continued use of our website after updates constitutes acceptance of the new policy.</p>
+
+                    <h3>Last Updated</h3>
+                    <p>This Privacy Policy was last updated on May 20, 2026. We regularly review and refine our practices to ensure your information remains protected.</p>
+
+                    <div class="info-card">
+                        <p>🤝 <strong>Thank you</strong> for trusting The B & K Bakery with your information. Your privacy is as important to us as the quality ingredients that go into every batch of our handmade baked goods!</p>
+                    </div>
+                </section>
+
+                <a href="#information-collected" class="back-to-top">↑ Back to Top</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer" aria-label="Site footer">
+    <div class="footer-top">
+        <div class="footer-info">
+        <div class="footer-logo logo" aria-label="B&KERY">
+            <a href="index.html"><img src="Logo.png" width="120" alt="The B&KERY logo"></a>
+        </div>
+        <p class="footer-tagline">Homemade Bakery in Santa Clara</p>
+
+        <div class="footer-detail-block">
+            <p class="footer-label">Opening hours:</p>
+            <div class="footer-text">
+            <p>Tuesday - Sunday: 11:00 AM - 4:00 PM</p>
+            </div>
+        </div>
+
+        <div class="footer-detail-block">
+            <p class="footer-label">Phone:</p>
+            <p class="footer-text"><a href="tel:4088571968" style="color:inherit;text-decoration:none">(408) 857-1968</a></p>
+        </div>
+
+        <div class="footer-detail-block">
+            <p class="footer-label">Location:</p>
+            <div class="footer-text">
+            <p>The B&amp;K Bakery</p>
+            <p>Community Clubhouse</p>
+            <p>WOODBRIDGE MOBILE HOME PARK</p>
+            <p>3051 Towers Lane&comma; San Jose&comma; CA 95121</p>
+            </div>
+        </div>
+        </div>
+
+        <!-- Interactive Map -->
+        <div class="footer-map" aria-label="Map showing bakery location in San Jose, California">
+        <iframe
+            title="B&KERY Location Map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3165.8000000!2d-121.8180063!3d37.3066031!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1sWoodbridge+Mobile+Homes!2s0x808e328115011a4f%3A0xe65d52bbbcc88e3!5e0!3m2!1sen!2sus!4v1716048000000!5m2!1sen!2sus"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p class="footer-copy">©2026. The B&KERY | The B and K Bakery.</p>
+        <p class="footer-designer">Designed by <a href="https://www.linkedin.com/company/redanaagency/" target="_blank" rel="noopener">Redana</a></p>
+        <div class="footer-links">
+        <a href="privacypolicy.html">Privacy Policy</a>
+        <span>|</span>
+        <a href="termsandconditions.html">Terms &amp; Conditions</a>
+        </div>
+    </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        function initMobileMenu() {
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            const panel = document.querySelector('.mobile-menu-panel');
+            const backdrop = document.querySelector('.mobile-menu-backdrop');
+
+            if (!toggle) return;
+
+            toggle.addEventListener('click', () => {
+                panel.classList.add('open');
+                backdrop.classList.add('open');
+            });
+
+            const closeBtn = document.querySelector('.mobile-menu-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    panel.classList.remove('open');
+                    backdrop.classList.remove('open');
+                });
+            }
+
+            backdrop.addEventListener('click', () => {
+                panel.classList.remove('open');
+                backdrop.classList.remove('open');
+            });
+        }
+
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.getElementById('progress-bar').style.width = scrollPercent + '%';
+        });
+
+        // Smooth scroll for TOC
+        document.querySelectorAll('.toc a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initMobileMenu);
+    </script>
+</body>
+</html>
