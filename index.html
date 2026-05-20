@@ -1,21 +1,879 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A brief description of the webpage">
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>The B&KERY — Handmade Bakery in Santa Clara</title>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
-<body>
-    <header>
-        <h1>Welcome to The B & K Bakery</h1>
-    </header>
-    <main>
-        <p>Your content goes here.</p>
-    </main>
-    <footer>
-        <p>&copy; 2023 The B & K Bakery. All rights reserved.</p>
-    </footer>
+<body class="alan-sans">
+
+<!-- Progress Bar -->
+<div id="progress-bar" role="progressbar" aria-label="Page scroll progress"></div>
+
+<!-- ── Toast Notifications ─────────────────────────────────────── -->
+<div id="toasts" role="status" aria-live="polite">
+  <div id="toast-1" class="toast brown" role="alert">
+    <span>NOTE: There's no inventory. Every order is freshly prepared when you request. It'll take 2 days to get your order ready. Thank you!💛</span>
+    <button class="toast-close" aria-label="Dismiss notification" onclick="dismissToast('toast-1')">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="toast-2" class="toast yellow" role="alert">
+    <span>Currently serving customers within California only.</span>
+    <button class="toast-close" aria-label="Dismiss notification" onclick="dismissToast('toast-2')">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ── Header ──────────────────────────────────────────────────── -->
+<header id="header" aria-label="Site header">
+  <nav aria-label="Main navigation">
+    <div class="logo" aria-label="B&KERY Home">
+      <a href="index.html"><img src="Logo.png" width="120" alt="The B&KERY logo"></a>
+    </div>
+    <div class="nav-actions">
+      <a href="#menu" class="btn btn-outline">Menu</a>
+      <a href="#footer-hero" class="btn btn-brown">Place order</a>
+    </div>
+    <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </nav>
+  <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+    <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+    <a href="#menu" class="btn btn-outline">Menu</a>
+    <a href="#footer-hero" class="btn btn-brown">Place order</a>
+  </div>
+  <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
+</header>
+
+<!-- ── Hero ───────────────────────────────────────────────────── -->
+<section id="hero" aria-label="Hero">
+  <div class="hero-text">
+    <div class="hero-badge">Handmade with love by Karen 💛</div>
+    <h1 class="hero-headline">Enjoy freshly baked treats,<br>made just for you!</h1>
+    <p class="hero-sub">Warm breads, sweet treats, and homemade favorites baked with love, laughter, and just the right amount of butter.</p>
+    <div class="hero-ctas">
+      <a href="#menu" class="btn btn-brown">Explore menu</a>
+      <a href="#footer-hero" class="btn btn-outline">Place order</a>
+    </div>
+  </div>
+
+  <div class="hero-images" aria-label="Bakery photos">
+    <div class="hero-img-wrap" style="width:170px;height:278px">
+      <img src="https://www.figma.com/api/mcp/asset/b90bdfd3-619c-4203-b0e8-5f5e4abe1886" alt="Bakery item" loading="lazy"/>
+    </div>
+    <div class="hero-img-wrap" style="width:200px;height:327px">
+      <img src="https://www.figma.com/api/mcp/asset/ba08dbf5-f45f-4ffc-8668-a399608f6255" alt="Bakery item" loading="lazy"/>
+    </div>
+    <div class="hero-img-wrap" style="width:236px;height:385px">
+      <img src="https://www.figma.com/api/mcp/asset/0e8f9873-95e7-41e2-8c44-3f9b324d4f12" alt="Featured bakery item" loading="lazy"/>
+    </div>
+    <div class="hero-img-wrap" style="width:200px;height:327px">
+      <img src="https://www.figma.com/api/mcp/asset/41fe3811-609e-4d3f-85f3-39eed584302b" alt="Bakery item" loading="lazy"/>
+    </div>
+    <div class="hero-img-wrap" style="width:170px;height:278px">
+      <img src="https://www.figma.com/api/mcp/asset/6ce6fbe7-0898-45f9-824c-72ae9c5f2672" alt="Bakery item" loading="lazy"/>
+    </div>
+  </div>
+</section>
+
+<!-- ── Menu Section ────────────────────────────────────────────── -->
+<section id="menu" aria-label="Our Menu">
+  <h2 class="section-title">Our Menu</h2>
+  <div class="menu-items">
+
+    <!-- 1. BABKA -->
+    <article class="menu-item" aria-label="Babka">
+      <div class="menu-info">
+        <div class="menu-header">
+          <div class="menu-num" aria-hidden="true">1</div>
+          <div class="menu-titles">
+            <div class="menu-name">Babka</div>
+            <div class="menu-price">Price: $22.00 a loaf</div>
+          </div>
+        </div>
+        <p class="menu-desc">As yummy as it looks, that's how great it tastes. I got this recipe and improvised on it. The filling is a combination of cocoa and chocolate chips, chopped just before the chips get really chipped and where you may not see them. You can definitely see mine. Now take a look at the slices below. It's light and airy and you can smell the yeast as it blends into the chocolate. It isn't your ordinary decadent gooey babka – it's perfect!</p>
+        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+      </div>
+      <div class="menu-images">
+        <div class="two-img">
+          <div class="img-col">
+            <p class="img-caption">This is a Babka loaf before slicing.</p>
+            <div class="img-card">
+              <img src="https://www.figma.com/api/mcp/asset/0e8f9873-95e7-41e2-8c44-3f9b324d4f12" alt="Babka loaf before slicing" loading="lazy"/>
+              <div class="price-badge" aria-label="Price $22">$22</div>
+            </div>
+          </div>
+          <div class="img-col">
+            <div class="img-card"><img src="https://www.figma.com/api/mcp/asset/9faac2b9-4dcf-46c1-8fd9-1acecdc0418c" alt="Babka loaf after slicing" loading="lazy"/></div>
+            <p class="img-caption">This is a Babka loaf after slicing.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2. CHALLAH -->
+    <article class="menu-item reverse" aria-label="Challah">
+      <div class="menu-info">
+        <div class="menu-header">
+          <div class="menu-num" aria-hidden="true">2</div>
+          <div class="menu-titles">
+            <div class="menu-name">Challah</div>
+            <div class="menu-price">Price: $22.00 a loaf</div>
+          </div>
+        </div>
+        <p class="menu-desc">Whole loaf of Challah (or sometimes called twisted egg loaf). This Challah was made from an old family recipe gotten from my friend's grandmother-in-law, who owned a Jewish restaurant. I buy the flour from Kansas – from their winter wheat. I tried to make this flour from King Arthur flour, but it never came out the same. It has a wonderful flavor, looks wonderful, browns wonderfully, and tastes fantastic. I am very proud of it. Above is a photo of some slices of the Challah (pronounced Hal-lah) – and then you have to "spit" the last syllable.</p>
+        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+      </div>
+      <div class="menu-images">
+        <div class="two-img">
+          <div class="img-col">
+            <p class="img-caption">This is a Challah loaf before slicing.</p>
+            <div class="img-card">
+              <img src="https://www.figma.com/api/mcp/asset/41fe3811-609e-4d3f-85f3-39eed584302b" alt="Challah before slicing" loading="lazy"/>
+              <div class="price-badge" aria-label="Price $22">$22</div>
+            </div>
+          </div>
+          <div class="img-col">
+            <div class="img-card"><img src="https://www.figma.com/api/mcp/asset/2d37bcdd-1779-46cd-b955-11ca38491ed5" alt="Challah after slicing" loading="lazy"/></div>
+            <p class="img-caption">This is a Challah loaf after slicing.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3. BAGELS -->
+    <article class="menu-item" aria-label="Bagels">
+      <div class="menu-info">
+        <div class="menu-header">
+          <div class="menu-num" aria-hidden="true">3</div>
+          <div class="menu-titles">
+            <div class="menu-name">Bagels</div>
+            <div class="menu-price">Price: $26.00 for a Baker's dozen (13) and $2.75 for one</div>
+          </div>
+        </div>
+        <p class="menu-desc">Fresh large bagels (kind of crispy bottom half) made by a born and bred New York Mom – Crispy bottoms, but soft and "textury" inside. You can actually taste the love.<br><br>My bagels – I baked and baked and watched YouTube channels until I had created my own recipe. I wanted the bagels bigger than you can get in the bagel store with a crunchy bottom, that is different from your bagel store. I use more flour and ingredients so I can make the bagels bigger with a special softness inside. And yes, I am an old time native New Yorker and my bagels are dipped in boiling water before they are baked and this makes its consistency that of a perfect New York bagel.</p>
+        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+      </div>
+      <div class="menu-images single-img">
+        <div class="single-img-wrap">
+          <div class="img-card">
+            <img src="https://www.figma.com/api/mcp/asset/c929192c-933a-4cc4-8bb8-965d17000d7f" alt="Fresh bagels" loading="lazy" style="height:240px;object-fit:cover;width:100%"/>
+            <div class="price-badge" aria-label="Price $26">$26</div>
+          </div>
+          <p class="img-caption">Get a Baker's Dozen (13) for $26 and $2.75 for one bagel.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4. BIALYS -->
+    <article class="menu-item reverse" aria-label="Bialys">
+      <div class="menu-info">
+        <div class="menu-header">
+          <div class="menu-num" aria-hidden="true">4</div>
+          <div class="menu-titles">
+            <div class="menu-name">Bialys</div>
+            <div class="menu-price">Price: $26.00 for a Baker's dozen (13) and $2.75 for one</div>
+          </div>
+        </div>
+        <p class="menu-desc">I pronounce it "Bee-ah-lies". And yes! - They smell good with Roasted Shallots center. Fresh large bialys (kind of crispy bottom half) made by a born and bred New York Mom – Crispy bottoms, but soft and chewy inside. You can actually taste the love. My bialys (unlike my bagels) are not water boiled. They are baked perfectly from a basic Polish recipe.<br><br>I looked and tried many different recipes, and came up with one from a combination of YouTube videos and the King Arthur Flour site on the internet. I got it down people! I think you'll love them. Since I have a Cottage permit from the County of Santa Clara, my bagels cannot be made and fried with natural onions (they would be considered "perishable"). However, I have dehydrated shallots which work as well, and form a crispy oniony center on the bialy. I know you'll enjoy them as you spread them with cream cheese.</p>
+        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+      </div>
+      <div class="menu-images single-img">
+        <div class="single-img-wrap">
+          <div class="img-card">
+            <img src="https://www.figma.com/api/mcp/asset/8d8ff454-d9ce-4bb4-a100-c1f52ae3a6e1" alt="Fresh bialys" loading="lazy" style="height:240px;object-fit:cover;width:100%"/>
+            <div class="price-badge" aria-label="Price $26">$26</div>
+          </div>
+          <p class="img-caption">Get a Baker's Dozen (13) for $26 and $2.75 for one bialy.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 5. RUGELACH -->
+    <article class="menu-item" aria-label="Rugelach">
+      <div class="menu-info">
+        <div class="menu-header">
+          <div class="menu-num" aria-hidden="true">5</div>
+          <div class="menu-titles">
+            <div class="menu-name">Rugelach</div>
+            <div class="menu-price">Price: Rugelach in a box for $10.00 (A dozen)</div>
+          </div>
+        </div>
+        <p class="menu-desc">(I pronounce it as "Rug-a-luck").<br><br>Guilt-free Rugalach with no sugar. Made with Raisins, Nuts and Cinnamon. My Rugalach is made with alternative sugar which is blended so perfectly that you can taste its sweetness and absolutely no aftertaste. The dough is blended with natural cream cheese and refrigerated just enough, so it has a little crunch on the outside, and softness on the inside and they're yummy.</p>
+        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+      </div>
+      <div class="menu-images single-img">
+        <div class="single-img-wrap">
+          <div class="img-card">
+            <img src="https://www.figma.com/api/mcp/asset/6ca2f4ed-0688-486c-94f8-3e8d88688b2d" alt="Rugelach cookies" loading="lazy" style="height:240px;object-fit:cover;width:100%"/>
+            <div class="price-badge" aria-label="Price $10">$10</div>
+          </div>
+          <p class="img-caption">Get a Dozen for $10.00</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 6. ALMOND THUMBPRINT COOKIES -->
+    <article class="menu-item reverse" aria-label="Almond Thumbprint Cookies">
+      <div class="menu-info">
+        <div class="menu-header">
+          <div class="menu-num" aria-hidden="true">6</div>
+          <div class="menu-titles">
+            <div class="menu-name">Almond Thumbprint Cookies</div>
+            <div class="menu-price">Price: $14.00 for a dozen</div>
+          </div>
+        </div>
+        <p class="menu-desc">As yummy as it looks, that's how great it tastes. I got this recipe and improvised on it. The filling is a combination of cocoa and chocolate chips, chopped just before the chips get really chipped and where you may not see them. You can definitely see mine. Now take a look at the slices below. It's light and airy and you can smell the yeast as it blends into the chocolate. It isn't your ordinary decadent gooey babka – it's perfect!</p>
+        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+      </div>
+      <div class="menu-images single-img">
+        <div class="single-img-wrap">
+          <div class="img-card">
+            <img src="https://www.figma.com/api/mcp/asset/1b1e0df2-58fd-43ba-a595-7308b7aa67f2" alt="Almond thumbprint cookies" loading="lazy" style="height:240px;object-fit:cover;width:100%"/>
+            <div class="price-badge" aria-label="Price $14">$14</div>
+          </div>
+          <p class="img-caption">Get a Dozen for $14.00</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 7. MANDELBROT -->
+    <article class="menu-item" aria-label="Mandelbrot">
+      <div class="menu-info">
+        <div class="menu-header">
+          <div class="menu-num" aria-hidden="true">7</div>
+          <div class="menu-titles">
+            <div class="menu-name">Mandelbrot</div>
+            <div class="menu-price">Price: Box of cookies for $10.00 (1 dozen)</div>
+          </div>
+        </div>
+        <p class="menu-desc">As yummy as it looks, that's how great it tastes. I got this recipe and improvised on it. The filling is a combination of cocoa and chocolate chips, chopped just before the chips get really chipped and where you may not see them. You can definitely see mine. Now take a look at the slices below. It's light and airy and you can smell the yeast as it blends into the chocolate. It isn't your ordinary decadent gooey babka – it's perfect!</p>
+        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+      </div>
+      <div class="menu-images single-img">
+        <div class="single-img-wrap">
+          <div class="img-card">
+            <img src="https://www.figma.com/api/mcp/asset/2fc824b1-4c7c-48cb-881a-f7326e745482" alt="Mandelbrot cookies" loading="lazy" style="height:240px;object-fit:cover;width:100%"/>
+            <div class="price-badge" aria-label="Price $10">$10</div>
+          </div>
+          <p class="img-caption">Get a Dozen (12) for $10.00</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 8. MACARONS -->
+    <article class="menu-item reverse" aria-label="Macarons">
+      <div class="menu-info">
+        <div class="menu-header">
+          <div class="menu-num" aria-hidden="true">8</div>
+          <div class="menu-titles">
+            <div class="menu-name">Macarons</div>
+            <div class="menu-price">Price: $12.00 for 10 sandwich cookies</div>
+          </div>
+        </div>
+        <p class="menu-desc">As yummy as it looks, that's how great it tastes. I got this recipe and improvised on it. The filling is a combination of cocoa and chocolate chips, chopped just before the chips get really chipped and where you may not see them. You can definitely see mine. Now take a look at the slices below. It's light and airy and you can smell the yeast as it blends into the chocolate. It isn't your ordinary decadent gooey babka – it's perfect!</p>
+        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+      </div>
+      <div class="menu-images">
+        <div class="two-img">
+          <div class="img-col">
+            <p class="img-caption">These are my lemon macarons after they were cooled and filled and sandwiched.</p>
+            <div class="img-card">
+              <img src="https://www.figma.com/api/mcp/asset/f14491a9-4a5e-47d8-9020-439b38c65a8a" alt="Lemon macarons" loading="lazy"/>
+              <div class="price-badge" aria-label="Price $12">$12</div>
+            </div>
+          </div>
+          <div class="img-col">
+            <div class="img-card"><img src="https://www.figma.com/api/mcp/asset/04fbccb1-7848-4a85-b382-8ed79eb3d99d" alt="Macarons display" loading="lazy"/></div>
+            <p class="img-caption">Get 10 for $12.00</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 9. GREATER-CRUMB COFFEE CAKE -->
+    <article class="menu-item" aria-label="Coffee Cake">
+      <div class="menu-info">
+        <div class="menu-header">
+          <div class="menu-num" aria-hidden="true">9</div>
+          <div class="menu-titles">
+            <div class="menu-name">Greater-Crumb Coffee Cake</div>
+            <div class="menu-price">Price: $30.00</div>
+          </div>
+        </div>
+        <p class="menu-desc">As yummy as it looks, that's how great it tastes. I got this recipe and improvised on it. The filling is a combination of cocoa and chocolate chips, chopped just before the chips get really chipped and where you may not see them. You can definitely see mine. Now take a look at the slices below. It's light and airy and you can smell the yeast as it blends into the chocolate. It isn't your ordinary decadent gooey babka – it's perfect!</p>
+        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+      </div>
+      <div class="menu-images">
+        <div class="two-img">
+          <div class="img-col">
+            <p class="img-caption">Below are photos of the actual crumb cake made about 1 week ago (August, 2025).</p>
+            <div class="img-card">
+              <img src="https://www.figma.com/api/mcp/asset/85a6f397-4f26-446f-b10b-86159c9af808" alt="Coffee crumb cake" loading="lazy"/>
+              <div class="price-badge" aria-label="Price $30">$30</div>
+            </div>
+          </div>
+          <div class="img-col">
+            <div class="img-card"><img src="https://www.figma.com/api/mcp/asset/e691b5b4-817a-47b0-b2df-c43c67a46459" alt="Coffee crumb cake slice" loading="lazy"/></div>
+            <p class="img-caption">Get this tasty cake for $30.00</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ── Footer Hero ──────────────────────────────────────────────── -->
+<section id="footer-hero" aria-label="Contact and CTA">
+  <div class="fh-bg" aria-hidden="true"></div>
+  <div class="fh-overlay" aria-hidden="true"></div>
+
+  <!-- Left: Text + CTA -->
+  <div class="fh-left">
+    <div>
+      <h2 class="fh-headline">Thank you for being <span>part of our story!</span></h2>
+      <p class="fh-sub" style="margin-top:18px">Every order means the world to us. We can't wait to bake more joy for you.</p>
+    </div>
+    <a href="#menu" class="btn btn-yellow" style="align-self:flex-start">View menu</a>
+    <p class="fh-note">Currently serving customers within California only. Please allow 2 days for handmade preparation.</p>
+  </div>
+
+  <!-- Right: Contact Form -->
+  <div class="fh-right">
+    <div>
+      <h3 class="fh-form-title">Want to make an inquiry?</h3>
+      <p class="fh-form-sub" style="margin-top:8px">We're here for you! Send us a message and we'll get back to you as soon as possible.</p>
+    </div>
+    <div id="form-msg" class="form-msg" aria-live="polite"></div>
+    <div class="fh-form" id="contact-form">
+      <label class="visually-hidden" for="f-name">Name</label>
+      <input class="fh-input" id="f-name" name="name" type="text" placeholder="Name" autocomplete="name" required aria-required="true"/>
+      <label class="visually-hidden" for="f-email">Email address</label>
+      <input class="fh-input" id="f-email" name="email" type="email" placeholder="Email address" autocomplete="email" required aria-required="true"/>
+      <label class="visually-hidden" for="f-message">Your message</label>
+      <textarea class="fh-input" id="f-message" name="message" placeholder="Your message" rows="5" required aria-required="true"></textarea>
+      <div class="fh-form-actions">
+        <button class="btn btn-yellow" onclick="handleSubmit(event)" type="button" id="submit-btn">Send message</button>
+        <a href="mailto:bronxkaren1@gmail.com" class="fh-email-link" aria-label="Email bronxkaren1@gmail.com">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+          bronxkaren1@gmail.com
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────────────── -->
+<footer id="footer" aria-label="Site footer">
+  <div class="footer-top">
+    <div class="footer-info">
+      <div class="footer-logo logo" aria-label="B&KERY">
+        <a href="index.html"><img src="Logo.png" width="120" alt="The B&KERY logo"></a>
+      </div>
+      <p class="footer-tagline">Homemade Bakery in Santa Clara</p>
+
+      <div class="footer-detail-block">
+        <p class="footer-label">Opening hours:</p>
+        <div class="footer-text">
+          <p>Mon - Thur: 11:00 AM - 9:00 PM</p>
+          <p>Fri - Sat: 11:00 AM - 10:00 PM</p>
+          <p>Sun: 12:00 PM - 8:00 PM</p>
+        </div>
+      </div>
+
+      <div class="footer-detail-block">
+        <p class="footer-label">Phone:</p>
+        <p class="footer-text"><a href="tel:4088571968" style="color:inherit;text-decoration:none">(408) 857-1968</a></p>
+      </div>
+
+      <div class="footer-detail-block">
+        <p class="footer-label">Location:</p>
+        <div class="footer-text">
+          <p>B&amp;K Bakery</p>
+          <p>San Jose, CA</p>
+          <p>Santa Clara County, CA</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Map -->
+    <div class="footer-map" aria-label="Map showing bakery location in San Jose, California">
+      <iframe
+        title="B&KERY Location Map"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d202782.47148985!2d-122.0357!3d37.3382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fcae48af93ff5%3A0xb99d8c0aca9f4b0!2sSan%20Jose%2C%20CA!5e0!3m2!1sen!2sus!4v1716048000000!5m2!1sen!2sus"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p class="footer-copy">©2026. The B&KERY | The B and K Bakery.</p>
+    <p class="footer-designer">Designed by <a href="https://www.linkedin.com/company/redanaagency/" target="_blank" rel="noopener">Redana</a></p>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <span>|</span>
+      <a href="#">Cookies</a>
+      <span>|</span>
+      <a href="#">Terms &amp; Conditions</a>
+    </div>
+  </div>
+</footer>
+
+<div class="order-modal-backdrop" id="order-modal-backdrop" aria-hidden="true">
+  <div class="order-modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title" aria-describedby="order-modal-desc" tabindex="-1">
+    <button type="button" class="modal-close" id="order-modal-close" aria-label="Close order modal">×</button>
+    <div class="order-modal-inner">
+      <div class="modal-header">
+        <h2 id="order-modal-title">Place Your Order</h2>
+        <p id="order-modal-desc">Every order is freshly handmade just for you. Please allow 2 days for preparation.</p>
+      </div>
+
+      <form id="order-form" class="order-form" novalidate>
+        <div class="form-group">
+          <label for="order-name">Full Name</label>
+          <input id="order-name" name="name" type="text" class="order-input" autocomplete="name" required />
+          <div class="order-field-error" id="error-order-name"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="order-phone">Phone Number</label>
+          <input id="order-phone" name="phone" type="tel" class="order-input" autocomplete="tel" required />
+          <div class="order-field-error" id="error-order-phone"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="order-email">Email Address</label>
+          <input id="order-email" name="email" type="email" class="order-input" autocomplete="email" required />
+          <div class="order-field-error" id="error-order-email"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="order-item">Bakery Item You Want To Order</label>
+          <select id="order-item" name="item" class="order-select" required>
+            <option value="" disabled selected>Select a bakery item</option>
+            <option value="Babka">Babka — $22.00</option>
+            <option value="Challah">Challah — $22.00</option>
+            <option value="Bagels">Bagels — $26.00</option>
+            <option value="Bialys">Bialys — $26.00</option>
+            <option value="Rugelach">Rugelach — $10.00</option>
+            <option value="Almond Thumbprint Cookies">Almond Thumbprint Cookies — $14.00</option>
+            <option value="Mandelbrot">Mandelbrot — $10.00</option>
+            <option value="Macarons">Macarons — $12.00</option>
+            <option value="Greater-Crumb Coffee Cake">Greater-Crumb Coffee Cake — $30.00</option>
+          </select>
+          <div class="order-field-error" id="error-order-item"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Pickup or Delivery</label>
+          <div class="radio-group">
+            <label><input type="radio" name="order-method" value="Pickup" checked /> Pickup</label>
+            <label><input type="radio" name="order-method" value="Delivery" /> Delivery</label>
+          </div>
+          <div class="order-field-error" id="error-order-method"></div>
+        </div>
+
+        <div class="form-group" id="address-group" aria-hidden="true">
+          <label for="order-address">Address / Location</label>
+          <input id="order-address" name="address" type="text" class="order-input" autocomplete="street-address" />
+          <div class="order-field-error" id="error-order-address"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="order-notes">Optional Notes / Special Request</label>
+          <textarea id="order-notes" name="notes" class="order-textarea" rows="4" placeholder="Let us know any special request."></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-brown order-submit" id="order-submit-btn">
+            <span>Place Order</span>
+          </button>
+          <button type="button" class="btn btn-outline order-cancel-btn" id="order-cancel-btn">Cancel</button>
+        </div>
+
+        <div class="order-status" id="order-status" aria-live="polite"></div>
+      </form>
+
+      <div class="order-success" id="order-success" aria-hidden="true">
+        <div class="order-success-icon" aria-hidden="true">✓</div>
+        <h3>Your order has been placed successfully.</h3>
+        <p>You&apos;ll get it in 2 days time.</p>
+        <div class="modal-actions order-success-actions">
+          <button type="button" class="btn btn-yellow" id="order-another-btn">Place Another Order</button>
+          <button type="button" class="btn btn-outline" id="order-close-btn">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Scripts ─────────────────────────────────────────────────── -->
+<script>
+// ── Toast persistence ──────────────────────────────────────────
+(function initToasts(){
+  const t1 = sessionStorage.getItem('toast-1-closed');
+  const t2 = sessionStorage.getItem('toast-2-closed');
+  if(t1) document.getElementById('toast-1').classList.add('hidden');
+  if(t2) document.getElementById('toast-2').classList.add('hidden');
+  updateHeader();
+})();
+
+function dismissToast(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.style.transition='opacity 250ms ease,transform 250ms ease';
+  el.style.opacity='0';
+  el.style.transform='translateY(-100%)';
+  setTimeout(()=>{
+    el.classList.add('hidden');
+    sessionStorage.setItem(id+'-closed','1');
+    updateHeader();
+  },260);
+}
+
+function updateHeader(){
+  const t1 = document.getElementById('toast-1');
+  const t2 = document.getElementById('toast-2');
+  const h = (t1.classList.contains('hidden')?0:48) + (t2.classList.contains('hidden')?0:48);
+  document.getElementById('header').style.top = h+'px';
+  // push hero down by toast height
+  document.getElementById('hero').style.paddingTop = (120 + h)+'px';
+}
+
+// ── Progress bar ───────────────────────────────────────────────
+(function(){
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll',()=>{
+    const st = document.documentElement.scrollTop;
+    const dh = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (dh>0?Math.min(100,(st/dh)*100):0)+'%';
+  },{passive:true});
+})();
+
+// ── Contact Form ───────────────────────────────────────────────
+async function handleSubmit(e){
+  const btn = document.getElementById('submit-btn');
+  const msgEl = document.getElementById('form-msg');
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const message = document.getElementById('f-message').value.trim();
+
+  // Reset
+  ['f-name','f-email','f-message'].forEach(id=>document.getElementById(id).classList.remove('error-field'));
+  msgEl.className='form-msg';msgEl.textContent='';
+
+  // Validate
+  let valid = true;
+  if(!name){document.getElementById('f-name').classList.add('error-field');valid=false;}
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){document.getElementById('f-email').classList.add('error-field');valid=false;}
+  if(!message){document.getElementById('f-message').classList.add('error-field');valid=false;}
+  if(!valid){
+    msgEl.className='form-msg error';
+    msgEl.textContent='Please fill in all required fields correctly.';
+    return;
+  }
+
+  btn.textContent='Sending…';btn.disabled=true;
+
+  // Use mailto as fallback — opens default mail client
+  const subject = encodeURIComponent(`Bakery Inquiry from ${name}`);
+  const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+  const mailtoUrl = `mailto:bronxkaren1@gmail.com?subject=${subject}&body=${body}`;
+
+  // Try EmailJS-style fetch; fall back to mailto
+  try{
+    // Using formsubmit.co (free, no account needed for mailto fallback)
+    const resp = await fetch(`https://formsubmit.co/ajax/bronxkaren1@gmail.com`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({name,email,message,_subject:`Bakery Inquiry from ${name}`})
+    });
+    const data = await resp.json();
+    if(data.success==='true'||data.success===true||resp.ok){
+      msgEl.className='form-msg success';
+      msgEl.textContent='✓ Message sent! We\'ll get back to you within 24–48 hours.';
+      document.getElementById('f-name').value='';
+      document.getElementById('f-email').value='';
+      document.getElementById('f-message').value='';
+    } else {throw new Error('form error');}
+  } catch(err){
+    // Fallback: open mailto
+    window.location.href = mailtoUrl;
+    msgEl.className='form-msg success';
+    msgEl.textContent='✓ Your email client has been opened. Alternatively, email us at bronxkaren1@gmail.com';
+  }
+  btn.textContent='Send message';btn.disabled=false;
+}
+
+// Allow Enter to submit from inputs
+['f-name','f-email'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit(e);});
+});
+
+// ── Nav: smooth background on scroll ──────────────────────────
+window.addEventListener('scroll',()=>{
+  const nav = document.querySelector('nav');
+  nav.style.boxShadow = window.scrollY>200
+    ? '0 2px 20px rgba(82,47,28,.15)' : 'none';
+},{passive:true});
+
+// ── Hero image auto-scroll disabled so user scrolling remains stable ───────────
+(function initHeroCarousel(){
+  return;
+})();
+
+(function initOrderModal(){
+  const backdrop = document.getElementById('order-modal-backdrop');
+  const modal = document.querySelector('.order-modal');
+  const orderForm = document.getElementById('order-form');
+  const orderStatus = document.getElementById('order-status');
+  const orderSubmitBtn = document.getElementById('order-submit-btn');
+  const orderCancelBtn = document.getElementById('order-cancel-btn');
+  const orderCloseBtn = document.getElementById('order-close-btn');
+  const orderAnotherBtn = document.getElementById('order-another-btn');
+  const orderItemInput = document.getElementById('order-item');
+  const addressGroup = document.getElementById('address-group');
+  const addressInput = document.getElementById('order-address');
+  const methodRadios = Array.from(document.querySelectorAll('input[name="order-method"]'));
+  const successPane = document.getElementById('order-success');
+  const body = document.body;
+  const focusSelectors = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+  let lastFocused = null;
+  let focusable = [];
+  let firstFocusable = null;
+  let lastFocusable = null;
+
+  if(!backdrop || !modal || !orderForm) return;
+
+  const orderButtons = Array.from(document.querySelectorAll('a.btn')).filter(el => el.textContent.trim().toLowerCase() === 'place order');
+
+  const updateAddressVisibility = () => {
+    const delivery = methodRadios.some(r => r.checked && r.value === 'Delivery');
+    addressGroup.style.display = delivery ? 'flex' : 'none';
+    addressGroup.setAttribute('aria-hidden', String(!delivery));
+    if(!delivery){
+      addressInput.value = '';
+      document.getElementById('error-order-address').textContent = '';
+      addressInput.classList.remove('error-field');
+    }
+  };
+
+  const focusModal = () => {
+    focusable = Array.from(modal.querySelectorAll(focusSelectors)).filter(el => el.offsetParent !== null);
+    firstFocusable = focusable[0];
+    lastFocusable = focusable[focusable.length - 1];
+    if(firstFocusable) firstFocusable.focus();
+  };
+
+  const clearValidation = () => {
+    ['order-name','order-phone','order-email','order-item','order-address'].forEach(id => {
+      const field = document.getElementById(id);
+      if(field) field.classList.remove('error-field');
+    });
+    ['error-order-name','error-order-phone','error-order-email','error-order-item','error-order-method','error-order-address'].forEach(id => {
+      const errorEl = document.getElementById(id);
+      if(errorEl) errorEl.textContent = '';
+    });
+    orderStatus.textContent = '';
+  };
+
+  const getOrderItemName = trigger => {
+    const menuItem = trigger.closest('.menu-item');
+    if(menuItem){
+      const title = menuItem.querySelector('.menu-name');
+      if(title) return title.textContent.trim();
+    }
+    return '';
+  };
+
+  const closeModal = () => {
+    backdrop.classList.remove('open');
+    backdrop.setAttribute('aria-hidden','true');
+    body.classList.remove('modal-open');
+    document.removeEventListener('keydown', handleKeyDown);
+    successPane.classList.remove('active');
+    successPane.setAttribute('aria-hidden', 'true');
+    orderForm.classList.remove('hidden');
+    if(lastFocused && lastFocused.focus) lastFocused.focus();
+  };
+
+  const openModal = (itemName = '') => {
+    lastFocused = document.activeElement;
+    orderForm.reset();
+    orderItemInput.value = itemName || '';
+    clearValidation();
+    updateAddressVisibility();
+    backdrop.classList.add('open');
+    backdrop.setAttribute('aria-hidden','false');
+    body.classList.add('modal-open');
+    successPane.classList.remove('active');
+    successPane.setAttribute('aria-hidden', 'true');
+    orderForm.classList.remove('hidden');
+    focusModal();
+    document.addEventListener('keydown', handleKeyDown);
+  };
+
+  const handleKeyDown = e => {
+    if(e.key === 'Escape'){
+      closeModal();
+      return;
+    }
+    if(e.key !== 'Tab' || focusable.length === 0) return;
+    if(e.shiftKey){
+      if(document.activeElement === firstFocusable){
+        e.preventDefault();
+        lastFocusable.focus();
+      }
+    } else if(document.activeElement === lastFocusable){
+      e.preventDefault();
+      firstFocusable.focus();
+    }
+  };
+
+  const showSuccess = () => {
+    orderForm.classList.add('hidden');
+    successPane.classList.add('active');
+    successPane.setAttribute('aria-hidden', 'false');
+    orderStatus.textContent = '';
+    focusModal();
+  };
+
+  const setError = (id, message) => {
+    const field = document.getElementById(id);
+    if(field) field.textContent = message;
+  };
+
+  const validateEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+  backdrop.addEventListener('click', event => {
+    if(event.target === backdrop) closeModal();
+  });
+  orderCancelBtn.addEventListener('click', closeModal);
+  orderCloseBtn.addEventListener('click', closeModal);
+  document.getElementById('order-modal-close').addEventListener('click', closeModal);
+  orderAnotherBtn.addEventListener('click', () => {
+    orderForm.reset();
+    updateAddressVisibility();
+    clearValidation();
+    orderForm.classList.remove('hidden');
+    successPane.classList.remove('active');
+    successPane.setAttribute('aria-hidden', 'true');
+    focusModal();
+  });
+
+  methodRadios.forEach(radio => radio.addEventListener('change', updateAddressVisibility));
+
+  orderButtons.forEach(button => {
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      openModal(getOrderItemName(button));
+    });
+  });
+
+  orderForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    clearValidation();
+
+    const name = document.getElementById('order-name').value.trim();
+    const phone = document.getElementById('order-phone').value.trim();
+    const email = document.getElementById('order-email').value.trim();
+    const item = orderItemInput.value.trim();
+    const method = methodRadios.find(r => r.checked)?.value || '';
+    const address = addressInput.value.trim();
+    const notes = document.getElementById('order-notes').value.trim();
+
+    let valid = true;
+    if(!name){ setError('error-order-name','Please enter your name.'); document.getElementById('order-name').classList.add('error-field'); valid = false; }
+    if(!phone){ setError('error-order-phone','Please enter your phone number.'); document.getElementById('order-phone').classList.add('error-field'); valid = false; }
+    if(!email || !validateEmail(email)){ setError('error-order-email','Please enter a valid email address.'); document.getElementById('order-email').classList.add('error-field'); valid = false; }
+    if(!item){ setError('error-order-item','Please specify your bakery item.'); orderItemInput.classList.add('error-field'); valid = false; }
+    if(!method){ setError('error-order-method','Please choose Pickup or Delivery.'); valid = false; }
+    if(method === 'Delivery' && !address){ setError('error-order-address','Please enter the delivery address.'); addressInput.classList.add('error-field'); valid = false; }
+
+    if(!valid){
+      orderStatus.textContent = 'Please fix the highlighted fields to continue.';
+      return;
+    }
+
+    orderSubmitBtn.disabled = true;
+    orderSubmitBtn.classList.add('loading');
+    orderSubmitBtn.innerHTML = `<span>Placing order <span class="dot-loader"><span></span><span></span><span></span></span></span>`;
+
+    const submittedAt = new Date().toLocaleString();
+    const payload = {
+      name,
+      phone,
+      email,
+      item,
+      method,
+      address,
+      notes,
+      submittedAt,
+      _subject: `New bakery order from ${name}`
+    };
+
+    try {
+      const response = await fetch('https://formsubmit.co/ajax/bronxkaren1@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if(!response.ok) throw new Error('Submission failed');
+
+      const result = await response.json();
+      if(result.success === true || result.success === 'true'){
+        showSuccess();
+      } else {
+        throw new Error(result.message || 'Submission failed');
+      }
+    } catch (error) {
+      const mailBody = encodeURIComponent(`Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nItem: ${item}\nMethod: ${method}\nAddress: ${address}\nNotes: ${notes}\nSubmitted: ${submittedAt}`);
+      window.location.href = `mailto:bronxkaren1@gmail.com?subject=${encodeURIComponent('Bakery order from ' + name)}&body=${mailBody}`;
+      showSuccess();
+    } finally {
+      orderSubmitBtn.disabled = false;
+      orderSubmitBtn.classList.remove('loading');
+      orderSubmitBtn.innerHTML = '<span>Place Order</span>';
+    }
+  });
+})();
+
+(function initMobileMenu(){
+  const toggle = document.querySelector('.mobile-menu-toggle');
+  const panel = document.getElementById('mobile-menu-panel');
+  const backdrop = document.getElementById('mobile-menu-backdrop');
+  const closeButton = document.querySelector('.mobile-menu-close');
+  if(!toggle || !panel || !backdrop || !closeButton) return;
+
+  const setOpen = open => {
+    panel.classList.toggle('open', open);
+    backdrop.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open);
+    panel.setAttribute('aria-hidden', !open);
+  };
+
+  const closeMenu = () => setOpen(false);
+  const toggleMenu = () => setOpen(!panel.classList.contains('open'));
+
+  toggle.addEventListener('click', toggleMenu);
+  closeButton.addEventListener('click', closeMenu);
+  backdrop.addEventListener('click', closeMenu);
+  panel.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+})();
+</script>
 </body>
 </html>
