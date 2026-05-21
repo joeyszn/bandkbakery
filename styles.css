@@ -97,8 +97,15 @@ textarea {
 }
 
 .toast.brown {
+  /* background: var(--brown);
+  color: #fff;
+  display: block; */
   background: var(--brown);
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-self: center;
+  padding: 10px 48px;
 }
 
 .toast.yellow {
@@ -1286,7 +1293,7 @@ nav {
       height: 300px;
     }
     .toast {
-      font-size: 13px;
+      font-size: 11px;
       padding: 0 48px;
       text-align: center;
     }
