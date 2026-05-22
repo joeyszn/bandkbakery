@@ -18,7 +18,7 @@
 <!-- ── Toast Notifications ─────────────────────────────────────── -->
 <div id="toasts" role="status" aria-live="polite">
   <div id="toast-1" class="toast brown" role="alert">
-    <span>NOTICE: Every order is freshly prepared for you. Depending on availability and current orders, preparation may take anywhere from 30 minutes to 2 days.</span>
+    <span>NOTICE: Every order is freshly prepared for you. Depending on availability and current orders, preparation may take anywhere from 3 to 4 hours.</span>
     <button class="toast-close" aria-label="Dismiss notification" onclick="dismissToast('toast-1')">
       <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
@@ -38,6 +38,7 @@
       <a href="index.html"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
     </div>
     <div class="nav-actions">
+      <a href="aboutus.html" class="btn btn-ghost">About Us</a>
       <a href="#menu" class="btn btn-outline">Menu</a>
       <a href="#footer-hero" class="btn btn-brown">Place order</a>
     </div>
@@ -49,6 +50,7 @@
   </nav>
   <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
     <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+    <a href="aboutus.html" class="btn btn-ghost">About Us</a>
     <a href="#menu" class="btn btn-outline">Menu</a>
     <a href="#footer-hero" class="btn btn-brown">Place order</a>
   </div>
@@ -69,19 +71,19 @@
 
   <div class="hero-images" aria-label="Bakery photos">
     <div class="hero-img-wrap" style="width:170px;height:278px">
-      <img src="https://www.figma.com/api/mcp/asset/b90bdfd3-619c-4203-b0e8-5f5e4abe1886" alt="Bakery item" loading="lazy"/>
+      <img src="images/Rugelach.jpg" alt="Bakery item" loading="eager"/>
     </div>
     <div class="hero-img-wrap" style="width:200px;height:327px">
-      <img src="https://www.figma.com/api/mcp/asset/ba08dbf5-f45f-4ffc-8668-a399608f6255" alt="Bakery item" loading="lazy"/>
+      <img src="images/Bagels (2).jpg" alt="Bakery item" loading="eager"/>
     </div>
     <div class="hero-img-wrap" style="width:236px;height:385px">
-      <img src="https://www.figma.com/api/mcp/asset/0e8f9873-95e7-41e2-8c44-3f9b324d4f12" alt="Featured bakery item" loading="lazy"/>
+      <img src="images/Babka.jpg" alt="Featured bakery item" loading="eager"/>
     </div>
     <div class="hero-img-wrap" style="width:200px;height:327px">
-      <img src="https://www.figma.com/api/mcp/asset/41fe3811-609e-4d3f-85f3-39eed584302b" alt="Bakery item" loading="lazy"/>
+      <img src="images/Challah.jpg" alt="Bakery item" loading="eager"/>
     </div>
     <div class="hero-img-wrap" style="width:170px;height:278px">
-      <img src="https://www.figma.com/api/mcp/asset/6ce6fbe7-0898-45f9-824c-72ae9c5f2672" alt="Bakery item" loading="lazy"/>
+      <img src="images/Macarons (2).png" alt="Bakery item" loading="eager"/>
     </div>
   </div>
 </section>
@@ -109,12 +111,12 @@
           <div class="img-col">
             <p class="img-caption">This is a Babka loaf before slicing.</p>
             <div class="img-card">
-              <img src="images/Babka.jpg" alt="Babka loaf before slicing" loading="lazy"/>
+              <img src="images/Babka.jpg" alt="Babka loaf before slicing" loading="eager"/>
               <div class="price-badge" aria-label="Price $22">$22</div>
             </div>
           </div>
           <div class="img-col">
-            <div class="img-card"><img src="images/Sliced Babka.jpg" alt="Babka loaf after slicing" loading="lazy"/></div>
+            <div class="img-card"><img src="images/Sliced Babka.jpg" alt="Babka loaf after slicing" loading="eager"/></div>
             <p class="img-caption">This is a Babka loaf after slicing.</p>
           </div>
         </div>
@@ -139,12 +141,12 @@
           <div class="img-col">
             <p class="img-caption">This is a Challah loaf before slicing.</p>
             <div class="img-card">
-              <img src="images/Challah.jpg" alt="Challah before slicing" loading="lazy"/>
+              <img src="images/Challah.jpg" alt="Challah before slicing" loading="eager"/>
               <div class="price-badge" aria-label="Price $22">$22</div>
             </div>
           </div>
           <div class="img-col">
-            <div class="img-card"><img src="images/Sliced Challah.jpg" alt="Challah after slicing" loading="lazy"/></div>
+            <div class="img-card"><img src="images/Sliced Challah.jpg" alt="Challah after slicing" loading="eager"/></div>
             <p class="img-caption">This is a Challah loaf after slicing.</p>
           </div>
         </div>
@@ -167,7 +169,7 @@
       <div class="menu-images single-img">
         <div class="single-img-wrap">
           <div class="img-card">
-            <img src="images/Bagels.jpg" alt="Fresh bagels" loading="lazy" style="height:240px;object-fit:cover;width:100%"/>
+            <img src="images/Bagels.jpg" alt="Fresh bagels" loading="eager" style="height:240px;object-fit:cover;width:100%"/>
             <div class="price-badge" aria-label="Price $26">$26</div>
           </div>
           <p class="img-caption">Get a Baker's Dozen (13) for $26 and $2.75 for one bagel.</p>
@@ -191,7 +193,7 @@
       <div class="menu-images single-img">
         <div class="single-img-wrap">
           <div class="img-card">
-            <img src="images/Bialys.jpg" alt="Fresh bialys" loading="lazy" style="height:240px;object-fit:cover;width:100%"/>
+            <img src="images/Bialys.jpg" alt="Fresh bialys" loading="eager" style="height:240px;object-fit:cover;width:100%"/>
             <div class="price-badge" aria-label="Price $26">$26</div>
           </div>
           <p class="img-caption">Get a Baker's Dozen (13) for $26 and $2.75 for one bialy.</p>
@@ -215,7 +217,7 @@
       <div class="menu-images single-img">
         <div class="single-img-wrap">
           <div class="img-card">
-            <img src="images/Rugelach.jpg" alt="Rugelach cookies" loading="lazy" style="height:240px;object-fit:cover;object-position:center bottom; width:100%"/>
+            <img src="images/Rugelach.jpg" alt="Rugelach cookies" loading="eager" style="height:240px;object-fit:cover;object-position:center bottom; width:100%"/>
             <div class="price-badge" aria-label="Price $10">$10</div>
           </div>
           <p class="img-caption">Get a Dozen for $10.00</p>
@@ -239,7 +241,7 @@
       <div class="menu-images single-img">
         <div class="single-img-wrap">
           <div class="img-card">
-            <img src="images/Almond Thumbprint Cookies.jpg" alt="Almond thumbprint cookies" loading="lazy" style="height:240px;object-fit:cover;width:100%"/>
+            <img src="images/Almond Thumbprint Cookies.jpg" alt="Almond thumbprint cookies" loading="eager" style="height:240px;object-fit:cover;width:100%"/>
             <div class="price-badge" aria-label="Price $14">$14</div>
           </div>
           <p class="img-caption">Get a Dozen for $14.00</p>
@@ -263,7 +265,7 @@
       <div class="menu-images single-img">
         <div class="single-img-wrap">
           <div class="img-card">
-            <img src="images/Mandelbrot.jpg" alt="Mandelbrot cookies" loading="lazy" style="height:240px;object-fit:cover;width:100%"/>
+            <img src="images/Mandelbrot.jpg" alt="Mandelbrot cookies" loading="eager" style="height:240px;object-fit:cover;width:100%"/>
             <div class="price-badge" aria-label="Price $10">$10</div>
           </div>
           <p class="img-caption">Get a Dozen (12) for $10.00</p>
@@ -289,12 +291,12 @@
           <div class="img-col">
             <p class="img-caption">These are my lemon macarons after they were cooled and filled and sandwiched.</p>
             <div class="img-card">
-              <img src="images/Macarons.jpg" alt="Lemon macarons" loading="lazy"/>
+              <img src="images/Macarons.jpg" alt="Lemon macarons" loading="eager"/>
               <div class="price-badge" aria-label="Price $12">$12</div>
             </div>
           </div>
           <div class="img-col">
-            <div class="img-card"><img src="images/Macarons 2.png" alt="Macarons display" loading="lazy"/></div>
+            <div class="img-card"><img src="images/Macarons 2.png" alt="Macarons display" loading="eager"/></div>
             <p class="img-caption">Get 10 for $12.00</p>
           </div>
         </div>
@@ -320,12 +322,12 @@
           <div class="img-col">
             <p class="img-caption">Below are photos of the actual crumb cake made about 1 week ago (August, 2025).</p>
             <div class="img-card">
-              <img src="images/Greater-Crumbs Coffee Cake.jpg" alt="Coffee crumb cake" loading="lazy"/>
+              <img src="images/Greater-Crumbs Coffee Cake.jpg" alt="Coffee crumb cake" loading="eager"/>
               <div class="price-badge" aria-label="Price $30">$30</div>
             </div>
           </div>
           <div class="img-col">
-            <div class="img-card"><img src="images/Greater-Crumbs Coffee Cake 2.jpg" alt="Coffee crumb cake slice" loading="lazy"/></div>
+            <div class="img-card"><img src="images/Greater-Crumbs Coffee Cake 2.jpg" alt="Coffee crumb cake slice" loading="eager"/></div>
             <p class="img-caption">Get this tasty cake for $30.00</p>
           </div>
         </div>
@@ -347,7 +349,7 @@
       <p class="fh-sub" style="margin-top:18px">Every order means the world to us. We can't wait to bake more joy for you.</p>
     </div>
     <a href="#menu" class="btn btn-yellow" style="align-self:flex-start">View menu</a>
-    <p class="fh-note">Currently serving customers within California only. Please allow 2 days for handmade preparation.</p>
+    <p class="fh-note">Currently serving customers within California only. Please allow 3-4 hours for preparation.</p>
   </div>
 
   <!-- Right: Contact Form -->
@@ -380,7 +382,7 @@
   <div class="footer-top">
     <div class="footer-info">
       <div class="footer-logo logo" aria-label="B&KERY">
-        <a href="index.html"><img src="Logo.png" width="160" alt="The B&KERY logo"></a>
+        <a href="index.html"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
       </div>
       <p class="footer-tagline">Homemade Bakery in Santa Clara</p>
 
@@ -414,7 +416,7 @@
         title="B&KERY Location Map"
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3165.8000000!2d-121.8180063!3d37.3066031!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1sWoodbridge+Mobile+Homes!2s0x808e328115011a4f%3A0xe65d52bbbcc88e3!5e0!3m2!1sen!2sus!4v1716048000000!5m2!1sen!2sus"
         allowfullscreen
-        loading="lazy"
+        loading="eager"
         referrerpolicy="no-referrer-when-downgrade">
       </iframe>
     </div>
@@ -439,7 +441,7 @@
     <div class="order-modal-inner">
       <div class="modal-header">
         <h2 id="order-modal-title">Place Your Order</h2>
-        <p id="order-modal-desc">Every order is freshly handmade just for you. Please allow 2 days for preparation.</p>
+        <p id="order-modal-desc">Every order is freshly handmade just for you. Please allow 3-4 hours for preparation.</p>
       </div>
 
       <form id="order-form" class="order-form" novalidate>

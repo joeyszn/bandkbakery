@@ -317,6 +317,17 @@ nav {
   color: #fff;
 }
 
+.btn-ghost {
+  background: transparent;
+  color: var(--brown);
+  border: 0px solid;
+}
+
+.btn-ghost:hover {
+  background: var(--brown);
+  color: #fff;
+}
+
 .btn-yellow {
   background: var(--yellow);
   color: var(--brown);

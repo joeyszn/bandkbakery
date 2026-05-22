@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>About Us | The B&KERY</title>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style>
+  .about-hero {
+    background: var(--beige);
+    padding: 165px 40px 70px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+    gap: 60px;
+    align-items: center;
+  }
+
+  .about-hero-copy {
+    max-width: 720px;
+  }
+
+  .about-kicker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    border: 1px solid rgba(82, 47, 28, .1);
+    padding: 9px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--brown);
+    margin-bottom: 22px;
+  }
+
+  .about-headline {
+    font-family: "Alan Sans", sans-serif;
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.1;
+    color: var(--brown);
+    margin: 0;
+  }
+
+  .about-headline span {
+    color: #3d2113;
+  }
+
+  .about-sub {
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--lighter-black);
+    max-width: 620px;
+  }
+
+  .about-ctas {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+
+  .about-card {
+    background: #fff;
+    border: 1.5px solid rgba(82, 47, 28, .12);
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 14px 36px rgba(82, 47, 28, .08);
+  }
+
+  .about-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .about-stat {
+    background: var(--cream);
+    border: 1px solid rgba(82, 47, 28, .08);
+    border-radius: 18px;
+    padding: 18px 16px;
+  }
+
+  .about-stat strong {
+    display: block;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--brown);
+    margin-bottom: 6px;
+  }
+
+  .about-stat span {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--lighter-black);
+  }
+
+  .about-section {
+    padding: 20px 40px 90px;
+    background: var(--beige);
+  }
+
+  .about-section-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    gap: 24px;
+  }
+
+  .about-section-title {
+    font-family: "Alan Sans", sans-serif;
+    font-size: clamp(28px, 3.8vw, 42px);
+    color: var(--brown);
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  .about-section-sub {
+    color: var(--lighter-black);
+    line-height: 1.8;
+    font-size: 15px;
+    max-width: 780px;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 8px;
+  }
+
+  .info-tile {
+    background: #fff;
+    border: 1.5px solid rgba(82, 47, 28, .12);
+    border-radius: 20px;
+    padding: 22px;
+    box-shadow: 0 12px 28px rgba(82, 47, 28, .06);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 100%;
+  }
+
+  .info-tile-num {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--yellow);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: var(--brown);
+    font-size: 20px;
+    border: 2px solid #fff;
+  }
+
+  .info-tile h3 {
+    font-size: 20px;
+    line-height: 1.2;
+    color: var(--brown);
+    margin: 0;
+  }
+
+  .info-tile p {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--lighter-black);
+  }
+
+  .about-photos {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 18px;
+    margin-top: 8px;
+    align-items: stretch;
+  }
+
+  .photo-panel {
+    background: #fff;
+    border-radius: 24px;
+    border: 1.5px solid rgba(82, 47, 28, .12);
+    overflow: hidden;
+    box-shadow: 0 14px 36px rgba(82, 47, 28, .08);
+  }
+
+  .photo-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photo-stack {
+    display: grid;
+    gap: 18px;
+  }
+
+  .photo-caption {
+    padding: 16px 18px 18px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--brown);
+    background: var(--cream);
+    border-top: 1px solid rgba(82, 47, 28, .08);
+  }
+
+  .quote-box {
+    background: var(--brown);
+    color: #fff;
+    border-radius: 24px;
+    padding: 26px;
+    display: grid;
+    gap: 14px;
+    box-shadow: 0 16px 34px rgba(82, 47, 28, .18);
+  }
+
+  .quote-box p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(255,255,255,.92);
+  }
+
+  .quote-box strong {
+    color: var(--yellow);
+  }
+
+  .quote-signoff {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,.82);
+  }
+
+  .about-cta-band {
+    margin-top: 12px;
+    background: var(--cream);
+    border: 1.5px solid rgba(82, 47, 28, .12);
+    border-radius: 24px;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .about-cta-band h3 {
+    font-family: "Alan Sans", sans-serif;
+    font-size: 26px;
+    color: var(--brown);
+    margin: 0 0 8px;
+  }
+
+  .about-cta-band p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--lighter-black);
+    max-width: 700px;
+  }
+
+  .about-cta-band .btn {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 1100px) {
+    .about-hero {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .about-photos {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .about-hero {
+      padding: 120px 20px 56px;
+    }
+
+    .about-section {
+      padding: 10px 20px 76px;
+    }
+
+    .about-card-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .about-cta-band {
+      padding: 22px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .about-hero {
+      padding: 114px 16px 48px;
+    }
+
+    .about-card-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .about-ctas {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .about-ctas .btn {
+      width: 100%;
+    }
+
+    .about-cta-band {
+      padding: 18px;
+    }
+
+    .about-cta-band .btn {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body class="alan-sans">
+
+<div id="progress-bar" role="progressbar" aria-label="Page scroll progress"></div>
+
+<header id="header" aria-label="Site header">
+  <nav aria-label="Main navigation">
+    <div class="logo" aria-label="B&KERY Home">
+      <a href="index.html"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+    </div>
+    <div class="nav-actions">
+      <a href="aboutus.html" class="btn btn-ghost">About Us</a>
+      <a href="index.html#menu" class="btn btn-outline">Menu</a>
+      <a href="index.html?openOrder=true" class="btn btn-brown">Place order</a>
+    </div>
+    <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </nav>
+  <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+    <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+    <a href="aboutus.html" class="btn btn-ghost">About Us</a>
+    <a href="index.html#menu" class="btn btn-outline">Menu</a>
+    <a href="index.html?openOrder=true" class="btn btn-brown">Place order</a>
+  </div>
+  <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
+</header>
+
+<main id="about">
+  <section class="about-hero" aria-label="About The B&KERY">
+    <div class="about-hero-copy">
+      <div class="about-kicker">Handmade with heart since day one</div>
+      <h1 class="about-headline">About <span>The B&KERY</span></h1>
+      <p class="about-sub">
+        We’re a Santa Clara cottage bakery creating warm breads, nostalgic Jewish pastries, and sweet treats with the kind of care you can taste. Every loaf, cookie, and cake is made fresh, by hand, and with a whole lot of love.
+      </p>
+      <p class="about-sub">
+        Our goal is simple: bake food that feels homemade, comforting, and memorable — whether you’re ordering a baker’s dozen of bagels or a special cake for family and friends.
+      </p>
+      <div class="about-ctas">
+        <a href="index.html#menu" class="btn btn-brown">Explore menu</a>
+        <a href="index.html?openOrder=true" class="btn btn-outline">Place order</a>
+      </div>
+    </div>
+
+    <div class="about-card">
+      <div class="about-card-grid">
+        <div class="about-stat">
+          <strong>9+</strong>
+          <span>signature bakery favorites made fresh for customers.</span>
+        </div>
+        <div class="about-stat">
+          <strong>CA</strong>
+          <span>Serving customers within California only.</span>
+        </div>
+        <div class="about-stat">
+          <strong>3–4 hrs</strong>
+          <span>Typical preparation window for handmade orders.</span>
+        </div>
+        <div class="about-stat">
+          <strong>100%</strong>
+          <span>Small-batch baking with a personal touch.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section" aria-label="Our story">
+    <div class="about-section-inner">
+      <h2 class="about-section-title">Our Story</h2>
+      <p class="about-section-sub">
+        The B&KERY started with family recipes, late-night experiments, and a love of baking that never left the kitchen. What began as a personal tradition grew into a small bakery built around flavor, warmth, and old-fashioned care.
+      </p>
+
+      <div class="about-photos">
+        <div class="photo-panel">
+          <img src="images/Babka.jpg" alt="Fresh babka loaf from The B&KERY" loading="eager">
+          <div class="photo-caption">
+            Rich, homemade babka is one of the bakery favorites and reflects the style we bring to every recipe: classic, comforting, and generously filled.
+          </div>
+        </div>
+
+        <div class="photo-stack">
+          <div class="quote-box">
+            <p>
+              <strong>“You can taste the love!”</strong> is more than a slogan to us. It describes how we bake — with patience, pride, and ingredients chosen to make every bite feel special.
+            </p>
+            <p>
+              From braided challah to rugelach, our menu brings together tradition and the joy of sharing something homemade.
+            </p>
+            <div class="quote-signoff">— The B&KERY kitchen</div>
+          </div>
+
+          <div class="photo-panel">
+            <img src="images/Bagels.jpg" alt="Fresh bagels from The B&KERY" loading="eager">
+            <div class="photo-caption">
+              Our bagels are inspired by classic New York texture and boiled before baking for that authentic bite.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section" aria-label="What makes us different">
+    <div class="about-section-inner">
+      <h2 class="about-section-title">What Makes Us Different</h2>
+      <p class="about-section-sub">
+        We’re not a factory bakery. We bake in small batches, pay attention to the little details, and keep things personal from the first inquiry to the final box.
+      </p>
+
+      <div class="about-grid">
+        <article class="info-tile">
+          <div class="info-tile-num" aria-hidden="true">1</div>
+          <h3>Fresh, handmade baking</h3>
+          <p>
+            Every order is prepared from scratch, so flavors stay bright, textures stay tender, and each tray feels like it was made just for you.
+          </p>
+        </article>
+
+        <article class="info-tile">
+          <div class="info-tile-num" aria-hidden="true">2</div>
+          <h3>Traditional favorites</h3>
+          <p>
+            Our menu features babka, challah, bagels, bialys, rugelach, cookies, macarons, and coffee cake — baked with care and plenty of character.
+          </p>
+        </article>
+
+        <article class="info-tile">
+          <div class="info-tile-num" aria-hidden="true">3</div>
+          <h3>Made for sharing</h3>
+          <p>
+            Whether it’s a family gathering, a holiday table, or a treat for yourself, our bakery is built around food that brings people together.
+          </p>
+        </article>
+      </div>
+
+      <div class="about-cta-band">
+        <div>
+          <h3>Ready to taste the love?</h3>
+          <p>
+            Browse the menu, choose your favorites, and send an order request. We’ll take care of the rest.
+          </p>
+        </div>
+        <a href="index.html#menu" class="btn btn-yellow">View menu</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="footer" aria-label="Site footer">
+  <div class="footer-top">
+    <div class="footer-info">
+      <div class="footer-logo logo" aria-label="B&KERY">
+        <a href="index.html"><img src="Logo.png" width="160" alt="The B&KERY logo"></a>
+      </div>
+      <p class="footer-tagline">Homemade Bakery in Santa Clara</p>
+
+      <div class="footer-detail-block">
+        <p class="footer-label">Opening hours:</p>
+        <div class="footer-text">
+          <p>Tuesday - Sunday: 11:00 AM - 4:00 PM</p>
+        </div>
+      </div>
+
+      <div class="footer-detail-block">
+        <p class="footer-label">Phone:</p>
+        <p class="footer-text"><a href="tel:4088571968" style="color:inherit;text-decoration:none">(408) 857-1968</a></p>
+      </div>
+
+      <div class="footer-detail-block">
+        <p class="footer-label">Location:</p>
+        <div class="footer-text">
+          <p>The B&K Bakery</p>
+          <p>Community Clubhouse</p>
+          <p>WOODBRIDGE MOBILE HOME PARK</p>
+          <p>3051 Towers Lane&comma; San Jose&comma; CA 95121</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-map" aria-label="Map showing bakery location in San Jose, California">
+      <iframe
+        title="B&KERY Location Map"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3165.8000000!2d-121.8180063!3d37.3066031!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1sWoodbridge+Mobile+Homes!2s0x808e328115011a4f%3A0xe65d52bbbcc88e3!5e0!3m2!1sen!2sus!4v1716048000000!5m2!1sen!2sus"
+        allowfullscreen
+        loading="eager"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </div>
+
+  <p style="max-width:980px;margin:18px auto 0;text-align:center;line-height:1.7;color:var(--brown);font-weight:500;font-size:14px;">The B&K Bakery, Bruce Klein as the Veteran CFO, and Karen Klein are registered and operate under Cottage Permit Class B issued by the County of Santa Clara under Permit # PT0505378.</p>
+
+  <div class="footer-bottom">
+    <p class="footer-copy">©2026. The B&KERY | The B and K Bakery.</p>
+    <p class="footer-designer">Designed by <a href="https://www.linkedin.com/company/redanaagency/" target="_blank" rel="noopener">Redana</a></p>
+    <div class="footer-links">
+      <a href="privacypolicy.html">Privacy Policy</a>
+      <span>|</span>
+      <a href="termsandconditions.html">Terms & Conditions</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const st = document.documentElement.scrollTop;
+    const dh = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (dh > 0 ? Math.min(100, (st / dh) * 100) : 0) + '%';
+  }, { passive: true });
+})();
+
+(function initMobileMenu(){
+  const toggle = document.querySelector('.mobile-menu-toggle');
+  const panel = document.getElementById('mobile-menu-panel');
+  const backdrop = document.getElementById('mobile-menu-backdrop');
+  const closeButton = document.querySelector('.mobile-menu-close');
+  if(!toggle || !panel || !backdrop || !closeButton) return;
+
+  const setOpen = open => {
+    panel.classList.toggle('open', open);
+    backdrop.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.setAttribute('aria-hidden', String(!open));
+  };
+
+  toggle.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
+  closeButton.addEventListener('click', () => setOpen(false));
+  backdrop.addEventListener('click', () => setOpen(false));
+  panel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+})();
+</script>
+</body>
+</html>
