@@ -271,6 +271,200 @@ nav {
   display: flex;
   gap: 12px;
   align-items: center;
+  position: relative;
+}
+
+/* ─── Search Component ────────────────────────────────────────── */
+.search-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brown);
+  transition: background var(--transition), transform var(--transition);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.search-toggle:hover {
+  background: rgba(82, 47, 28, .08);
+}
+
+.search-toggle:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+.search-toggle:active {
+  transform: scale(.95);
+}
+
+.search-container {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 320px;
+  background: #fff;
+  border-radius: 20px;
+  border: 1.5px solid var(--border-brown);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .12);
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 260ms ease, visibility 260ms ease, transform 260ms ease;
+  z-index: 998;
+}
+
+.search-container[aria-hidden="false"] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 36px 12px 14px;
+  border: 1.5px solid var(--border-brown);
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--black);
+  background: rgba(255, 251, 240, .6);
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.search-input:focus {
+  border-color: var(--brown);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(82, 47, 28, .1);
+}
+
+.search-input::placeholder {
+  color: var(--gray);
+}
+
+.search-clear {
+  position: absolute;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--gray);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.search-clear:hover {
+  color: var(--brown);
+}
+
+.search-input:not(:placeholder-shown) + .search-clear {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.search-hint {
+  font-size: 12px;
+  color: var(--gray);
+  margin-top: 8px;
+  text-align: center;
+}
+
+.search-results {
+  margin-top: 12px;
+  max-height: 320px;
+  overflow-y: auto;
+  display: grid;
+  gap: 4px;
+}
+
+.search-results::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-results::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+  background: rgba(82, 47, 28, .15);
+  border-radius: 3px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+  background: rgba(82, 47, 28, .25);
+}
+
+.search-result-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--black);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  background: rgba(255, 251, 240, .5);
+}
+
+.search-result-item:hover,
+.search-result-item[data-selected] {
+  background: var(--yellow);
+  color: var(--brown);
+}
+
+.search-result-item:focus-visible {
+  outline: 2px solid var(--brown);
+  outline-offset: -2px;
+}
+
+.search-empty {
+  padding: 20px 12px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--gray);
+}
+
+/* ─── Search Responsive ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .search-container {
+    width: 280px;
+  }
+
+  .nav-actions {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-container {
+    width: calc(100vw - 32px);
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+  }
+
+  .search-container[aria-hidden="false"] {
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .btn {
@@ -480,8 +674,89 @@ nav {
   margin-top: 24px;
 }
 
-.form-group {
+.order-items-group {
+  display: grid;
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.order-items-header {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-items-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--brown);
+}
+
+.order-items {
+  display: grid;
+  gap: 16px;
+}
+
+.order-item-row {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.order-item-row.show {
+  opacity: 1;
+  transform: none;
+}
+
+.order-item-card {
+  border: 1.5px solid rgba(82, 47, 28, .14);
+  border-radius: 24px;
+  background: rgba(255, 249, 240, .95);
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.order-item-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-item-row-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--brown);
+}
+
+.remove-order-item {
+  min-width: 86px;
+  padding: 10px 14px;
+}
+
+.order-item-row .form-group {
+  margin: 0;
+}
+
+.order-item-quantity {
+  max-width: 140px;
+}
+
+.schedule-helper {
+  margin: 6px 0 0;
+  color: var(--gray);
+  font-size: 13px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.form-group {
   flex-direction: column;
   gap: 5px;
 }
@@ -766,6 +1041,43 @@ nav {
   font-size: 36px;
   font-weight: 600;
   color: var(--brown);
+}
+
+.about-us {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 80px 0 40px;
+  display: grid;
+  gap: 30px;
+}
+
+.about-us-copy {
+  display: grid;
+  gap: 18px;
+  color: var(--brown);
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.about-images {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.about-placeholder {
+  min-height: 220px;
+  border: 1.5px dashed var(--brown);
+  border-radius: 20px;
+  background: rgba(255, 248, 240, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 22px;
+  color: var(--brown);
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .menu-items {

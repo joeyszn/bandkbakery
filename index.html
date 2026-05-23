@@ -35,9 +35,33 @@
 <header id="header" aria-label="Site header">
   <nav aria-label="Main navigation">
     <div class="logo" aria-label="B&KERY Home">
-      <a href="index.html"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+      <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
     </div>
     <div class="nav-actions">
+      <button class="search-toggle" id="search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+      <div class="search-container" id="search-container" aria-hidden="true">
+        <div class="search-input-wrapper">
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Search treats..."
+            autocomplete="off"
+            aria-label="Search bakery products"
+            aria-describedby="search-hint"
+            aria-autocomplete="list"
+            aria-controls="search-results"
+          />
+          <button class="search-clear" id="search-clear" aria-label="Clear search" type="button">×</button>
+        </div>
+        <div class="search-hint" id="search-hint">Type to find your favorite treats</div>
+        <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
+      </div>
       <a href="aboutus.html" class="btn btn-ghost">About Us</a>
       <a href="#menu" class="btn btn-outline">Menu</a>
       <a href="#footer-hero" class="btn btn-brown">Place order</a>
@@ -103,7 +127,7 @@
             <div class="menu-price">Price: $22.00 a loaf</div>
           </div>
         </div>
-        <p class="menu-desc">As yummy as it looks, that's how great it tastes. I got this recipe and improvised on it. The filling is a combination of cocoa and chocolate chips, chopped just before the chips get really chipped and where you may not see them. You can definitely see mine. Now take a look at the slices. It's light and airy and you can smell the yeast as it blends into the chocolate. It isn't your ordinary decadent gooey babka – it's perfect!</p>
+        <p class="menu-desc">As yummy as it looks, that's how great it tastes. I got this recipe and improvised on it. The filling is a combination of cocoa and chocolate chips, chopped just before the chips get really chipped and where you may not see them. You can definitely see mine. Now take a look at the slices. they are light and airy and you can smell the yeast as it blends into the chocolate. It isn't your ordinary decadent gooey babka – it's perfect!</p>
         <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
       </div>
       <div class="menu-images">
@@ -187,7 +211,9 @@
             <div class="menu-price">Price: $26.00 for a Baker's dozen (13) and $2.75 for one</div>
           </div>
         </div>
-        <p class="menu-desc">I pronounce it "Bee-ah-lies". And yes! - They smell good with Roasted Shallots center. Fresh large bialys (kind of crispy bottom half) made by a born and bred New York Mom – Crispy bottoms, but soft and chewy inside. You can actually taste the love. My bialys (unlike my bagels) are not water boiled. They are baked perfectly from a basic Polish recipe.<br><br>I looked and tried many different recipes, and came up with one from a combination of YouTube videos and the King Arthur Flour site on the internet. I got it down people! I think you'll love them. Since I have a Cottage permit from the County of Santa Clara, my bagels cannot be made and fried with natural onions (they would be considered "perishable"). However, I have dehydrated shallots which work as well, and form a crispy oniony center on the bialy. I know you'll enjoy them as you spread them with cream cheese.</p>
+        <p class="menu-desc">I  pronounce it "Bee-ah-lies". And yes! - They smell good with Roasted Shallots center. Fresh large bialys (kind of crispy bottom half) made by a born and bred New York Mom – Crispy bottoms, but soft and chewy inside. You can actually taste the love. My bialys (unlike my bagels) are not water boiled. They are baked perfectly from a basic Polish recipe.
+        <br><br>
+        I looked and tried many different recipes, and came up with one from a combination of YouTube videos and the King Arthur Flour site on the internet. I got it down people! I think you'll love them. Since I have a Cottage permit from the County of Santa Clara, my bagels cannot be made and fried with natural onions (they would be considered "perishable"). However, I have dehydrated shallots or sliced dehydrated onions, which work as well, and form a crispy oniony center on the bialy. I know you'll enjoy them as you spread them with cream cheese.</p>
         <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
       </div>
       <div class="menu-images single-img">
@@ -259,7 +285,7 @@
             <div class="menu-price">Price: Box of cookies for $10.00 (1 dozen)</div>
           </div>
         </div>
-        <p class="menu-desc">Similar to Biscotti – except maybe not as crunchy in the center. My daughter calls these cookies the perfect cookie snack – not too sweet, not salty, just crusty enough, guiltless - made with flour (of course) but egg whites, no sugar added, chocolate chips and just ½ cup of sugar used for about 30 2-4” bars of the Mandelbrot. These cookies are extremely tasty and satisfying. This recipe is a combination of ingredients from my mother (who was an artist and was 109-1/2 when she passed away - and I believe one of the Epicurious sites). Thank you mom!</p>
+        <p class="menu-desc">Similar to Biscotti – except maybe not as crunchy in the center. My daughter calls these cookies the perfect cookie snack – not too sweet, not salty, just crusty enough, guiltless - made with flour (of course) but egg whites, no sugar added, chocolate chips and just ½ cup of sugar used for about 20 2-4” bars of the Mandelbrot. These cookies are extremely tasty and satisfying. This recipe is a combination of ingredients from my mother (who was an artist and was 109-1/2 when she passed away - and I believe one of the Epicurious sites). Thank you mom!</p>
         <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
       </div>
       <div class="menu-images single-img">
@@ -283,7 +309,7 @@
             <div class="menu-price">Price: $12.00 for 10 sandwich cookies</div>
           </div>
         </div>
-        <p class="menu-desc">Shredded Coconut, Whipped Egg Whites, No sugar added, lemon and/or chocolate ganache. Called “Coconut Guiltless Macarons” Your guiltless pleasure – I believe very low in calories. What is a Macaron - a small round cake or cookie with a meringue-like consistency, made with egg whites, sugar, and powdered almonds or coconut and consisting of two halves sandwiching a creamy filling. What is “Ganache” -  a whipped filling of chocolate and water, milk or cream, used in desserts such as cakes and truffles.</p>
+        <p class="menu-desc">Shredded Coconut, Whipped Egg Whites, No sugar added, lemon and/or chocolate ganache. Called “Coconut Guiltless Macarons” Your guiltless pleasure – I believe very low in calories. What is a Macaron - a small round cake or cookie with a meringue-like consistency, made with egg whites, sugar, and powdered almonds or coconut and consisting of two halves sandwiching a creamy filling. What is my“Ganache” - a whipped filling of chocolate or white chocolate and water or lemon  juice, used in desserts such as cakes and truffles.</p>
         <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
       </div>
       <div class="menu-images">
@@ -313,7 +339,7 @@
             <div class="menu-price">Price: $30.00</div>
           </div>
         </div>
-        <p class="menu-desc">THIS ONE IS MY SIGNATURE. I get so many compliments on this cake. It’s made with special combination flou (my secret), golden brown sugar blended with flour and butter until they are scrumptious lumps that you can bite into. This is my very own recipe, but I have to give initial credit to my friend Terry who worked in my law office where we were both legal secretaries (now they are called paralegals) and who introduced me to the “easiest” coffee crumb cake (and it was). And I made it much more complicated. But it was worth it. Can’t count your calories with this one!
+        <p class="menu-desc">THIS ONE IS MY SIGNATURE. I get so many compliments on this cake. It’s made with special combination flour (my secret), golden brown sugar blended with flour and butter until they are scrumptious lumps that you can bite into. This is my very own recipe, but I have to give initial credit to my friend Terry who worked in my law office where we were both legal secretaries (now they are called paralegals) and who introduced me to the “easiest” coffee crumb cake (and it was). And I made it much more complicated. But it was worth it. Can’t count your calories with this one!
 </p>
         <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
       </div>
@@ -336,7 +362,36 @@
 
   </div>
 </section>
+<!-- ── About Us Section ───────────────────────────────────────── -->
+<section id="about-us" class="about-us" aria-label="About Bruce and Karen and the bakery">
+  <h2 class="section-title">Meet Bruce & Karen, the heart of The B&K Bakery</h2>
+  <div class="about-us-copy">
+    <p>Karen doesn’t mass-produce anything.
 
+      Every treat is handmade fresh to order because apparently she refuses to let machines have all the fun.
+
+      Bruce, on the other hand, has fully accepted his important role in life:
+      quality control, taste testing, and making sure nobody leaves hungry.
+      
+      Together, they’ve turned B&KERY into the kind of place where baked goods feel personal, conversations last a little longer, and “just one bite” becomes a very optimistic lie.
+      <br> <br>      
+
+    From buttery rugelach to rich babka and melt-in-your-mouth cookies, everything is made with care, experience, and the strong belief that nobody has ever been sad while holding a warm pastry.
+
+      Some orders take 30 minutes.
+      Some take a little longer.
+      Good things — especially baked things — deserve a little patience.
+
+      Also, fair warning:
+      Karen WILL encourage you to “take some home for later.”
+      Bruce already knows you won’t.</p>
+  </div>
+  <div class="about-images" aria-label="About Bruce and Karen and bakery photos">
+    <div class="about-placeholder" role="img" aria-label="Placeholder for Karen portrait">Replace this with an image of Karen</div>
+    <div class="about-placeholder" role="img" aria-label="Placeholder for bakery interior photo">Replace this with a bakery photo</div>
+    <div class="about-placeholder" role="img" aria-label="Placeholder for baked goods photo">Replace this with a product photo</div>
+  </div>
+</section>
 <!-- ── Footer Hero ──────────────────────────────────────────────── -->
 <section id="footer-hero" aria-label="Contact and CTA">
   <div class="fh-bg" aria-hidden="true"></div>
@@ -382,7 +437,7 @@
   <div class="footer-top">
     <div class="footer-info">
       <div class="footer-logo logo" aria-label="B&KERY">
-        <a href="index.html"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+        <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
       </div>
       <p class="footer-tagline">Homemade Bakery in Santa Clara</p>
 
@@ -463,21 +518,49 @@
           <div class="order-field-error" id="error-order-email"></div>
         </div>
 
+        <div class="order-items-group">
+          <div class="order-items-header">
+            <p class="order-items-title">Bakery items to order</p>
+            <button type="button" class="btn btn-outline" id="add-order-item">Add another item</button>
+          </div>
+          <div id="order-items" class="order-items" aria-label="Bakery items to order">
+            <div class="order-item-row show">
+              <div class="order-item-card">
+                <div class="order-item-row-top">
+                  <p class="order-item-row-title">Item 1</p>
+                  <button type="button" class="btn btn-ghost remove-order-item" aria-label="Remove this bakery item" disabled>Remove</button>
+                </div>
+                <div class="form-group">
+                  <label for="order-item">Bakery Item</label>
+                  <select id="order-item" name="item" class="order-select order-item-select" required>
+                    <option value="" disabled selected>Select a bakery item</option>
+                    <option value="Babka">Babka — $22.00</option>
+                    <option value="Challah">Challah — $22.00</option>
+                    <option value="Bagels">Bagels — $26.00</option>
+                    <option value="Bialys">Bialys — $26.00</option>
+                    <option value="Rugelach">Rugelach — $10.00</option>
+                    <option value="Almond Thumbprint Cookies">Almond Thumbprint Cookies — $14.00</option>
+                    <option value="Mandelbrot">Mandelbrot — $10.00</option>
+                    <option value="Macarons">Macarons — $12.00</option>
+                    <option value="Greater-Crumb Coffee Cake">Greater-Crumb Coffee Cake — $30.00</option>
+                  </select>
+                  <div class="order-field-error"></div>
+                </div>
+                <div class="form-group">
+                  <label>Quantity</label>
+                  <input name="quantity" type="number" min="1" value="1" class="order-input order-item-quantity" required />
+                  <div class="order-field-error"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="form-group">
-          <label for="order-item">Bakery Item You Want To Order</label>
-          <select id="order-item" name="item" class="order-select" required>
-            <option value="" disabled selected>Select a bakery item</option>
-            <option value="Babka">Babka — $22.00</option>
-            <option value="Challah">Challah — $22.00</option>
-            <option value="Bagels">Bagels — $26.00</option>
-            <option value="Bialys">Bialys — $26.00</option>
-            <option value="Rugelach">Rugelach — $10.00</option>
-            <option value="Almond Thumbprint Cookies">Almond Thumbprint Cookies — $14.00</option>
-            <option value="Mandelbrot">Mandelbrot — $10.00</option>
-            <option value="Macarons">Macarons — $12.00</option>
-            <option value="Greater-Crumb Coffee Cake">Greater-Crumb Coffee Cake — $30.00</option>
-          </select>
-          <div class="order-field-error" id="error-order-item"></div>
+          <label for="order-schedule">When would you like your order?</label>
+          <input id="order-schedule" name="schedule" type="datetime-local" class="order-input" />
+          <p class="schedule-helper">Preparation time varies depending on availability and current orders.</p>
+          <div class="order-field-error" id="error-order-schedule"></div>
         </div>
 
         <div class="form-group">
@@ -513,7 +596,8 @@
       <div class="order-success" id="order-success" aria-hidden="true">
         <div class="order-success-icon" aria-hidden="true">✓</div>
         <h3>Your order has been placed successfully.</h3>
-        <p>We'll contact you through your phone and email address when your order is ready.</p>
+        <p id="success-message">Karen & Bruce will prepare your treats as soon as possible.</p>
+        <p id="success-schedule-note" class="schedule-note hidden"></p>
         <div class="modal-actions order-success-actions">
           <button type="button" class="btn btn-yellow" id="order-another-btn">Place Another Order</button>
           <button type="button" class="btn btn-outline" id="order-close-btn">Close</button>
@@ -665,10 +749,15 @@ window.addEventListener('scroll',()=>{
   const orderCloseBtn = document.getElementById('order-close-btn');
   const orderAnotherBtn = document.getElementById('order-another-btn');
   const orderItemInput = document.getElementById('order-item');
+  const orderItemsContainer = document.getElementById('order-items');
+  const addOrderItemBtn = document.getElementById('add-order-item');
+  const scheduleInput = document.getElementById('order-schedule');
   const addressGroup = document.getElementById('address-group');
   const addressInput = document.getElementById('order-address');
   const methodRadios = Array.from(document.querySelectorAll('input[name="order-method"]'));
   const successPane = document.getElementById('order-success');
+  const successMessage = document.getElementById('success-message');
+  const scheduleSuccessNote = document.getElementById('success-schedule-note');
   const body = document.body;
   const focusSelectors = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
   let lastFocused = null;
@@ -676,9 +765,59 @@ window.addEventListener('scroll',()=>{
   let firstFocusable = null;
   let lastFocusable = null;
 
-  if(!backdrop || !modal || !orderForm) return;
+  if(!backdrop || !modal || !orderForm || !orderItemsContainer) return;
+
+  const orderItemOptionsHTML = orderItemInput ? orderItemInput.innerHTML : '';
 
   const orderButtons = Array.from(document.querySelectorAll('a.btn')).filter(el => el.textContent.trim().toLowerCase() === 'place order');
+
+  const getOrderRows = () => Array.from(orderItemsContainer.querySelectorAll('.order-item-row'));
+
+  const updateRowTitles = () => {
+    const rows = getOrderRows();
+    rows.forEach((row, index) => {
+      const title = row.querySelector('.order-item-row-title');
+      if(title) title.textContent = `Item ${index + 1}`;
+      const removeButton = row.querySelector('.remove-order-item');
+      if(removeButton) removeButton.disabled = rows.length === 1;
+    });
+  };
+
+  const createOrderItemRow = (selected = '', quantity = 1) => {
+    const row = document.createElement('div');
+    row.className = 'order-item-row';
+    row.innerHTML = `
+      <div class="order-item-card">
+        <div class="order-item-row-top">
+          <p class="order-item-row-title">Item</p>
+          <button type="button" class="btn btn-ghost remove-order-item" aria-label="Remove this bakery item">Remove</button>
+        </div>
+        <div class="form-group">
+          <label>Bakery Item</label>
+          <select class="order-select order-item-select" required>
+            ${orderItemOptionsHTML}
+          </select>
+          <div class="order-field-error"></div>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" min="1" value="${quantity}" class="order-input order-item-quantity" required />
+          <div class="order-field-error"></div>
+        </div>
+      </div>
+    `;
+    const select = row.querySelector('.order-item-select');
+    if(select && selected) select.value = selected;
+    return row;
+  };
+
+  const resetOrderItems = (itemName = '') => {
+    orderItemsContainer.innerHTML = '';
+    const firstRow = createOrderItemRow(itemName, 1);
+    orderItemsContainer.appendChild(firstRow);
+    requestAnimationFrame(() => firstRow.classList.add('show'));
+    updateRowTitles();
+  };
 
   const updateAddressVisibility = () => {
     const delivery = methodRadios.some(r => r.checked && r.value === 'Delivery');
@@ -699,11 +838,15 @@ window.addEventListener('scroll',()=>{
   };
 
   const clearValidation = () => {
-    ['order-name','order-phone','order-email','order-item','order-address'].forEach(id => {
+    ['order-name','order-phone','order-email','order-address'].forEach(id => {
       const field = document.getElementById(id);
       if(field) field.classList.remove('error-field');
     });
-    ['error-order-name','error-order-phone','error-order-email','error-order-item','error-order-method','error-order-address'].forEach(id => {
+    document.querySelectorAll('.order-item-select, .order-item-quantity').forEach(field => field.classList.remove('error-field'));
+    document.querySelectorAll('.order-item-row .order-field-error').forEach(errorEl => {
+      errorEl.textContent = '';
+    });
+    ['error-order-name','error-order-phone','error-order-email','error-order-method','error-order-address','error-order-schedule'].forEach(id => {
       const errorEl = document.getElementById(id);
       if(errorEl) errorEl.textContent = '';
     });
@@ -733,7 +876,8 @@ window.addEventListener('scroll',()=>{
   const openModal = (itemName = '') => {
     lastFocused = document.activeElement;
     orderForm.reset();
-    orderItemInput.value = itemName || '';
+    resetOrderItems(itemName);
+    scheduleInput.value = '';
     clearValidation();
     updateAddressVisibility();
     backdrop.classList.add('open');
@@ -742,6 +886,7 @@ window.addEventListener('scroll',()=>{
     successPane.classList.remove('active');
     successPane.setAttribute('aria-hidden', 'true');
     orderForm.classList.remove('hidden');
+    scheduleSuccessNote.classList.add('hidden');
     focusModal();
     document.addEventListener('keydown', handleKeyDown);
   };
@@ -763,11 +908,18 @@ window.addEventListener('scroll',()=>{
     }
   };
 
-  const showSuccess = () => {
+  const showSuccess = (scheduled = false) => {
     orderForm.classList.add('hidden');
     successPane.classList.add('active');
     successPane.setAttribute('aria-hidden', 'false');
     orderStatus.textContent = '';
+    if(scheduled){
+      scheduleSuccessNote.textContent = 'We’ve noted your requested schedule.';
+      scheduleSuccessNote.classList.remove('hidden');
+    } else {
+      scheduleSuccessNote.textContent = '';
+      scheduleSuccessNote.classList.add('hidden');
+    }
     focusModal();
   };
 
@@ -778,6 +930,15 @@ window.addEventListener('scroll',()=>{
 
   const validateEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
+  const removeOrderRow = row => {
+    if(getOrderRows().length <= 1) return;
+    row.classList.remove('show');
+    row.addEventListener('transitionend', () => {
+      row.remove();
+      updateRowTitles();
+    }, { once: true });
+  };
+
   backdrop.addEventListener('click', event => {
     if(event.target === backdrop) closeModal();
   });
@@ -786,15 +947,36 @@ window.addEventListener('scroll',()=>{
   document.getElementById('order-modal-close').addEventListener('click', closeModal);
   orderAnotherBtn.addEventListener('click', () => {
     orderForm.reset();
+    resetOrderItems();
     updateAddressVisibility();
     clearValidation();
     orderForm.classList.remove('hidden');
     successPane.classList.remove('active');
     successPane.setAttribute('aria-hidden', 'true');
+    scheduleSuccessNote.classList.add('hidden');
     focusModal();
   });
 
   methodRadios.forEach(radio => radio.addEventListener('change', updateAddressVisibility));
+
+  if(addOrderItemBtn){
+    addOrderItemBtn.addEventListener('click', () => {
+      const row = createOrderItemRow('', 1);
+      orderItemsContainer.appendChild(row);
+      requestAnimationFrame(() => row.classList.add('show'));
+      updateRowTitles();
+      const select = row.querySelector('.order-item-select');
+      if(select) select.focus();
+    });
+  }
+
+  orderItemsContainer.addEventListener('click', event => {
+    const removeBtn = event.target.closest('.remove-order-item');
+    if(removeBtn){
+      const row = removeBtn.closest('.order-item-row');
+      if(row) removeOrderRow(row);
+    }
+  });
 
   orderButtons.forEach(button => {
     button.addEventListener('click', event => {
@@ -810,23 +992,47 @@ window.addEventListener('scroll',()=>{
     const name = document.getElementById('order-name').value.trim();
     const phone = document.getElementById('order-phone').value.trim();
     const email = document.getElementById('order-email').value.trim();
-    const item = orderItemInput.value.trim();
     const method = methodRadios.find(r => r.checked)?.value || '';
     const address = addressInput.value.trim();
+    const schedule = scheduleInput.value.trim();
     const notes = document.getElementById('order-notes').value.trim();
+
+    const rows = getOrderRows();
+    const orderedItems = rows.map(row => {
+      const select = row.querySelector('.order-item-select');
+      const quantityInput = row.querySelector('.order-item-quantity');
+      return {
+        row,
+        select,
+        quantityInput,
+        item: select ? select.value.trim() : '',
+        quantity: quantityInput ? parseInt(quantityInput.value, 10) : 0
+      };
+    });
 
     let valid = true;
     if(!name){ setError('error-order-name','Please enter your name.'); document.getElementById('order-name').classList.add('error-field'); valid = false; }
     if(!phone){ setError('error-order-phone','Please enter your phone number.'); document.getElementById('order-phone').classList.add('error-field'); valid = false; }
     if(!email || !validateEmail(email)){ setError('error-order-email','Please enter a valid email address.'); document.getElementById('order-email').classList.add('error-field'); valid = false; }
-    if(!item){ setError('error-order-item','Please specify your bakery item.'); orderItemInput.classList.add('error-field'); valid = false; }
+    if(orderedItems.length === 0){ valid = false; orderStatus.textContent = 'Please add at least one bakery item to order.'; }
+
+    orderedItems.forEach(entry => {
+      const errorEl = entry.row.querySelector('.order-field-error');
+      if(!entry.item){ entry.select?.classList.add('error-field'); if(errorEl) errorEl.textContent = 'Please select a bakery item.'; valid = false; }
+      if(!entry.quantity || entry.quantity < 1){ entry.quantityInput?.classList.add('error-field'); if(errorEl) errorEl.textContent = 'Please enter a quantity of 1 or more.'; valid = false; }
+    });
+
     if(!method){ setError('error-order-method','Please choose Pickup or Delivery.'); valid = false; }
     if(method === 'Delivery' && !address){ setError('error-order-address','Please enter the delivery address.'); addressInput.classList.add('error-field'); valid = false; }
 
     if(!valid){
-      orderStatus.textContent = 'Please fix the highlighted fields to continue.';
+      orderStatus.textContent = orderStatus.textContent || 'Please fix the highlighted fields to continue.';
       return;
     }
+
+    const orderSummaryLines = orderedItems.map(entry => `${entry.item} | ${entry.quantity}`);
+    const orderSummaryText = orderSummaryLines.join('\n');
+    const itemDescription = orderedItems.map(entry => `${entry.quantity} x ${entry.item}`).join('; ');
 
     orderSubmitBtn.disabled = true;
     orderSubmitBtn.classList.add('loading');
@@ -837,9 +1043,11 @@ window.addEventListener('scroll',()=>{
       name,
       phone,
       email,
-      item,
+      orderSummary: orderSummaryText,
+      orderItems: itemDescription,
       method,
       address,
+      requestedTime: schedule || 'Earliest available preparation',
       notes,
       submittedAt,
       _subject: `New bakery order from ${name}`
@@ -856,14 +1064,14 @@ window.addEventListener('scroll',()=>{
 
       const result = await response.json();
       if(result.success === true || result.success === 'true'){
-        showSuccess();
+        showSuccess(Boolean(schedule));
       } else {
         throw new Error(result.message || 'Submission failed');
       }
     } catch (error) {
-      const mailBody = encodeURIComponent(`Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nItem: ${item}\nMethod: ${method}\nAddress: ${address}\nNotes: ${notes}\nSubmitted: ${submittedAt}`);
+      const mailBody = encodeURIComponent(`Name: ${name}\nPhone: ${phone}\nEmail: ${email}\n\nOrder Summary:\nItem | Quantity\n${orderSummaryText}\n\nMethod: ${method}\nAddress: ${address}\nRequested time: ${schedule || 'Earliest available preparation'}\nNotes: ${notes}\nSubmitted: ${submittedAt}`);
       window.location.href = `mailto:bronxkaren1@gmail.com?subject=${encodeURIComponent('Bakery order from ' + name)}&body=${mailBody}`;
-      showSuccess();
+      showSuccess(Boolean(schedule));
     } finally {
       orderSubmitBtn.disabled = false;
       orderSubmitBtn.classList.remove('loading');
@@ -893,6 +1101,217 @@ window.addEventListener('scroll',()=>{
   closeButton.addEventListener('click', closeMenu);
   backdrop.addEventListener('click', closeMenu);
   panel.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+})();
+
+(function initProductSearch(){
+  const searchToggle = document.getElementById('search-toggle');
+  const searchContainer = document.getElementById('search-container');
+  const searchInput = document.getElementById('search-input');
+  const searchClear = document.getElementById('search-clear');
+  const searchResults = document.getElementById('search-results');
+  const searchHint = document.getElementById('search-hint');
+
+  if(!searchToggle || !searchContainer || !searchInput || !searchResults) return;
+
+  // All bakery products from the menu
+  const bakeryProducts = [
+    { name: 'Babka', id: 'babka' },
+    { name: 'Challah', id: 'challah' },
+    { name: 'Bagels', id: 'bagels' },
+    { name: 'Bialys', id: 'bialys' },
+    { name: 'Rugelach', id: 'rugelach' },
+    { name: 'Almond Thumbprint Cookies', id: 'almond-cookies' },
+    { name: 'Mandelbrot', id: 'mandelbrot' },
+    { name: 'Macarons', id: 'macarons' },
+    { name: 'Greater-Crumb Coffee Cake', id: 'coffee-cake' }
+  ];
+
+  let selectedIndex = -1;
+  let currentResults = [];
+
+  const toggleSearch = () => {
+    const isOpen = searchContainer.getAttribute('aria-hidden') === 'false';
+    if(isOpen){
+      closeSearch();
+    } else {
+      openSearch();
+    }
+  };
+
+  const openSearch = () => {
+    searchContainer.setAttribute('aria-hidden', 'false');
+    searchToggle.setAttribute('aria-expanded', 'true');
+    searchInput.focus();
+  };
+
+  const closeSearch = () => {
+    searchContainer.setAttribute('aria-hidden', 'true');
+    searchToggle.setAttribute('aria-expanded', 'false');
+    searchResults.innerHTML = '';
+    selectedIndex = -1;
+  };
+
+  const filterProducts = (query) => {
+    if(!query.trim()){
+      searchResults.innerHTML = '';
+      searchHint.style.display = 'block';
+      selectedIndex = -1;
+      return;
+    }
+
+    const lowerQuery = query.toLowerCase().trim();
+    currentResults = bakeryProducts.filter(product =>
+      product.name.toLowerCase().includes(lowerQuery)
+    );
+
+    selectedIndex = -1;
+    renderResults();
+  };
+
+  const renderResults = () => {
+    searchHint.style.display = 'none';
+    searchResults.innerHTML = '';
+
+    if(currentResults.length === 0){
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'search-empty';
+      emptyMsg.textContent = 'No matching treats found.';
+      searchResults.appendChild(emptyMsg);
+      return;
+    }
+
+    currentResults.forEach((product, index) => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'search-result-item';
+      item.textContent = product.name;
+      item.setAttribute('data-index', index);
+      item.addEventListener('click', () => selectResult(index));
+      searchResults.appendChild(item);
+    });
+  };
+
+  const selectResult = (index) => {
+    if(index < 0 || index >= currentResults.length) return;
+    scrollToProduct(currentResults[index]);
+    closeSearch();
+    searchInput.value = '';
+  };
+
+  const scrollToProduct = (product) => {
+    const section = document.querySelector(
+      `article[aria-label="${product.name}"]` ||
+      `article:has(.menu-name:contains("${product.name}"))`
+    );
+
+    if(section){
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Add subtle highlight animation
+      const originalBg = section.style.backgroundColor;
+      section.style.backgroundColor = 'rgba(249, 199, 95, .2)';
+      setTimeout(() => {
+        section.style.backgroundColor = originalBg;
+      }, 1500);
+      section.focus();
+    } else {
+      // Fallback: search by menu-name text content
+      const menuItems = Array.from(document.querySelectorAll('.menu-item'));
+      const target = menuItems.find(item => {
+        const menuName = item.querySelector('.menu-name');
+        return menuName && menuName.textContent.trim() === product.name;
+      });
+      if(target){
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const originalBg = target.style.backgroundColor;
+        target.style.backgroundColor = 'rgba(249, 199, 95, .2)';
+        setTimeout(() => {
+          target.style.backgroundColor = originalBg;
+        }, 1500);
+      }
+    }
+  };
+
+  const updateSelection = (newIndex) => {
+    if(currentResults.length === 0) return;
+
+    // Constrain index
+    if(newIndex < 0) newIndex = currentResults.length - 1;
+    if(newIndex >= currentResults.length) newIndex = 0;
+
+    selectedIndex = newIndex;
+
+    // Remove previous selection
+    document.querySelectorAll('.search-result-item[data-selected]').forEach(item => {
+      item.removeAttribute('data-selected');
+    });
+
+    // Add selection to current
+    const selected = document.querySelector(
+      `.search-result-item[data-index="${selectedIndex}"]`
+    );
+    if(selected){
+      selected.setAttribute('data-selected', '');
+      selected.scrollIntoView({ block: 'nearest' });
+    }
+  };
+
+  searchToggle.addEventListener('click', toggleSearch);
+
+  searchInput.addEventListener('input', (e) => {
+    filterProducts(e.target.value);
+  });
+
+  searchClear.addEventListener('click', (e) => {
+    e.preventDefault();
+    searchInput.value = '';
+    searchResults.innerHTML = '';
+    searchHint.style.display = 'block';
+    selectedIndex = -1;
+    searchInput.focus();
+  });
+
+  searchInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){
+      closeSearch();
+      return;
+    }
+
+    if(e.key === 'ArrowDown'){
+      e.preventDefault();
+      updateSelection(selectedIndex + 1);
+      return;
+    }
+
+    if(e.key === 'ArrowUp'){
+      e.preventDefault();
+      updateSelection(selectedIndex - 1);
+      return;
+    }
+
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      if(selectedIndex >= 0){
+        selectResult(selectedIndex);
+      }
+      return;
+    }
+  });
+
+  // Close search when clicking outside
+  document.addEventListener('click', (e) => {
+    if(!searchContainer.contains(e.target) && !searchToggle.contains(e.target)){
+      if(searchContainer.getAttribute('aria-hidden') === 'false'){
+        closeSearch();
+      }
+    }
+  });
+
+  // Close search on ESC key anywhere
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && searchContainer.getAttribute('aria-hidden') === 'false'){
+      closeSearch();
+    }
+  });
 })();
 </script>
 </body>
