@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Page Not Found | The B&KERY</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --page-bg: linear-gradient(180deg, #fff8ed 0%, #fff5e1 42%, #f7e4d2 100%);
+      --panel-bg: rgba(255, 255, 245, 0.96);
+      --shadow-soft: 0 24px 70px rgba(82, 47, 28, 0.12);
+    }
+
+    body {
+      background: var(--page-bg);
+      min-height: 100vh;
+    }
+
+    header {
+      background: transparent;
+      position: relative;
+      padding: 22px 32px 0;
+    }
+
+    .page-shell {
+      display: grid;
+      gap: 36px;
+      padding: 140px 24px 60px;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .notfound-hero {
+      display: grid;
+      gap: 32px;
+      align-items: center;
+      text-align: center;
+      padding: 42px 30px 36px;
+      border-radius: 36px;
+      background: var(--panel-bg);
+      border: 1px solid rgba(82, 47, 28, 0.14);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .notfound-hero::before,
+    .notfound-hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.28;
+      pointer-events: none;
+    }
+
+    .notfound-hero::before {
+      width: 210px;
+      height: 210px;
+      background: radial-gradient(circle, rgba(249, 199, 95, 0.4), transparent 62%);
+      top: -70px;
+      right: -60px;
+    }
+
+    .notfound-hero::after {
+      width: 170px;
+      height: 170px;
+      background: radial-gradient(circle, rgba(82, 47, 28, 0.1), transparent 68%);
+      bottom: -60px;
+      left: -50px;
+    }
+
+    .notfound-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 20px;
+      border-radius: 999px;
+      background: rgba(249, 199, 95, 0.18);
+      color: var(--brown);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      border: 1px solid rgba(82, 47, 28, 0.08);
+    }
+
+    .notfound-heading {
+      font-size: clamp(42px, 6vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -1px;
+      color: var(--brown);
+      margin: 0;
+    }
+
+    .notfound-subtext {
+      max-width: 680px;
+      margin: 0 auto;
+      color: var(--lighter-black);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .notfound-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .notfound-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .notfound-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(82, 47, 28, 0.11);
+      border-radius: 24px;
+      box-shadow: 0 18px 42px rgba(82, 47, 28, 0.08);
+      padding: 26px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .notfound-card h3 {
+      margin: 0;
+      color: var(--brown);
+      font-size: 18px;
+    }
+
+    .notfound-card p {
+      margin: 0;
+      color: var(--gray);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .footer-mini {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--gray);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .footer-mini a {
+      color: var(--brown);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .footer-mini a:hover {
+      color: var(--yellow);
+    }
+
+    @media (max-width: 900px) {
+      .notfound-card-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page-shell {
+        padding: 120px 18px 40px;
+      }
+
+      .notfound-card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body class="alan-sans">
+  <header id="header" aria-label="Site header">
+    <nav aria-label="Main navigation">
+      <div class="logo" aria-label="B&KERY Home">
+        <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+      </div>
+      <div class="nav-actions">
+        <a href="aboutus" class="btn btn-ghost">About Us</a>
+        <a href="/#menu" class="btn btn-outline">Menu</a>
+        <a href="/?openOrder=true" class="btn btn-brown">Place order</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-shell" aria-labelledby="notfound-title">
+    <section class="notfound-hero">
+      <span class="notfound-badge">Oops! Fresh batch lost</span>
+      <h1 id="notfound-title" class="notfound-heading">404</h1>
+      <p class="notfound-subtext">It looks like this page wandered off the baking sheet. While we search the oven, you can return to the warmest loaf of the site or explore our most beloved treats below.</p>
+      <div class="notfound-actions">
+        <a href="/" class="btn btn-brown">Back to Home</a>
+        <a href="/#menu" class="btn btn-outline">Browse Menu</a>
+      </div>
+    </section>
+
+    <section class="notfound-card-grid" aria-label="Suggested pages">
+      <article class="notfound-card">
+        <h3>Sweet beginnings</h3>
+        <p>Find your way back to the homepage where every bakery story starts with warm aromas and handcrafted goodness.</p>
+      </article>
+      <article class="notfound-card">
+        <h3>About our bakery</h3>
+        <p>Learn more about The B&KERY, our small-batch baking rituals, and the love behind every loaf and pastry.</p>
+      </article>
+      <article class="notfound-card">
+        <h3>Order fresh treats</h3>
+        <p>Ready to indulge? Place a new order online and choose the perfect time to pick up your freshly baked favorites.</p>
+      </article>
+    </section>
+
+    <div class="footer-mini">
+      <span>Need help?</span>
+      <a href="aboutus">About Us</a>
+      <a href="privacypolicy">Privacy Policy</a>
+      <a href="termsandconditions">Terms &amp; Conditions</a>
+    </div>
+  </main>
+</body>
+</html>
