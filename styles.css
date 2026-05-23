@@ -302,6 +302,10 @@ nav {
   transform: scale(.95);
 }
 
+.search-toggle.mobile-search-toggle {
+  display: none;
+}
+
 .search-container {
   position: absolute;
   top: 100%;
@@ -445,6 +449,10 @@ nav {
 
 /* ─── Search Responsive ───────────────────────────────────────── */
 @media (max-width: 768px) {
+  .search-toggle.mobile-search-toggle {
+    display: flex;
+  }
+
   .search-container {
     width: 280px;
   }

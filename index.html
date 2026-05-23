@@ -66,6 +66,12 @@
       <a href="#menu" class="btn btn-outline">Menu</a>
       <a href="#footer-hero" class="btn btn-brown">Place order</a>
     </div>
+    <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+    </button>
     <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
       <span class="hamburger-line"></span>
       <span class="hamburger-line"></span>
@@ -1104,14 +1110,14 @@ window.addEventListener('scroll',()=>{
 })();
 
 (function initProductSearch(){
-  const searchToggle = document.getElementById('search-toggle');
+  const searchToggles = Array.from(document.querySelectorAll('#search-toggle, #search-toggle-mobile'));
   const searchContainer = document.getElementById('search-container');
   const searchInput = document.getElementById('search-input');
   const searchClear = document.getElementById('search-clear');
   const searchResults = document.getElementById('search-results');
   const searchHint = document.getElementById('search-hint');
 
-  if(!searchToggle || !searchContainer || !searchInput || !searchResults) return;
+  if(searchToggles.length === 0 || !searchContainer || !searchInput || !searchResults) return;
 
   // All bakery products from the menu
   const bakeryProducts = [
@@ -1140,13 +1146,13 @@ window.addEventListener('scroll',()=>{
 
   const openSearch = () => {
     searchContainer.setAttribute('aria-hidden', 'false');
-    searchToggle.setAttribute('aria-expanded', 'true');
+    searchToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
     searchInput.focus();
   };
 
   const closeSearch = () => {
     searchContainer.setAttribute('aria-hidden', 'true');
-    searchToggle.setAttribute('aria-expanded', 'false');
+    searchToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
     searchResults.innerHTML = '';
     selectedIndex = -1;
   };
@@ -1255,7 +1261,7 @@ window.addEventListener('scroll',()=>{
     }
   };
 
-  searchToggle.addEventListener('click', toggleSearch);
+  searchToggles.forEach(toggle => toggle.addEventListener('click', toggleSearch));
 
   searchInput.addEventListener('input', (e) => {
     filterProducts(e.target.value);
@@ -1299,7 +1305,7 @@ window.addEventListener('scroll',()=>{
 
   // Close search when clicking outside
   document.addEventListener('click', (e) => {
-    if(!searchContainer.contains(e.target) && !searchToggle.contains(e.target)){
+    if(!searchContainer.contains(e.target) && !searchToggles.some(toggle => toggle.contains(e.target))){
       if(searchContainer.getAttribute('aria-hidden') === 'false'){
         closeSearch();
       }
