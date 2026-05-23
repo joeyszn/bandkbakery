@@ -258,6 +258,18 @@ nav {
   letter-spacing: -0.5px;
 }
 
+.nav-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  position: relative;
+  margin-left: auto;
+}
+
+.mobile-nav {
+  display: none;
+}
+
 .logo-sub {
   font-size: 10px;
   font-weight: 500;
@@ -265,13 +277,6 @@ nav {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   margin-top: 2px;
-}
-
-.nav-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  position: relative;
 }
 
 /* ─── Search Component ────────────────────────────────────────── */
@@ -1562,9 +1567,34 @@ nav {
   @media (max-width: 768px) {
     nav {
       padding: 14px 20px;
+      gap: 16px;
     }
     .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+    .nav-actions > a,
+    .nav-actions > .btn {
       display: none;
+    }
+    .nav-actions > .search-toggle {
+      display: none;
+    }
+    .search-container {
+      width: calc(100vw - 32px);
+      right: auto;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+    }
+    .search-container[aria-hidden="false"] {
+      transform: translateX(-50%) translateY(0);
+    }
+    .mobile-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .mobile-menu-toggle {
       display: flex;
@@ -1667,7 +1697,26 @@ nav {
       margin-top: 0;
     }
     .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+    .nav-actions > a,
+    .nav-actions > .btn {
       display: none;
+    }
+    .nav-actions > .search-toggle {
+      display: none;
+    }
+    .search-container {
+      width: calc(100vw - 32px);
+      right: auto;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+    }
+    .search-container[aria-hidden="false"] {
+      transform: translateX(-50%) translateY(0);
     }
     .mobile-menu-toggle {
       display: flex;

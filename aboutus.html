@@ -123,7 +123,7 @@
     color: var(--lighter-black);
     line-height: 1.8;
     font-size: 15px;
-    max-width: 780px;
+    /* max-width: 780px; */
   }
 
   .about-grid {
@@ -178,6 +178,21 @@
     gap: 18px;
     margin-top: 8px;
     align-items: stretch;
+  }
+
+  .about-images {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    margin-top: 24px;
+  }
+
+  .about-images img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 22px;
+    box-shadow: 0 14px 28px rgba(82, 47, 28, .12);
   }
 
   .photo-panel {
@@ -399,8 +414,28 @@
     <div class="about-section-inner">
       <h2 class="about-section-title">Our Story</h2>
       <p class="about-section-sub">
-        The B&KERY started with family recipes, late-night experiments, and a love of baking that never left the kitchen. What began as a personal tradition grew into a small bakery built around flavor, warmth, and old-fashioned care.
+        Both Bruce and I were born in the Bronx, one of the boroughs of New York City. Bruce grew up on the West Side and I grew up on the South, and we were connected by the Cross Bronx Expressway.
       </p>
+      <p class="about-section-sub">
+        We met in 1963 and married in 1965. We both loved home baked bread and goodies from the bakeries near our homes — Snowflake Bakery for Bruce and Zarro’s for me. We moved to California in 1986 and missed the taste of East Coast bakeries so much that I began collecting recipes to mirror those flavors at home. And it worked — pretty successfully.
+      </p>
+      <p class="about-section-sub">
+        We have two married adult children who luckily live in northern California right now, and we are able to see them.
+      </p>
+      <p class="about-section-sub">
+        We have been married for 61 years. Not all our years were happy, but we both laugh and communicate a lot. Some years were terrible, some were okay, some were really great and others were very challenging. But we worked at it (we are soooo different) and still have chemistry; that helped us pull through. After 61 years, we are still together, and this past year we decided my baking was good enough to sell to the public and hopefully bring in extra cash. Hence, the B & K Bakery was born.
+      </p>
+      <p class="about-section-sub">
+        We bake all our goods in our home kitchen. I am the baker while Bruce works with me as the Veteran CFO of our bakery and assists me. We are registered with the County of Santa Clara and complied with all the health and a myriad of other requirements to be a Cottage bakery.
+      </p>
+
+      <div class="about-images" aria-label="About Bruce and Karen and bakery photos">
+        <img src="images/B&K1.jpg" alt="Bruce & Karen" loading="eager" />
+        <img src="images/B&K2.jpg" alt="Bruce & Karen" loading="eager" />
+        <img src="images/B&K3.jpg" alt="Bruce & Karen" loading="eager" />
+        <img src="images/B&K4.jpg" alt="Bruce and Karen wedding" loading="eager" />
+        <img src="images/B&K5.jpg" alt="Bruce and Karen wedding" loading="eager" />
+      </div>
 
       <div class="about-photos">
         <div class="photo-panel">
@@ -418,7 +453,7 @@
             <p>
               From braided challah to rugelach, our menu brings together tradition and the joy of sharing something homemade.
             </p>
-            <div class="quote-signoff">— The B&KERY kitchen</div>
+            <div class="quote-signoff">— The B&KERY</div>
           </div>
 
           <div class="photo-panel">
