@@ -1040,53 +1040,119 @@ window.addEventListener('scroll',()=>{
       return;
     }
 
-    const orderSummaryLines = orderedItems.map(entry => `${entry.item} | ${entry.quantity}`);
-    const orderSummaryText = orderSummaryLines.join('\n');
-    const itemDescription = orderedItems.map(entry => `${entry.quantity} x ${entry.item}`).join('; ');
-
     orderSubmitBtn.disabled = true;
     orderSubmitBtn.classList.add('loading');
-    orderSubmitBtn.innerHTML = `<span>Placing order <span class="dot-loader"><span></span><span></span><span></span></span></span>`;
+    orderSubmitBtn.innerHTML = `<span>Processing<span class="dot-loader"><span></span><span></span><span></span></span></span>`;
 
-    const submittedAt = new Date().toLocaleString();
-    const payload = {
+    // Parse items and extract prices
+    const items = orderedItems.map(entry => {
+      // Parse price from option text: "Item Name — $22.00"
+      const optionText = entry.select?.value || entry.item;
+      let price = 0;
+      
+      // Find the option element to get the original text with price
+      if(entry.select){
+        const selectedOption = entry.select.querySelector(`option[value="${optionText}"]`);
+        if(selectedOption){
+          const priceMatch = selectedOption.textContent.match(/\$(\d+\.\d{2})/);
+          if(priceMatch) price = parseFloat(priceMatch[1]);
+        }
+      }
+      
+      return {
+        name: optionText,
+        quantity: entry.quantity,
+        price: price
+      };
+    });
+
+    // Prepare order data for payment page
+    const orderData = {
       name,
       phone,
       email,
-      orderSummary: orderSummaryText,
-      orderItems: itemDescription,
+      items,
       method,
-      address,
-      requestedTime: schedule || 'Earliest available preparation',
+      address: method === 'Delivery' ? address : '',
+      schedule,
       notes,
-      submittedAt,
-      _subject: `New bakery order from ${name}`
+      submittedAt: new Date().toISOString()
     };
 
-    try {
-      const response = await fetch('https://formsubmit.co/ajax/bronxkaren1@gmail.com', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+    // Store order data in sessionStorage
+    sessionStorage.setItem('bakery_order', JSON.stringify(orderData));
 
-      if(!response.ok) throw new Error('Submission failed');
+    // Map item names to specific PayPal links (priority: Babka, Challah, Bagels, Rugelach, Mandelbrot, Macarons, Greater-Crumb Coffee Cake, Almond Thumbprint Cookies)
+    const paypalLinks = {
+      babka: 'https://www.paypal.com/ncp/payment/GFHKZ8EFVCBX4',
+      challah: 'https://www.paypal.com/ncp/payment/JQH3CGKHTQ3K6',
+      bagels: 'https://www.paypal.com/ncp/payment/FHEXTUWT549SW',
+      rugelach: 'https://www.paypal.com/ncp/payment/BBH3653UC4WLY',
+      mandelbrot: 'https://www.paypal.com/ncp/payment/P4EKDTYK4ZRRS',
+      macarons: 'https://www.paypal.com/ncp/payment/7CH6B7R2VUXW8',
+      coffeeCake: 'https://www.paypal.com/ncp/payment/8FBMHDVRUL5JA',
+      almondThumbprintCookies: 'https://www.paypal.com/ncp/payment/JPTFNUWJTC4C6',
+      bialys: 'https://www.paypal.com/ncp/payment/VAF7FTACMAMZ8'
+    };
 
-      const result = await response.json();
-      if(result.success === true || result.success === 'true'){
-        showSuccess(Boolean(schedule));
-      } else {
-        throw new Error(result.message || 'Submission failed');
-      }
-    } catch (error) {
-      const mailBody = encodeURIComponent(`Name: ${name}\nPhone: ${phone}\nEmail: ${email}\n\nOrder Summary:\nItem | Quantity\n${orderSummaryText}\n\nMethod: ${method}\nAddress: ${address}\nRequested time: ${schedule || 'Earliest available preparation'}\nNotes: ${notes}\nSubmitted: ${submittedAt}`);
-      window.location.href = `mailto:bronxkaren1@gmail.com?subject=${encodeURIComponent('Bakery order from ' + name)}&body=${mailBody}`;
-      showSuccess(Boolean(schedule));
-    } finally {
-      orderSubmitBtn.disabled = false;
-      orderSubmitBtn.classList.remove('loading');
-      orderSubmitBtn.innerHTML = '<span>Place Order</span>';
+    const itemNames = items.map(it => (it.name || '').toLowerCase());
+
+    // If Babka is present, redirect to its PayPal link (priority)
+    if(itemNames.some(n => n.includes('babka'))){
+      setTimeout(() => { window.location.href = paypalLinks.babka; }, 300);
+      return;
     }
+
+    // If Challah is present, redirect to its PayPal link
+    if(itemNames.some(n => n.includes('challah'))){
+      setTimeout(() => { window.location.href = paypalLinks.challah; }, 300);
+      return;
+    }
+
+    // If Bagels are present, redirect to its PayPal link
+    if(itemNames.some(n => n.includes('bagel'))){
+      setTimeout(() => { window.location.href = paypalLinks.bagels; }, 300);
+      return;
+    }
+
+    // If Rugelach is present, redirect to its PayPal link
+    if(itemNames.some(n => n.includes('rugel'))){
+      setTimeout(() => { window.location.href = paypalLinks.rugelach; }, 300);
+      return;
+    }
+
+    // If Mandelbrot is present, redirect to its PayPal link
+    if(itemNames.some(n => n.includes('mandelbrot') || n.includes('mandelbrot'))){
+      setTimeout(() => { window.location.href = paypalLinks.mandelbrot; }, 300);
+      return;
+    }
+
+    // If Macarons are present, redirect to its PayPal link
+    if(itemNames.some(n => n.includes('macaron') || n.includes('macarons'))){
+      setTimeout(() => { window.location.href = paypalLinks.macarons; }, 300);
+      return;
+    }
+
+    // If Greater-Crumb Coffee Cake is present, redirect to its PayPal link
+    if(itemNames.some(n => n.includes('coffee cake') || n.includes('greater-crumb') || n.includes('greater crumb'))){
+      setTimeout(() => { window.location.href = paypalLinks.coffeeCake; }, 300);
+      return;
+    }
+
+    // If Almond Thumbprint Cookies are present, redirect to its PayPal link
+    if(itemNames.some(n => n.includes('almond thumbprint') || n.includes('thumbprint') || n.includes('almond'))){
+      setTimeout(() => { window.location.href = paypalLinks.almondThumbprintCookies; }, 300);
+      return;
+    }
+
+    // If Bialys are present, redirect to its PayPal link
+    if(itemNames.some(n => n.includes('bialy'))){
+      setTimeout(() => { window.location.href = paypalLinks.bialys; }, 300);
+      return;
+    }
+
+    // Otherwise, continue to the standard payment page
+    setTimeout(() => { window.location.href = 'payment.html'; }, 300);
   });
 })();
 
