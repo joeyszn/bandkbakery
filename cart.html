@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Your Cart — The B&KERY</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    /* Cart card – premium bakery aesthetic */
+    .cart-wrap{max-width:1100px;margin:28px auto;padding:20px;padding-top:100px;display:grid;grid-template-columns:1fr 360px;gap:24px}
+
+    .cart-items{background:transparent;border-radius:16px;padding: 0}
+
+    .cart-item{background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(82,47,28,0.08);display:block;padding:18px;margin-bottom:16px;transition:transform .22s ease,box-shadow .22s ease}
+    .cart-item:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(82,47,28,0.12)}
+
+    .cart-item-inner{display:grid;grid-template-columns:120px 1fr 110px;gap:18px;align-items:center}
+
+    .cart-left img{width:120px;height:120px;object-fit:cover;border-radius:14px;display:block}
+
+    .cart-center{display:flex;flex-direction:column;gap:8px}
+    .item-name{font-size:1.05rem;font-weight:800;color:var(--brown);line-height:1.1}
+    .item-unit{font-size:0.92rem;color:rgba(0,0,0,0.6)}
+
+    .item-controls{display:flex;justify-content:flex-start;align-items:center;gap:16px;margin-top:6px}
+    .qty-controls{display:flex;align-items:center;gap:10px}
+    .qty-btn{width:40px;height:40px;border-radius:10px;border:1px solid rgb(146 146 146 / 50%);background:transparent;font-size:1.05rem;cursor:pointer;transition:background .18s ease,transform .18s ease}
+    .qty-btn:hover{background:rgba(249,199,95,0.08);transform:translateY(-1px)}
+    .qty-value{min-width:36px;text-align:center;font-weight:700}
+
+    .remove-btn{background:transparent;border:none;color:var(--brown);font-weight:700;cursor:pointer;padding:6px}
+    .remove-btn:hover{text-decoration:underline}
+
+    .cart-right{text-align:right}
+    .item-total{font-size:1.12rem;font-weight:800;color:var(--brown)}
+
+    .empty-cart{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 0px;text-align:center}
+
+    .summary{background:#fff;border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(82,47,28,.06);height:max-content}
+    .summary-row{display:flex;justify-content:space-between;margin-bottom:10px;color:var(--brown)}
+    .checkout-btn{display:block;width:100%;margin-top:12px}
+
+    @media(max-width:900px){
+      .cart-wrap{grid-template-columns:1fr;padding:14px;padding-top: 80px}
+      .summary-sticky{position:static}
+      .cart-item-inner{grid-template-columns:1fr;grid-auto-rows:auto}
+      .cart-left img{width:100%;height:200px;border-radius:12px}
+      .cart-right{text-align:left;margin-top:12px}
+      .item-controls{flex-direction:row;flex-wrap:wrap;gap:12px}
+      .qty-btn{width:44px;height:44px;border-radius:12px}
+    }
+  </style>
+</head>
+<body class="alan-sans">
+  <header id="header" aria-label="Site header">
+    <nav aria-label="Main navigation">
+      <div class="logo" aria-label="B&KERY Home">
+        <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+      </div>
+      <div class="nav-actions">
+        <button class="search-toggle" id="search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+        <div class="search-container" id="search-container" aria-hidden="true">
+          <div class="search-input-wrapper">
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Search treats..."
+              autocomplete="off"
+              aria-label="Search bakery products"
+              aria-describedby="search-hint"
+              aria-autocomplete="list"
+              aria-controls="search-results"
+            />
+            <button class="search-clear" id="search-clear" aria-label="Clear search" type="button">×</button>
+          </div>
+          <div class="search-hint" id="search-hint">Type to find your favorite treats</div>
+          <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
+        </div>
+        <a href="aboutus" class="btn btn-ghost">About Us</a>
+        <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+        <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
+      </div>
+      <div class="mobile-nav">
+        <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+        <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </nav>
+    <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+      <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+      <a href="aboutus" class="btn btn-ghost">About Us</a>
+      <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+      <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
+    </div>
+    <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
+  </header>
+
+  <script>
+    (function initMobileMenu(){
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      const panel = document.getElementById('mobile-menu-panel');
+      const backdrop = document.getElementById('mobile-menu-backdrop');
+      const closeButton = document.querySelector('.mobile-menu-close');
+      if(!toggle || !panel || !backdrop || !closeButton) return;
+
+      const setOpen = open => {
+        panel.classList.toggle('open', open);
+        backdrop.classList.toggle('open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        panel.setAttribute('aria-hidden', String(!open));
+      };
+
+      toggle.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
+      closeButton.addEventListener('click', () => setOpen(false));
+      backdrop.addEventListener('click', () => setOpen(false));
+      panel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+    })();
+  </script>
+
+  <main>
+    <div class="cart-wrap">
+      <section class="cart-items" id="cart-items-section">
+        <h2 style="margin-top:0; margin-bottom:16px">Your Basket</h2>
+        <div id="cart-items"></div>
+      </section>
+
+      <aside class="summary summary-sticky" id="order-summary">
+        <h3 style="margin-bottom:10px;">Order Summary</h3>
+        <div class="summary-row"><span>Items</span><span id="summary-items">0</span></div>
+        <div class="summary-row"><span>Subtotal</span><span id="summary-subtotal">$0.00</span></div>
+        <div class="summary-row"><span>Delivery fee</span><span id="summary-delivery">$0.00</span></div>
+        <div class="summary-row" style="font-size:1.05rem;font-weight:700"><span>Total</span><span id="summary-total">$0.00</span></div>
+
+        <hr style="border:none;border-top:1px solid #f2e9e0;margin:12px 0" />
+
+        <form id="customer-form">
+          <div style="margin-bottom:8px">
+            <label>Full name</label>
+            <input id="cust-name" required class="order-input" />
+          </div>
+          <div style="margin-bottom:8px">
+            <label>Phone number</label>
+            <input id="cust-phone" required class="order-input" />
+          </div>
+          <div style="margin-bottom:8px">
+            <label>Email address</label>
+            <input id="cust-email" type="email" required class="order-input" />
+          </div>
+
+          <div style="margin-bottom:8px">
+            <label>Pickup or Delivery</label>
+            <div class="radio-group">
+              <label><input type="radio" name="method" value="Pickup" checked /> Pickup</label>
+              <label><input type="radio" name="method" value="Delivery" /> Delivery</label>
+            </div>
+          </div>
+
+          <div id="address-block" style="display:none;margin-bottom:8px">
+            <label>Address (required for delivery)</label>
+            <input id="cust-address" class="order-input" />
+          </div>
+
+          <div style="margin-bottom:8px">
+            <label>Requested date (optional)</label>
+            <input id="cust-date" type="date" class="order-input" />
+          </div>
+          <div style="margin-bottom:8px">
+            <label>Requested time (optional)</label>
+            <input id="cust-time" type="time" class="order-input" />
+          </div>
+          <div style="margin-bottom:8px">
+            <label>Special instructions (optional)</label>
+            <textarea id="cust-notes" class="order-textarea" rows="3"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-brown checkout-btn">Proceed to Secure Checkout</button>
+        </form>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const STORAGE_KEY = 'bk_cart';
+      const LAST_ORDER_KEY = 'bk_last_order';
+      const cartItemsEl = document.getElementById('cart-items');
+      const summaryItems = document.getElementById('summary-items');
+      const summarySubtotal = document.getElementById('summary-subtotal');
+      const summaryDelivery = document.getElementById('summary-delivery');
+      const summaryTotal = document.getElementById('summary-total');
+      const cartCountEl = document.getElementById('cart-count');
+
+      function loadCart(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
+      function saveCart(cart){ localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }
+      function saveLastOrder(order){ localStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order)); }
+      function getLastOrder(){ try{ return JSON.parse(localStorage.getItem(LAST_ORDER_KEY)||'null'); }catch(e){ return null; } }
+
+      function formatMoney(n){ return '$'+(n||0).toFixed(2); }
+      function generateOrderId(){ return 'BK-'+Date.now()+'-'+Math.floor(Math.random()*900+100); }
+
+      function renderEmpty(){
+        cartItemsEl.innerHTML = `<div class="empty-cart"><h3>Looks like your basket is empty. Let's fix that.</h3><p style="color:var(--brown)">Freshly baked treats are waiting.</p><a href="index.html#menu" class="btn btn-yellow" style="margin-top:14px">Browse Treats</a></div>`;
+      }
+
+      function renderCart(){
+        const cart = loadCart();
+        if(!cart || cart.length === 0){ renderEmpty(); updateSummary([],0,0); return; }
+        cartItemsEl.innerHTML = '';
+        cart.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'cart-item';
+          row.innerHTML = `
+            <div class="cart-item-inner">
+              <div class="cart-left">
+                <img src="${item.image||'images/Babka.jpg'}" alt="${item.name}">
+              </div>
+              <div class="cart-center">
+                <div class="item-name">${item.name}</div>
+                <div class="item-unit">Unit item: ${formatMoney(item.price)}</div>
+                <div class="item-controls">
+                  <div class="qty-controls">
+                    <button class="qty-btn qty-decrease" data-id="${item.id}" aria-label="Decrease">-</button>
+                    <div class="qty-value">${item.quantity}</div>
+                    <button class="qty-btn qty-increase" data-id="${item.id}" aria-label="Increase">+</button>
+                  </div>
+                  <button class="remove-btn" data-id="${item.id}">Remove</button>
+                </div>
+              </div>
+              <div class="cart-right">
+                <div class="item-total">${formatMoney(item.price * item.quantity)}</div>
+              </div>
+            </div>
+          `;
+          cartItemsEl.appendChild(row);
+        });
+        attachItemHandlers();
+        updateSummary(cart);
+      }
+
+      function buildPayPalForm(order){
+        const origin = window.location.origin;
+        const payForm = document.createElement('form');
+        payForm.method = 'POST';
+        payForm.action = 'https://www.paypal.com/cgi-bin/webscr';
+        payForm.style.display = 'none';
+
+        const addField = (name, value) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = String(value);
+          payForm.appendChild(input);
+        };
+
+        addField('cmd', '_cart');
+        addField('upload', '1');
+        addField('business', 'mgbikehjoel@gmail.com');
+        addField('currency_code', 'USD');
+        addField('no_note', '1');
+        addField('rm', '1');
+        addField('return', `${origin}/success.html`);
+        addField('cancel_return', `${origin}/cancel.html`);
+        addField('invoice', order.orderId);
+        addField('custom', encodeURIComponent(JSON.stringify({
+          orderId: order.orderId,
+          name: order.name,
+          email: order.email,
+          phone: order.phone,
+          method: order.method
+        })));
+
+        order.items.forEach((item, index) => {
+          const idx = index + 1;
+          addField(`item_name_${idx}`, item.name);
+          addField(`amount_${idx}`, item.price.toFixed(2));
+          addField(`quantity_${idx}`, item.quantity);
+        });
+
+        if(order.deliveryFee && order.deliveryFee > 0){
+          addField('handling_cart', order.deliveryFee.toFixed(2));
+        }
+
+        document.body.appendChild(payForm);
+        return payForm;
+      }
+
+      function submitToPayPal(order){
+        order.orderId = order.orderId || generateOrderId();
+        order.checkoutAt = new Date().toISOString();
+        saveLastOrder(order);
+        const paypalForm = buildPayPalForm(order);
+        paypalForm.submit();
+      }
+
+      function updateSummary(cart,deliveryFee=0,anim=false){
+        cart = cart || loadCart();
+        const items = cart.reduce((s,i)=>s+(i.quantity||0),0);
+        const subtotal = cart.reduce((s,i)=>s + (i.price||0)*(i.quantity||0),0);
+        const delivery = deliveryFee || 0;
+        const total = subtotal + delivery;
+        summaryItems.textContent = items;
+        summarySubtotal.textContent = formatMoney(subtotal);
+        summaryDelivery.textContent = formatMoney(delivery);
+        summaryTotal.textContent = formatMoney(total);
+        if(cartCountEl){ cartCountEl.textContent = items; }
+      }
+
+      function attachItemHandlers(){
+        document.querySelectorAll('.qty-decrease').forEach(btn=>btn.addEventListener('click',()=>{
+          const id = btn.getAttribute('data-id'); changeQty(id, -1);
+        }));
+        document.querySelectorAll('.qty-increase').forEach(btn=>btn.addEventListener('click',()=>{
+          const id = btn.getAttribute('data-id'); changeQty(id, +1);
+        }));
+        document.querySelectorAll('.remove-btn').forEach(btn=>btn.addEventListener('click',()=>{
+          const id = btn.getAttribute('data-id'); removeItem(id);
+        }));
+      }
+
+      function changeQty(id, delta){
+        const cart = loadCart();
+        const it = cart.find(i=>i.id===id); if(!it) return;
+        it.quantity = Math.max(0,(it.quantity||0) + delta);
+        if(it.quantity === 0) { const idx = cart.findIndex(i=>i.id===id); if(idx>-1) cart.splice(idx,1); }
+        saveCart(cart); renderCart();
+      }
+
+      function removeItem(id){ const cart = loadCart(); const idx = cart.findIndex(i=>i.id===id); if(idx>-1) cart.splice(idx,1); saveCart(cart); renderCart(); }
+
+      // Customer form handling
+      const form = document.getElementById('customer-form');
+      const addressBlock = document.getElementById('address-block');
+      form.addEventListener('change', (e)=>{
+        if(e.target.name === 'method'){
+          const delivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
+          addressBlock.style.display = delivery ? 'block' : 'none';
+          // simple fee: $5 for delivery
+          updateSummary(null, delivery ? 5 : 0);
+        }
+      });
+
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        const cart = loadCart(); if(!cart || cart.length===0){ alert('Your cart is empty. Add some treats first.'); return; }
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+        const email = document.getElementById('cust-email').value.trim();
+        const method = form.querySelector('input[name="method"]:checked').value;
+        const address = document.getElementById('cust-address').value.trim();
+        const date = document.getElementById('cust-date').value;
+        const time = document.getElementById('cust-time').value;
+        const notes = document.getElementById('cust-notes').value.trim();
+
+        if(!name||!phone||!email){ alert('Please fill name, phone and email.'); return; }
+        if(method === 'Delivery' && !address){ alert('Please provide a delivery address.'); return; }
+
+        const subtotal = cart.reduce((s,i)=>s + (i.price||0)*(i.quantity||0),0);
+        const deliveryFee = method === 'Delivery' ? 5 : 0;
+        const total = subtotal + deliveryFee;
+
+        const order = { name, phone, email, items: cart, method, address: method==='Delivery'?address:'', scheduleDate:date, scheduleTime:time, notes, subtotal, deliveryFee, total, createdAt: new Date().toISOString() };
+        sessionStorage.setItem('bakery_order', JSON.stringify(order));
+        submitToPayPal(order);
+      });
+
+      // initial render
+      renderCart();
+    })();
+  </script>
+</body>
+</html>

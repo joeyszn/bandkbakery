@@ -63,8 +63,8 @@
         <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
       </div>
       <a href="aboutus" class="btn btn-ghost">About Us</a>
-      <a href="#menu" class="btn btn-outline">Menu</a>
-      <a href="#footer-hero" class="btn btn-brown">Place order</a>
+      <a href="#menu" class="btn btn-ghost">Menu</a>
+      <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
     </div>
     <div class="mobile-nav">
         <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
@@ -80,11 +80,11 @@
         </button>
     </div>
   </nav>
-  <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+    <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
     <button class="mobile-menu-close" aria-label="Close navigation">×</button>
     <a href="aboutus" class="btn btn-ghost">About Us</a>
-    <a href="#menu" class="btn btn-outline">Menu</a>
-    <a href="#footer-hero" class="btn btn-brown">Place order</a>
+    <a href="#menu" class="btn btn-ghost">Menu</a>
+    <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
   </div>
   <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
 </header>
@@ -97,7 +97,7 @@
     <p class="hero-sub">Warm breads, sweet treats, and homemade favorites baked with love, laughter, and just the right amount of butter.</p>
     <div class="hero-ctas">
       <a href="#menu" class="btn btn-brown">Explore menu</a>
-      <a href="#footer-hero" class="btn btn-outline">Place order</a>
+      <!-- <a href="#footer-hero" class="btn btn-outline">Place order</a> -->
     </div>
   </div>
 
@@ -136,7 +136,7 @@
           </div>
         </div>
         <p class="menu-desc">As yummy as it looks, that's how great it tastes. I got this recipe and improvised on it. The filling is a combination of cocoa and chocolate chips, chopped just before the chips get really chipped and where you may not see them. You can definitely see mine. Now take a look at the slices. they are light and airy and you can smell the yeast as it blends into the chocolate. It isn't your ordinary decadent gooey babka – it's perfect!</p>
-        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+        <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images">
         <div class="two-img">
@@ -166,7 +166,7 @@
           </div>
         </div>
         <p class="menu-desc">Whole loaf of Challah (or sometimes called twisted egg loaf). This Challah was made from an old family recipe gotten from my friend's grandmother-in-law, who owned a Jewish restaurant. I buy the flour from Kansas – from their winter wheat. I tried to make this flour from King Arthur flour, but it never came out the same. It has a wonderful flavor, looks wonderful, browns wonderfully, and tastes fantastic. I am very proud of it. Above is a photo of some slices of the Challah (pronounced Hal-lah) – and then you have to "spit" the last syllable.</p>
-        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+        <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images">
         <div class="two-img">
@@ -196,7 +196,7 @@
           </div>
         </div>
         <p class="menu-desc">Fresh large bagels (kind of crispy bottom half) made by a born and bred New York Mom – Crispy bottoms, but soft and "textury" inside. You can actually taste the love.<br><br>My bagels – I baked and baked and watched YouTube channels until I had created my own recipe. I wanted the bagels bigger than you can get in the bagel store with a crunchy bottom, that is different from your bagel store. I use more flour and ingredients so I can make the bagels bigger with a special softness inside. And yes, I am an old time native New Yorker and my bagels are dipped in boiling water before they are baked and this makes its consistency that of a perfect New York bagel.</p>
-        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+        <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images single-img">
         <div class="single-img-wrap">
@@ -222,7 +222,7 @@
         <p class="menu-desc">I  pronounce it "Bee-ah-lies". And yes! - They smell good with Roasted Shallots center. Fresh large bialys (kind of crispy bottom half) made by a born and bred New York Mom – Crispy bottoms, but soft and chewy inside. You can actually taste the love. My bialys (unlike my bagels) are not water boiled. They are baked perfectly from a basic Polish recipe.
         <br><br>
         I looked and tried many different recipes, and came up with one from a combination of YouTube videos and the King Arthur Flour site on the internet. I got it down people! I think you'll love them. Since I have a Cottage permit from the County of Santa Clara, my bagels cannot be made and fried with natural onions (they would be considered "perishable"). However, I have dehydrated shallots or sliced dehydrated onions, which work as well, and form a crispy oniony center on the bialy. I know you'll enjoy them as you spread them with cream cheese.</p>
-        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+        <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images single-img">
         <div class="single-img-wrap">
@@ -246,7 +246,7 @@
           </div>
         </div>
         <p class="menu-desc">(I pronounce it as "Rug-a-luck").<br><br>Guilt-free Rugelach with no sugar. Made with Raisins, Nuts and Cinnamon. My Rugelach is made with alternative sugar which is blended so perfectly that you can taste its sweetness and absolutely no aftertaste. The dough is blended with natural cream cheese and refrigerated just enough, so it has a little crunch on the outside, and softness on the inside and they're yummy.</p>
-        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+        <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images single-img">
         <div class="single-img-wrap">
@@ -270,7 +270,7 @@
           </div>
         </div>
         <p class="menu-desc">I call them black-eyed Susans because of their chocolate center. These are so delicious. The Almond dough when it comes out of the oven and cools has a little salty-almond flavor (very unique). It is made with strictly almond flour which is non-gluten. The ingredients are Almond flour, pure grade A honey, and canola oil and a tiny bit of salt. The topping is a no-sugar-added chocolate chips and water. These 2 ingredients are warmed, blended and piped to make the delectable center. Perfect combination. The picture above was taken right from the oven and right after the centers were squeezed through the piping. I took the photo at that point so you can see the actual cookies. Enjoy!</p>
-        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+        <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images single-img">
         <div class="single-img-wrap">
@@ -294,7 +294,7 @@
           </div>
         </div>
         <p class="menu-desc">Similar to Biscotti – except maybe not as crunchy in the center. My daughter calls these cookies the perfect cookie snack – not too sweet, not salty, just crusty enough, guiltless - made with flour (of course) but egg whites, no sugar added, chocolate chips and just ½ cup of sugar used for about 20 2-4” bars of the Mandelbrot. These cookies are extremely tasty and satisfying. This recipe is a combination of ingredients from my mother (who was an artist and was 109-1/2 when she passed away - and I believe one of the Epicurious sites). Thank you mom!</p>
-        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+        <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images single-img">
         <div class="single-img-wrap">
@@ -318,7 +318,7 @@
           </div>
         </div>
         <p class="menu-desc">Shredded Coconut, Whipped Egg Whites, No sugar added, lemon and/or chocolate ganache. Called “Coconut Guiltless Macarons” Your guiltless pleasure – I believe very low in calories. What is a Macaron - a small round cake or cookie with a meringue-like consistency, made with egg whites, sugar, and powdered almonds or coconut and consisting of two halves sandwiching a creamy filling. What is my“Ganache” - a whipped filling of chocolate or white chocolate and water or lemon  juice, used in desserts such as cakes and truffles.</p>
-        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+        <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images">
         <div class="two-img">
@@ -349,7 +349,7 @@
         </div>
         <p class="menu-desc">THIS ONE IS MY SIGNATURE. I get so many compliments on this cake. It’s made with special combination flour (my secret), golden brown sugar blended with flour and butter until they are scrumptious lumps that you can bite into. This is my very own recipe, but I have to give initial credit to my friend Terry who worked in my law office where we were both legal secretaries (now they are called paralegals) and who introduced me to the “easiest” coffee crumb cake (and it was). And I made it much more complicated. But it was worth it. Can’t count your calories with this one!
 </p>
-        <a href="#footer-hero" class="btn btn-brown" style="align-self:flex-start">Place order</a>
+        <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images">
         <div class="two-img">
@@ -1388,6 +1388,86 @@ window.addEventListener('scroll',()=>{
       closeSearch();
     }
   });
+})();
+</script>
+<script>
+// Cart: simple localStorage-backed cart for Add to Cart buttons
+(function(){
+  const STORAGE_KEY = 'bk_cart';
+  const cartCountEls = Array.from(document.querySelectorAll('.cart-count'));
+
+  function loadCart(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; }
+  }
+  function saveCart(cart){ localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }
+  function getCount(cart){ return cart.reduce((s,i)=>s+(i.quantity||0),0); }
+  function updateCartBadge(anim=true){
+    const cart = loadCart();
+    const count = getCount(cart);
+    if(cartCountEls.length) {
+      cartCountEls.forEach((el,i)=>{
+        el.textContent = count;
+        if(anim && i===0){ // animate primary badge (first)
+          el.animate([
+            { transform: 'scale(1)' },
+            { transform: 'scale(1.4)' },
+            { transform: 'scale(1)' }
+          ], { duration: 300, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        }
+      });
+    }
+  }
+
+  function slugify(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+
+  function parsePriceFromNode(menuItem){
+    // Prefer .price-badge, else search for $ in menu-price
+    const badge = menuItem.querySelector('.price-badge');
+    if(badge && /\$/.test(badge.textContent)){
+      const m = badge.textContent.match(/\$(\d+(?:\.\d{1,2})?)/);
+      if(m) return parseFloat(m[1]);
+    }
+    const mp = menuItem.querySelector('.menu-price');
+    if(mp){ const m = mp.textContent.match(/\$(\d+(?:\.\d{1,2})?)/); if(m) return parseFloat(m[1]); }
+    return 0;
+  }
+
+  function showMiniToast(message){
+    const t = document.createElement('div');
+    t.className = 'mini-toast';
+    t.textContent = message;
+    Object.assign(t.style,{position:'fixed',right:'18px',top:'80px',background:'#fff6e0',color:'#5b3a28',padding:'10px 14px',borderRadius:'8px',boxShadow:'0 6px 18px rgba(82,47,28,.12)',zIndex:9999,fontWeight:600});
+    document.body.appendChild(t);
+    t.animate([{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'translateY(0)'}],{duration:220,easing:'ease-out'});
+    setTimeout(()=>{ t.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-8px)'}],{duration:220,easing:'ease-in'}).onfinish=()=>t.remove(); },1400);
+  }
+
+  function addToCartFromButton(button){
+    const menuItem = button.closest('.menu-item');
+    if(!menuItem) return;
+    const nameEl = menuItem.querySelector('.menu-name');
+    const imgEl = menuItem.querySelector('img');
+    const name = nameEl ? nameEl.textContent.trim() : 'Item';
+    const price = parsePriceFromNode(menuItem) || 0;
+    const image = imgEl ? imgEl.getAttribute('src') : '';
+    const id = slugify(name);
+
+    const cart = loadCart();
+    const existing = cart.find(i=>i.id===id);
+    if(existing){ existing.quantity = (existing.quantity||0) + 1; }
+    else { cart.push({ id, name, price, image, quantity: 1 }); }
+    saveCart(cart);
+    updateCartBadge(true);
+    showMiniToast('Added to Cart');
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('.add-to-cart');
+    if(btn){ e.preventDefault(); addToCartFromButton(btn); }
+  });
+
+  // initial badge render
+  document.addEventListener('DOMContentLoaded', ()=> updateCartBadge(false));
 })();
 </script>
 </body>

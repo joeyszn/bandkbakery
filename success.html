@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank You — Order Confirmed | The B&KERY</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    .success-shell{max-width:940px;margin:72px auto 72px;padding:0 18px;}
+    .success-card{background:#fff;border-radius:24px;box-shadow:0 18px 44px rgba(82,47,28,0.12);overflow:hidden}
+    .success-hero{padding:42px 40px 32px;background:linear-gradient(180deg,rgba(249,199,95,0.14),rgba(255,255,255,0.96));}
+    .success-hero h1{font-size:2.6rem;margin:0 0 12px;color:var(--brown)}
+    .success-hero p{margin:0;color:rgba(0,0,0,.68);line-height:1.8;max-width:780px}
+    .success-meta{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:28px 40px;border-bottom:1px solid #f3e8de;}
+    .success-meta div{background:rgba(249,199,95,0.08);padding:18px;border-radius:18px;}
+    .success-meta strong{display:block;font-size:0.95rem;color:var(--brown);margin-bottom:6px}
+    .success-details{padding:28px 40px;display:grid;gap:24px}
+    .summary-table{display:grid;gap:14px}
+    .summary-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 18px;border-radius:16px;background:#fdf8f0;}
+    .summary-row span{display:block;color:var(--brown)}
+    .item-list{background:#fefcf7;border-radius:18px;padding:18px;}
+    .item-row{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid rgba(82,47,28,.08)}
+    .item-row:last-child{border-bottom:none}
+    .item-label{font-weight:700;color:var(--brown)}
+    .item-qty{color:#6d4a2d}
+    .item-price{font-weight:800;color:var(--brown)}
+    .status-pill{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:rgba(92,51,15,0.08);color:var(--brown);font-weight:700}
+    .success-actions{display:flex;flex-wrap:wrap;gap:16px;margin-top:10px}
+    .success-actions .btn{min-width:170px}
+    .page-notice{max-width:760px;margin-top:14px;color:rgba(0,0,0,.64);line-height:1.75}
+    @media(max-width:800px){.success-meta{grid-template-columns:1fr}.success-details{padding:24px}.item-row{flex-direction:column;align-items:flex-start}.item-price{text-align:left}}
+  </style>
+</head>
+<body class="alan-sans">
+  <header id="header" aria-label="Site header">
+    <nav aria-label="Main navigation">
+      <div class="logo" aria-label="B&KERY Home">
+        <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+      </div>
+      <div class="nav-actions">
+        <button class="search-toggle" id="search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+        <div class="search-container" id="search-container" aria-hidden="true">
+          <div class="search-input-wrapper">
+            <input type="text" id="search-input" class="search-input" placeholder="Search treats..." autocomplete="off" aria-label="Search bakery products" aria-describedby="search-hint" aria-autocomplete="list" aria-controls="search-results" />
+            <button class="search-clear" id="search-clear" aria-label="Clear search" type="button">×</button>
+          </div>
+          <div class="search-hint" id="search-hint">Type to find your favorite treats</div>
+          <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
+        </div>
+        <a href="aboutus" class="btn btn-ghost">About Us</a>
+        <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+        <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span class="cart-count">0</span>)</a>
+      </div>
+      <div class="mobile-nav">
+        <button class="search-toggle mobile-search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+        <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </nav>
+    <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+      <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+      <a href="aboutus" class="btn btn-ghost">About Us</a>
+      <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+      <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
+    </div>
+    <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
+  </header>
+
+  <main class="success-shell">
+    <div class="success-card">
+      <div class="success-hero">
+        <div class="status-pill">Order Confirmed</div>
+        <h1>Thank you for your order!</h1>
+        <p>Your payment has been received successfully. Karen & Bruce will begin preparing your treats shortly.</p>
+        <p class="page-notice">Preparation times may vary depending on availability and current orders. A confirmation email will arrive shortly.</p>
+      </div>
+
+      <div class="success-meta">
+        <div>
+          <strong>Order Number</strong>
+          <div id="order-id">—</div>
+        </div>
+        <div>
+          <strong>Customer</strong>
+          <div id="customer-name">—</div>
+        </div>
+      </div>
+
+      <div class="success-details">
+        <div class="summary-table">
+          <div class="summary-row"><span>Pickup / Delivery</span><span id="order-method">—</span></div>
+          <div class="summary-row"><span>Payment Status</span><span id="order-status">Paid</span></div>
+          <div class="summary-row"><span>Payment ID</span><span id="payment-id">—</span></div>
+          <div class="summary-row"><span>Total Paid</span><span id="order-total">—</span></div>
+        </div>
+
+        <div class="item-list">
+          <strong style="display:block;margin-bottom:12px;color:var(--brown)">Purchased Items</strong>
+          <div id="order-items"></div>
+        </div>
+
+        <div class="summary-table" id="delivery-info" style="display:none">
+          <div class="summary-row"><span>Delivery Address</span><span id="order-address">—</span></div>
+        </div>
+
+        <div class="summary-table" id="schedule-info" style="display:none">
+          <div class="summary-row"><span>Requested Pickup/Delivery</span><span id="order-schedule">—</span></div>
+        </div>
+
+        <div class="success-actions">
+          <a href="/" class="btn btn-brown">Return to Home</a>
+          <a href="cart.html" class="btn btn-outline">View Cart</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="footer" aria-label="Site footer">
+    <div class="footer-content">
+      <p>&copy; 2026. The B&KERY. You can taste the love! 💛</p>
+      <div class="footer-links">
+        <a href="privacypolicy.html">Privacy Policy</a>
+        <a href="termsandconditions.html">Terms & Conditions</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]');
+        const count = cart.reduce((sum,item)=>sum + (item.quantity||0),0);
+        document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
+      } catch (e) {}
+
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      const panel = document.getElementById('mobile-menu-panel');
+      const backdrop = document.getElementById('mobile-menu-backdrop');
+      const closeButton = document.querySelector('.mobile-menu-close');
+      if(toggle && panel && backdrop && closeButton){
+        const setOpen = open => {
+          panel.classList.toggle('open', open);
+          backdrop.classList.toggle('open', open);
+          toggle.setAttribute('aria-expanded', String(open));
+          panel.setAttribute('aria-hidden', String(!open));
+        };
+        toggle.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
+        closeButton.addEventListener('click', () => setOpen(false));
+        backdrop.addEventListener('click', () => setOpen(false));
+        panel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const transactionId = params.get('tx') || params.get('transaction_id') || 'N/A';
+      const order = JSON.parse(localStorage.getItem('bk_last_order') || 'null');
+
+      if (!order) {
+        document.querySelector('.success-hero h1').textContent = 'Order Received';
+        document.querySelector('.success-hero p').textContent = 'Your payment was completed, but we could not load the order details from this browser session.';
+        document.getElementById('order-id').textContent = transactionId;
+        document.getElementById('customer-name').textContent = 'Guest';
+        document.getElementById('order-total').textContent = 'See PayPal receipt';
+        document.getElementById('order-items').innerHTML = '<p style="margin:0;color:#6d4a2d">Order details are not available. Please check your email receipt.</p>';
+        document.getElementById('payment-id').textContent = transactionId;
+        return;
+      }
+
+      const totalPaid = order.total ? `$${order.total.toFixed(2)}` : '—';
+      document.getElementById('order-id').textContent = order.orderId || '—';
+      document.getElementById('customer-name').textContent = order.name || '—';
+      document.getElementById('order-method').textContent = order.method || 'Pickup';
+      document.getElementById('payment-id').textContent = transactionId;
+      document.getElementById('order-total').textContent = totalPaid;
+      document.getElementById('order-status').textContent = 'Payment completed';
+
+      const itemsContainer = document.getElementById('order-items');
+      itemsContainer.innerHTML = '';
+      order.items.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'item-row';
+        itemEl.innerHTML = `<span class="item-label">${item.name}</span><span class="item-qty">${item.quantity} × ${formatCurrency(item.price)}</span>`;
+        itemsContainer.appendChild(itemEl);
+      });
+
+      if (order.method === 'Delivery' && order.address) {
+        document.getElementById('delivery-info').style.display = 'block';
+        document.getElementById('order-address').textContent = order.address;
+      }
+
+      if (order.scheduleDate || order.scheduleTime) {
+        document.getElementById('schedule-info').style.display = 'block';
+        const schedule = [order.scheduleDate || '', order.scheduleTime || ''].filter(Boolean).join(' at ');
+        document.getElementById('order-schedule').textContent = schedule;
+      }
+
+      if (order.checkoutAt) {
+        try { localStorage.removeItem('bk_cart'); } catch (e) {}
+      }
+
+      function formatCurrency(value) {
+        return `$${(parseFloat(value)||0).toFixed(2)}`;
+      }
+    });
+  </script>
+</body>
+</html>
