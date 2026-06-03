@@ -234,9 +234,10 @@ async function sendSendGridEmail(to, subject, htmlContent) {
 }
 
 exports.handler = async (event) => {
+  const allowedOrigin = process.env.SITE_URL || '*';
   const headers = {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
   };
@@ -273,12 +274,8 @@ exports.handler = async (event) => {
         sendSendGridEmail(BAKERY_EMAIL, `New Order from ${name}`, bakeryHTML)
       ]);
     } else {
-      // Fallback: log to console (you can integrate with other services)
-      console.log('Email would be sent:', {
-        to: email,
-        subject: `Order Confirmation - ${BAKERY_NAME}`,
-        bakeryEmail: BAKERY_EMAIL
-      });
+      // Fallback: service not configured — log generic message (do not include PII)
+      console.log('Email service not configured; skipping send.');
     }
 
     return {
@@ -289,13 +286,12 @@ exports.handler = async (event) => {
       })
     };
   } catch (error) {
-    console.error('Email sending error:', error);
+    console.error('Email sending error');
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
-        error: 'Failed to send confirmation email',
-        message: error.message
+        error: 'Failed to send confirmation email'
       })
     };
   }

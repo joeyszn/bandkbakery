@@ -396,6 +396,20 @@
                     <div class="info-card">
                         <p>💡 <strong>Important Note:</strong> We only collect information necessary to serve you better. We never require unnecessary personal data to browse our website or view our menu.</p>
                     </div>
+
+                    <h3>Client-side storage (LocalStorage)</h3>
+                    <p>To provide a smooth shopping and checkout experience we temporarily store a small set of data in your browser's <strong>localStorage</strong>. The keys we use are:</p>
+                    <ul>
+                        <li><strong>bk_cart</strong> — the items in your basket (product id, name, price, quantity, optional image).</li>
+                        <li><strong>bk_checkout</strong> — checkout form values you enter (name, phone, email, delivery address, requested date/time, special instructions). This is used to prefill the checkout form and is not shared publicly.</li>
+                        <li><strong>bk_last_order</strong> — a record of the most recent order placed in this browser (order id, items, totals, and PayPal transaction id). This is cleared from your browser after you view the order confirmation page.</li>
+                    </ul>
+
+                    <p><strong>Payment data:</strong> We do <strong>not</strong> store raw payment card numbers, CVV codes, or other sensitive payment data. Payments are processed by PayPal; card details are entered into PayPal-managed secure fields and transmitted directly to PayPal. We never write card details to localStorage or to our servers.</p>
+
+                    <p><strong>Order confirmations & emails:</strong> Order confirmation emails are sent by our server-side email service after a successful payment. We do not include raw payment card data in email communications.</p>
+
+                    <p><strong>Retention & deletion:</strong> Local data described above is removed from your browser after a successful checkout. You can also clear your browser storage at any time to remove these items.</p>
                 </section>
 
                 <!-- How We Use Your Data -->

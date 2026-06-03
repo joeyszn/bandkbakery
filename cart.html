@@ -53,6 +53,28 @@
       .item-controls{flex-direction:row;flex-wrap:wrap;gap:12px}
       .qty-btn{width:44px;height:44px;border-radius:12px}
     }
+
+    .bk-modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px);z-index:9999;opacity:0;transition:opacity .22s ease}
+    .bk-modal-overlay.open{display:flex;opacity:1}
+    .bk-modal{background:#fff;border-radius:24px;box-shadow:0 24px 80px rgba(0,0,0,.22);max-width:520px;width:100%;padding:34px;text-align:center;transform:scale(.95);opacity:0;transition:transform .22s ease,opacity .22s ease}
+    .bk-modal-overlay.open .bk-modal{transform:scale(1);opacity:1}
+    .bk-modal-icon{width:76px;height:76px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(249,199,95,0.18);color:#522f1c;font-size:32px}
+    .bk-modal h2{margin:0 0 14px;font-size:2rem;line-height:1.1;color:#522f1c}
+    .bk-modal-message{color:#4b3222;font-size:1rem;line-height:1.75;white-space:pre-wrap;margin-bottom:26px}
+    .bk-modal-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .bk-modal-button{min-width:140px;padding:14px 22px;border-radius:999px;border:none;font-weight:700;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+    .bk-modal-button:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(82,47,28,.12)}
+    .bk-modal-button:focus{outline:3px solid rgba(82,47,28,.22);outline-offset:3px}
+    .bk-modal-primary{background:#522f1c;color:#fff}
+    .bk-modal-secondary{background:#fff;color:#522f1c;border:2px solid #522f1c}
+    .bk-modal-close{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(82,47,28,.06);color:#522f1c;font-size:18px;cursor:pointer}
+    .bk-modal-close:hover{background:rgba(82,47,28,.1)}
+
+    @media(max-width:600px){
+      .bk-modal{padding:24px;max-width:90%}
+      .bk-modal-icon{width:60px;height:60px;font-size:28px}
+      .bk-modal-button{width:100%;min-width:auto}
+    }
   </style>
 </head>
 <body class="alan-sans">
@@ -158,7 +180,8 @@
           </div>
           <div style="margin-bottom:8px">
             <label>Phone number</label>
-            <input id="cust-phone" required class="order-input" />
+            <input id="cust-phone" type="tel" placeholder="e.g. 415-555-1234" required class="order-input" />
+            <small style="display:block;color:rgba(0,0,0,0.6);margin-top:6px;font-size:0.92rem;">California phone numbers only</small>
           </div>
           <div style="margin-bottom:8px">
             <label>Email address</label>
@@ -216,15 +239,24 @@
     </div>
   </main>
 
+  <div class="bk-modal-overlay" id="bk-modal-overlay" aria-hidden="true">
+    <div class="bk-modal" role="dialog" aria-modal="true" aria-labelledby="bk-modal-title" aria-describedby="bk-modal-message" tabindex="-1">
+      <button type="button" class="bk-modal-close" id="bk-modal-close" aria-label="Close dialog">×</button>
+      <div class="bk-modal-icon" id="bk-modal-icon">⚠️</div>
+      <h2 id="bk-modal-title">Oops!</h2>
+      <div class="bk-modal-message" id="bk-modal-message">Something went wrong. Please try again.</div>
+      <div class="bk-modal-buttons">
+        <button type="button" class="bk-modal-button bk-modal-primary" id="bk-modal-primary">Okay</button>
+        <button type="button" class="bk-modal-button bk-modal-secondary" id="bk-modal-secondary" style="display:none"></button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function(){
       const STORAGE_KEY = 'bk_cart';
       const LAST_ORDER_KEY = 'bk_last_order';
-      const EMAILJS_SERVICE_ID = 'service_txo4c2j';
-      const EMAILJS_PUBLIC_KEY = 'f-K_hQuzRnjD-QpbJ';
-      const EMAILJS_TEMPLATE_CUSTOMER = 'template_bakery_customer';
-      const EMAILJS_TEMPLATE_OWNER = 'template_bakery_owner';
-      const EMAILJS_OWNER_EMAIL = 'bronxkaren1@gmail.com';
+      // Email sending moved to server-side function for privacy
       const cartItemsEl = document.getElementById('cart-items');
       const summaryItems = document.getElementById('summary-items');
       const summarySubtotal = document.getElementById('summary-subtotal');
@@ -292,6 +324,104 @@
         if(cartCountEl){ cartCountEl.textContent = items; }
       }
 
+      const modalOverlay = document.getElementById('bk-modal-overlay');
+      const modalTitle = document.getElementById('bk-modal-title');
+      const modalMessage = document.getElementById('bk-modal-message');
+      const modalIcon = document.getElementById('bk-modal-icon');
+      const modalPrimary = document.getElementById('bk-modal-primary');
+      const modalSecondary = document.getElementById('bk-modal-secondary');
+      const modalClose = document.getElementById('bk-modal-close');
+      let modalResolve;
+      let lastFocusedElement = null;
+
+      function trapModalFocus(event) {
+        if (!modalOverlay.classList.contains('open')) return;
+        const focusable = [modalPrimary, modalSecondary].filter(el => el && el.offsetParent !== null);
+        if (!focusable.length) return;
+        if (event.key !== 'Tab') return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey) {
+          if (document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      }
+
+      function closeModal(result) {
+        if (!modalOverlay.classList.contains('open')) return;
+        modalOverlay.classList.remove('open');
+        modalOverlay.setAttribute('aria-hidden', 'true');
+        document.removeEventListener('keydown', handleModalKeydown);
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+          lastFocusedElement.focus();
+        }
+        if (modalResolve) {
+          modalResolve(result || { action: 'primary' });
+          modalResolve = null;
+        }
+      }
+
+      function handleModalKeydown(event) {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeModal({ action: 'close' });
+        }
+        trapModalFocus(event);
+      }
+
+      function showModal({ type = 'warning', title = 'Oops!', message = '', buttonText = 'Okay', secondaryText, secondaryAction }) {
+        if (!modalOverlay) return Promise.resolve();
+        lastFocusedElement = document.activeElement;
+        modalTitle.textContent = title;
+        modalMessage.innerHTML = String(message).replace(/\n/g, '<br>');
+        modalIcon.textContent = type === 'success' ? '🍞' : type === 'error' ? '⚠️' : '🥐';
+        modalPrimary.textContent = buttonText || 'Okay';
+        modalSecondary.style.display = secondaryText ? 'inline-flex' : 'none';
+        modalSecondary.textContent = secondaryText || '';
+
+        modalPrimary.onclick = () => closeModal({ action: 'primary' });
+        modalSecondary.onclick = () => {
+          if (typeof secondaryAction === 'function') {
+            secondaryAction();
+          }
+          closeModal({ action: 'secondary' });
+        };
+        modalClose.onclick = () => closeModal({ action: 'close' });
+        modalOverlay.onclick = (event) => {
+          if (event.target === modalOverlay) {
+            closeModal({ action: 'close' });
+          }
+        };
+
+        document.addEventListener('keydown', handleModalKeydown);
+        modalOverlay.setAttribute('aria-hidden', 'false');
+        modalOverlay.classList.add('open');
+        modalPrimary.focus();
+
+        return new Promise((resolve) => {
+          modalResolve = resolve;
+        });
+      }
+
+      function showWarning(title, message) {
+        return showModal({ type: 'warning', title, message, buttonText: 'Okay' });
+      }
+
+      function showError(title, message) {
+        return showModal({ type: 'error', title, message, buttonText: 'Try Again' });
+      }
+
+      function showSuccess(title, message, buttonText = 'Continue') {
+        return showModal({ type: 'success', title, message, buttonText });
+      }
+
       function attachItemHandlers(){
         document.querySelectorAll('.qty-decrease').forEach(btn=>btn.addEventListener('click',()=>{
           const id = btn.getAttribute('data-id'); changeQty(id, -1);
@@ -333,12 +463,36 @@
         return { name, phone, email, method, address, city, state, zip, date, time, notes };
       }
 
+      function isCaliforniaPhoneNumber(phone){
+        const digits = (phone || '').replace(/[^0-9]/g, '');
+        if (digits.length === 11 && digits.startsWith('1')) {
+          phone = digits.slice(1);
+        } else {
+          phone = digits;
+        }
+
+        if (phone.length !== 10) {
+          return false;
+        }
+
+        const californiaAreaCodes = new Set([
+          '209','213','279','310','323','341','408','415','424','442','510','530','559','562','619','626','628','650','657','661','669','707','714','747','760','805','818','820','831','858','909','916','925','935','949','951'
+        ]);
+
+        const areaCode = phone.slice(0, 3);
+        return californiaAreaCodes.has(areaCode);
+      }
+
       function validateCheckoutForm(){
         const values = getCheckoutValues();
         const errors = [];
 
         if(!values.name) errors.push('Full Name is required.');
-        if(!values.phone) errors.push('Phone Number is required.');
+        if(!values.phone) {
+          errors.push('Phone Number is required.');
+        } else if(!isCaliforniaPhoneNumber(values.phone)) {
+          errors.push('Please enter a valid California phone number to complete checkout.');
+        }
         if(!values.email) errors.push('Email Address is required.');
         if(values.method === 'Delivery'){
           if(!values.address) errors.push('Delivery address is required for delivery.');
@@ -396,7 +550,6 @@
 
           const result = await response.json();
           if(!response.ok){
-            console.error('Server order creation failed', result);
             throw new Error(result.message || 'Unable to create PayPal order');
           }
 
@@ -406,7 +559,6 @@
 
           return result.id;
         } catch (error) {
-          console.error('Error creating PayPal order on server:', error);
           throw error;
         }
       }
@@ -440,67 +592,8 @@
         }];
       }
 
-      function initEmailJS(){
-        if(window.emailjs && !window.emailjs._bakeryEmailJSInit){
-          emailjs.init(EMAILJS_PUBLIC_KEY);
-          window.emailjs._bakeryEmailJSInit = true;
-        }
-      }
-
-      function formatEmailJSItems(items){
-        return items.map(item => `${item.quantity} × ${item.name} — $${((item.price||0)*item.quantity).toFixed(2)}`).join('\n');
-      }
-
-      async function sendEmailJSMessage(templateId, templateParams){
-        if(!window.emailjs){
-          throw new Error('EmailJS is not loaded');
-        }
-        initEmailJS();
-        return emailjs.send(EMAILJS_SERVICE_ID, templateId, templateParams);
-      }
-
       async function sendOrderEmails(orderRecord){
-        const emailPayload = {
-          order_id: orderRecord.orderId,
-          customer_name: orderRecord.name,
-          customer_email: orderRecord.email,
-          customer_phone: orderRecord.phone,
-          order_items: formatEmailJSItems(orderRecord.items),
-          order_subtotal: orderRecord.subtotal.toFixed(2),
-          order_delivery_fee: orderRecord.deliveryFee.toFixed(2),
-          order_total: orderRecord.total.toFixed(2),
-          order_method: orderRecord.method,
-          order_address: orderRecord.address || 'Pickup',
-          order_schedule: orderRecord.schedule || 'N/A',
-          order_notes: orderRecord.notes || 'None',
-          paypal_transaction_id: orderRecord.paypalTransactionId || 'N/A',
-          bakery_name: 'The B&KERY',
-          bakery_email: EMAILJS_OWNER_EMAIL,
-          recipient_email: orderRecord.email,
-          recipient_name: orderRecord.name
-        };
-
-        if(window.emailjs){
-          try {
-            await Promise.all([
-              sendEmailJSMessage(EMAILJS_TEMPLATE_CUSTOMER, {
-                ...emailPayload,
-                to_email: orderRecord.email,
-                to_name: orderRecord.name
-              }),
-              sendEmailJSMessage(EMAILJS_TEMPLATE_OWNER, {
-                ...emailPayload,
-                to_email: EMAILJS_OWNER_EMAIL,
-                to_name: 'Karen & Bruce'
-              })
-            ]);
-            return;
-          } catch (error) {
-            console.warn('EmailJS send failed, falling back to server email:', error);
-          }
-        }
-
-        try {
+        try{
           await fetch('/api/send-confirmation-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -511,28 +604,20 @@
               total: orderRecord.total.toFixed(2)
             })
           });
-        } catch (error) {
-          console.warn('Email notification failed:', error);
+        }catch(e){
+          // intentionally silent: server handles logging and retries
         }
       }
 
       function loadPayPalSdk(){
         const clientId = 'AcBPikCR5CBX4jordTLtGan7voqCqZ3QthwhjH0wQ0d2KExU0YSlUapcvGUrwY9VGgEIDvcfZYvVcuHT';
-        if(!clientId){
-          console.error('PayPal client ID is missing in cart.html');
-          return;
-        }
+        if(!clientId) return;
 
         const script = document.createElement('script');
         script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&intent=capture&components=buttons`;
         script.async = true;
-        script.onload = () => {
-          console.info('PayPal SDK loaded');
-          renderPayPalButtons();
-        };
-        script.onerror = () => {
-          console.error('Could not load PayPal SDK.');
-        };
+        script.onload = () => renderPayPalButtons();
+        script.onerror = () => {};
 
         document.head.appendChild(script);
       }
@@ -584,7 +669,7 @@
           onClick: async (data, actions) => {
             const { valid, errors } = validateCheckoutForm();
             if(!valid){
-              alert(errors.join('\n'));
+              await showWarning('Missing Information', errors.join('\n'));
               return actions.reject();
             }
             return actions.resolve();
@@ -593,13 +678,13 @@
           createOrder: async (data, actions) => {
             const cart = loadCart();
             if(!cart || cart.length === 0){
-              alert('Your cart is empty. Add some treats before checking out.');
+              await showWarning('Cart is Empty', 'Your cart is empty. Add some treats before checking out.');
               throw new Error('Cart is empty');
             }
 
             const { valid, checkout, errors } = validateCheckoutForm();
             if(!valid){
-              alert(errors.join('\n'));
+              await showWarning('Missing Information', errors.join('\n'));
               throw new Error('Checkout form validation failed');
             }
 
@@ -624,7 +709,7 @@
               localStorage.setItem('bk_last_order', JSON.stringify({ ...payload, orderId, checkout }));
               return orderId;
             } catch (error) {
-              console.warn('Server order creation failed; falling back to client-side PayPal order:', error);
+              // server create failed; falling back to client-side PayPal order
               localStorage.setItem('bk_checkout', JSON.stringify(checkout));
               localStorage.setItem('bk_last_order', JSON.stringify({ ...payload, orderId: '', checkout }));
               return actions.order.create({
@@ -652,9 +737,8 @@
             window.location.href = 'cancel.html';
           },
 
-          onError: (err) => {
-            console.error('PayPal checkout error', err);
-            alert('There was a problem with the PayPal checkout. Please try again.');
+          onError: async (err) => {
+            await showError('Payment Could Not Be Completed', 'There was a problem with the PayPal checkout. Please try again.');
           }
         }).render('#paypal-button-container');
       }
@@ -666,6 +750,6 @@
     })();
 
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  
 </body>
 </html>

@@ -94,9 +94,10 @@ async function capturePayPalOrder(orderId) {
 }
 
 exports.handler = async (event) => {
+  const allowedOrigin = process.env.SITE_URL || '*';
   const headers = {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
   };
@@ -146,14 +147,7 @@ exports.handler = async (event) => {
     // Check if payment was successful
     if (captureResult.status === 'COMPLETED') {
       // Store payment record (you may want to save this to a database)
-      console.log('Payment captured:', {
-        orderId,
-        paypalOrderId: captureResult.id,
-        amount,
-        customerEmail,
-        customerName,
-        timestamp: new Date().toISOString()
-      });
+      console.log('Payment captured:', { orderId, paypalOrderId: captureResult.id, amount, timestamp: new Date().toISOString() });
 
       return {
         statusCode: 200,
@@ -186,13 +180,12 @@ exports.handler = async (event) => {
       };
     }
   } catch (error) {
-    console.error('Payment confirmation error:', error);
+    console.error('Payment confirmation error');
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
-        error: 'Payment processing failed',
-        message: error.message
+        error: 'Payment processing failed'
       })
     };
   }

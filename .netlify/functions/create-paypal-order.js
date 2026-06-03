@@ -148,9 +148,10 @@ async function createPayPalOrder(payload) {
 
 exports.handler = async (event) => {
   // CORS headers
+  const allowedOrigin = process.env.SITE_URL || '*';
   const headers = {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
   };
@@ -214,13 +215,12 @@ exports.handler = async (event) => {
       })
     };
   } catch (error) {
-    console.error('PayPal order creation error:', error);
+    console.error('PayPal order creation error');
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
-        error: 'Failed to create payment order',
-        message: error.message
+        error: 'Failed to create payment order'
       })
     };
   }

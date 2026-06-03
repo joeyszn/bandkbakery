@@ -210,6 +210,7 @@
       }
 
       try { localStorage.removeItem('bk_cart'); } catch (e) {}
+      try { localStorage.removeItem('bk_last_order'); } catch (e) {}
 
       function formatCurrency(value) {
         return `$${(parseFloat(value)||0).toFixed(2)}`;
