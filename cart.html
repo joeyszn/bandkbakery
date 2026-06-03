@@ -173,9 +173,25 @@
             </div>
           </div>
 
-          <div id="address-block" style="display:none;margin-bottom:8px">
-            <label>Address (required for delivery)</label>
-            <input id="cust-address" class="order-input" />
+          <div id="delivery-address-block" style="display:none;margin-bottom:8px">
+            <div style="margin-bottom:8px">
+              <label>Address</label>
+              <input id="cust-address" class="order-input" />
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+              <div>
+                <label>City</label>
+                <input id="cust-city" class="order-input" />
+              </div>
+              <div>
+                <label>State</label>
+                <input id="cust-state" class="order-input" />
+              </div>
+              <div>
+                <label>ZIP Code</label>
+                <input id="cust-zip" class="order-input" />
+              </div>
+            </div>
           </div>
 
           <div style="margin-bottom:8px">
@@ -190,9 +206,12 @@
             <label>Special instructions (optional)</label>
             <textarea id="cust-notes" class="order-textarea" rows="3"></textarea>
           </div>
-
-          <button type="submit" class="btn btn-brown checkout-btn">Proceed to Secure Checkout</button>
         </form>
+
+        <div class="paypal-section" style="margin-top:18px">
+          <p style="margin-bottom:14px;color:rgba(0,0,0,0.72);font-size:0.98rem;">When your order details are complete, pay securely with PayPal.</p>
+          <div id="paypal-button-container"></div>
+        </div>
       </aside>
     </div>
   </main>
@@ -201,6 +220,11 @@
     (function(){
       const STORAGE_KEY = 'bk_cart';
       const LAST_ORDER_KEY = 'bk_last_order';
+      const EMAILJS_SERVICE_ID = 'service_txo4c2j';
+      const EMAILJS_PUBLIC_KEY = 'f-K_hQuzRnjD-QpbJ';
+      const EMAILJS_TEMPLATE_CUSTOMER = 'template_bakery_customer';
+      const EMAILJS_TEMPLATE_OWNER = 'template_bakery_owner';
+      const EMAILJS_OWNER_EMAIL = 'bronxkaren1@gmail.com';
       const cartItemsEl = document.getElementById('cart-items');
       const summaryItems = document.getElementById('summary-items');
       const summarySubtotal = document.getElementById('summary-subtotal');
@@ -255,61 +279,6 @@
         updateSummary(cart);
       }
 
-      function buildPayPalForm(order){
-        const origin = window.location.origin;
-        const payForm = document.createElement('form');
-        payForm.method = 'POST';
-        payForm.action = 'https://www.paypal.com/cgi-bin/webscr';
-        payForm.style.display = 'none';
-
-        const addField = (name, value) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = name;
-          input.value = String(value);
-          payForm.appendChild(input);
-        };
-
-        addField('cmd', '_cart');
-        addField('upload', '1');
-        addField('business', 'mgbikehjoel@gmail.com');
-        addField('currency_code', 'USD');
-        addField('no_note', '1');
-        addField('rm', '1');
-        addField('return', `${origin}/success.html`);
-        addField('cancel_return', `${origin}/cancel.html`);
-        addField('invoice', order.orderId);
-        addField('custom', encodeURIComponent(JSON.stringify({
-          orderId: order.orderId,
-          name: order.name,
-          email: order.email,
-          phone: order.phone,
-          method: order.method
-        })));
-
-        order.items.forEach((item, index) => {
-          const idx = index + 1;
-          addField(`item_name_${idx}`, item.name);
-          addField(`amount_${idx}`, item.price.toFixed(2));
-          addField(`quantity_${idx}`, item.quantity);
-        });
-
-        if(order.deliveryFee && order.deliveryFee > 0){
-          addField('handling_cart', order.deliveryFee.toFixed(2));
-        }
-
-        document.body.appendChild(payForm);
-        return payForm;
-      }
-
-      function submitToPayPal(order){
-        order.orderId = order.orderId || generateOrderId();
-        order.checkoutAt = new Date().toISOString();
-        saveLastOrder(order);
-        const paypalForm = buildPayPalForm(order);
-        paypalForm.submit();
-      }
-
       function updateSummary(cart,deliveryFee=0,anim=false){
         cart = cart || loadCart();
         const items = cart.reduce((s,i)=>s+(i.quantity||0),0);
@@ -347,43 +316,356 @@
 
       // Customer form handling
       const form = document.getElementById('customer-form');
-      const addressBlock = document.getElementById('address-block');
-      form.addEventListener('change', (e)=>{
-        if(e.target.name === 'method'){
-          const delivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
-          addressBlock.style.display = delivery ? 'block' : 'none';
-          // simple fee: $5 for delivery
-          updateSummary(null, delivery ? 5 : 0);
-        }
-      });
 
-      form.addEventListener('submit',(e)=>{
-        e.preventDefault();
-        const cart = loadCart(); if(!cart || cart.length===0){ alert('Your cart is empty. Add some treats first.'); return; }
+      function getCheckoutValues(){
         const name = document.getElementById('cust-name').value.trim();
         const phone = document.getElementById('cust-phone').value.trim();
         const email = document.getElementById('cust-email').value.trim();
         const method = form.querySelector('input[name="method"]:checked').value;
         const address = document.getElementById('cust-address').value.trim();
+        const city = document.getElementById('cust-city').value.trim();
+        const state = document.getElementById('cust-state').value.trim();
+        const zip = document.getElementById('cust-zip').value.trim();
         const date = document.getElementById('cust-date').value;
         const time = document.getElementById('cust-time').value;
         const notes = document.getElementById('cust-notes').value.trim();
 
-        if(!name||!phone||!email){ alert('Please fill name, phone and email.'); return; }
-        if(method === 'Delivery' && !address){ alert('Please provide a delivery address.'); return; }
+        return { name, phone, email, method, address, city, state, zip, date, time, notes };
+      }
 
-        const subtotal = cart.reduce((s,i)=>s + (i.price||0)*(i.quantity||0),0);
-        const deliveryFee = method === 'Delivery' ? 5 : 0;
-        const total = subtotal + deliveryFee;
+      function validateCheckoutForm(){
+        const values = getCheckoutValues();
+        const errors = [];
 
-        const order = { name, phone, email, items: cart, method, address: method==='Delivery'?address:'', scheduleDate:date, scheduleTime:time, notes, subtotal, deliveryFee, total, createdAt: new Date().toISOString() };
-        sessionStorage.setItem('bakery_order', JSON.stringify(order));
-        submitToPayPal(order);
+        if(!values.name) errors.push('Full Name is required.');
+        if(!values.phone) errors.push('Phone Number is required.');
+        if(!values.email) errors.push('Email Address is required.');
+        if(values.method === 'Delivery'){
+          if(!values.address) errors.push('Delivery address is required for delivery.');
+          if(!values.city) errors.push('Delivery city is required.');
+          if(!values.state) errors.push('Delivery state is required.');
+          if(!values.zip) errors.push('Delivery ZIP code is required.');
+        }
+
+        if(errors.length){
+          return { valid: false, errors, checkout: null };
+        }
+
+        const formattedAddress = values.method === 'Delivery'
+          ? `${values.address}, ${values.city}, ${values.state} ${values.zip}`
+          : '';
+
+        const checkout = {
+          name: values.name,
+          phone: values.phone,
+          email: values.email,
+          method: values.method,
+          address: formattedAddress,
+          city: values.city,
+          state: values.state,
+          zip: values.zip,
+          scheduleDate: values.date,
+          scheduleTime: values.time,
+          notes: values.notes,
+          savedAt: new Date().toISOString()
+        };
+
+        localStorage.setItem('bk_checkout', JSON.stringify(checkout));
+        return { valid: true, errors: [], checkout };
+      }
+
+      function setDeliveryVisibility(){
+        const delivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
+        document.getElementById('delivery-address-block').style.display = delivery ? 'block' : 'none';
+        updateSummary(null, delivery ? 5 : 0);
+      }
+
+      form.addEventListener('change', (e)=>{
+        if(e.target.name === 'method'){
+          setDeliveryVisibility();
+        }
       });
+
+      async function createOrderOnServer(orderPayload){
+        try {
+          const response = await fetch('/api/create-paypal-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderPayload)
+          });
+
+          const result = await response.json();
+          if(!response.ok){
+            console.error('Server order creation failed', result);
+            throw new Error(result.message || 'Unable to create PayPal order');
+          }
+
+          if(!result.id){
+            throw new Error('PayPal order creation returned no ID');
+          }
+
+          return result.id;
+        } catch (error) {
+          console.error('Error creating PayPal order on server:', error);
+          throw error;
+        }
+      }
+
+      function buildPayPalPurchaseUnits(orderPayload){
+        return [{
+          amount: {
+            currency_code: 'USD',
+            value: (orderPayload.total || 0).toFixed(2),
+            breakdown: {
+              item_total: {
+                currency_code: 'USD',
+                value: (orderPayload.subtotal || 0).toFixed(2)
+              },
+              shipping: {
+                currency_code: 'USD',
+                value: (orderPayload.deliveryFee || 0).toFixed(2)
+              }
+            }
+          },
+          items: (orderPayload.items || []).map(item => ({
+            name: item.name || 'Bakery item',
+            unit_amount: {
+              currency_code: 'USD',
+              value: (parseFloat(item.price) || 0).toFixed(2)
+            },
+            quantity: String(item.quantity || 1),
+            description: item.description || item.name || 'Bakery treat',
+            sku: item.id || item.name || ''
+          }))
+        }];
+      }
+
+      function initEmailJS(){
+        if(window.emailjs && !window.emailjs._bakeryEmailJSInit){
+          emailjs.init(EMAILJS_PUBLIC_KEY);
+          window.emailjs._bakeryEmailJSInit = true;
+        }
+      }
+
+      function formatEmailJSItems(items){
+        return items.map(item => `${item.quantity} × ${item.name} — $${((item.price||0)*item.quantity).toFixed(2)}`).join('\n');
+      }
+
+      async function sendEmailJSMessage(templateId, templateParams){
+        if(!window.emailjs){
+          throw new Error('EmailJS is not loaded');
+        }
+        initEmailJS();
+        return emailjs.send(EMAILJS_SERVICE_ID, templateId, templateParams);
+      }
+
+      async function sendOrderEmails(orderRecord){
+        const emailPayload = {
+          order_id: orderRecord.orderId,
+          customer_name: orderRecord.name,
+          customer_email: orderRecord.email,
+          customer_phone: orderRecord.phone,
+          order_items: formatEmailJSItems(orderRecord.items),
+          order_subtotal: orderRecord.subtotal.toFixed(2),
+          order_delivery_fee: orderRecord.deliveryFee.toFixed(2),
+          order_total: orderRecord.total.toFixed(2),
+          order_method: orderRecord.method,
+          order_address: orderRecord.address || 'Pickup',
+          order_schedule: orderRecord.schedule || 'N/A',
+          order_notes: orderRecord.notes || 'None',
+          paypal_transaction_id: orderRecord.paypalTransactionId || 'N/A',
+          bakery_name: 'The B&KERY',
+          bakery_email: EMAILJS_OWNER_EMAIL,
+          recipient_email: orderRecord.email,
+          recipient_name: orderRecord.name
+        };
+
+        if(window.emailjs){
+          try {
+            await Promise.all([
+              sendEmailJSMessage(EMAILJS_TEMPLATE_CUSTOMER, {
+                ...emailPayload,
+                to_email: orderRecord.email,
+                to_name: orderRecord.name
+              }),
+              sendEmailJSMessage(EMAILJS_TEMPLATE_OWNER, {
+                ...emailPayload,
+                to_email: EMAILJS_OWNER_EMAIL,
+                to_name: 'Karen & Bruce'
+              })
+            ]);
+            return;
+          } catch (error) {
+            console.warn('EmailJS send failed, falling back to server email:', error);
+          }
+        }
+
+        try {
+          await fetch('/api/send-confirmation-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: orderRecord.email,
+              name: orderRecord.name,
+              orderData: orderRecord,
+              total: orderRecord.total.toFixed(2)
+            })
+          });
+        } catch (error) {
+          console.warn('Email notification failed:', error);
+        }
+      }
+
+      function loadPayPalSdk(){
+        const clientId = 'AcBPikCR5CBX4jordTLtGan7voqCqZ3QthwhjH0wQ0d2KExU0YSlUapcvGUrwY9VGgEIDvcfZYvVcuHT';
+        if(!clientId){
+          console.error('PayPal client ID is missing in cart.html');
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&intent=capture&components=buttons`;
+        script.async = true;
+        script.onload = () => {
+          console.info('PayPal SDK loaded');
+          renderPayPalButtons();
+        };
+        script.onerror = () => {
+          console.error('Could not load PayPal SDK.');
+        };
+
+        document.head.appendChild(script);
+      }
+
+      function buildOrderRecord(captureDetails, cart, checkout){
+        const subtotal = cart.reduce((sum,item)=>sum + (parseFloat(item.price)||0)*(parseInt(item.quantity)||0),0);
+        const deliveryFee = checkout.method === 'Delivery' ? 5 : 0;
+        const total = subtotal + deliveryFee;
+        const schedule = [checkout.scheduleDate, checkout.scheduleTime].filter(Boolean).join(' at ');
+        const orderId = `BK-${new Date().getFullYear()}-${Math.floor(Math.random()*9000)+1000}`;
+
+        return {
+          orderId,
+          name: checkout.name,
+          phone: checkout.phone,
+          email: checkout.email,
+          method: checkout.method,
+          address: checkout.address,
+          city: checkout.city,
+          state: checkout.state,
+          zip: checkout.zip,
+          schedule,
+          notes: checkout.notes,
+          items: cart,
+          subtotal,
+          deliveryFee,
+          total,
+          paypalTransactionId: captureDetails.purchase_units?.[0]?.payments?.captures?.[0]?.id || captureDetails.id || '',
+          paymentStatus: captureDetails.status || 'COMPLETED',
+          capturedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString()
+        };
+      }
+
+      function renderPayPalButtons(){
+        if(!window.paypal){
+          return setTimeout(renderPayPalButtons, 100);
+        }
+
+        paypal.Buttons({
+          style: {
+            layout: 'vertical',
+            color: 'gold',
+            shape: 'pill',
+            label: 'paypal',
+            height: 48
+          },
+
+          onClick: async (data, actions) => {
+            const { valid, errors } = validateCheckoutForm();
+            if(!valid){
+              alert(errors.join('\n'));
+              return actions.reject();
+            }
+            return actions.resolve();
+          },
+
+          createOrder: async (data, actions) => {
+            const cart = loadCart();
+            if(!cart || cart.length === 0){
+              alert('Your cart is empty. Add some treats before checking out.');
+              throw new Error('Cart is empty');
+            }
+
+            const { valid, checkout, errors } = validateCheckoutForm();
+            if(!valid){
+              alert(errors.join('\n'));
+              throw new Error('Checkout form validation failed');
+            }
+
+            const payload = {
+              orderId: `BK-${new Date().getFullYear()}-${Math.floor(Math.random()*9000)+1000}`,
+              items: cart.map(item => ({
+                id: item.id || item.sku || item.name,
+                name: item.name || 'Bakery item',
+                price: parseFloat(item.price) || 0,
+                quantity: parseInt(item.quantity) || 1,
+                description: item.description || item.name || 'Bakery treat'
+              })),
+              checkout,
+              subtotal: cart.reduce((sum,item)=>sum + (parseFloat(item.price)||0)*(parseInt(item.quantity)||0),0),
+              deliveryFee: checkout.method === 'Delivery' ? 5 : 0
+            };
+            payload.total = payload.subtotal + payload.deliveryFee;
+
+            try {
+              const orderId = await createOrderOnServer(payload);
+              localStorage.setItem('bk_checkout', JSON.stringify(checkout));
+              localStorage.setItem('bk_last_order', JSON.stringify({ ...payload, orderId, checkout }));
+              return orderId;
+            } catch (error) {
+              console.warn('Server order creation failed; falling back to client-side PayPal order:', error);
+              localStorage.setItem('bk_checkout', JSON.stringify(checkout));
+              localStorage.setItem('bk_last_order', JSON.stringify({ ...payload, orderId: '', checkout }));
+              return actions.order.create({
+                purchase_units: buildPayPalPurchaseUnits(payload),
+                application_context: {
+                  brand_name: 'The B&KERY',
+                  user_action: 'PAY_NOW'
+                }
+              });
+            }
+          },
+
+          onApprove: async (data) => {
+            const captureDetails = await actions.order.capture();
+            const cart = loadCart();
+            const checkout = JSON.parse(localStorage.getItem('bk_checkout') || 'null') || {};
+            const orderRecord = buildOrderRecord(captureDetails, cart, checkout);
+            saveLastOrder(orderRecord);
+            await sendOrderEmails(orderRecord);
+            saveCart([]);
+            window.location.href = `success.html?orderId=${encodeURIComponent(orderRecord.orderId)}`;
+          },
+
+          onCancel: () => {
+            window.location.href = 'cancel.html';
+          },
+
+          onError: (err) => {
+            console.error('PayPal checkout error', err);
+            alert('There was a problem with the PayPal checkout. Please try again.');
+          }
+        }).render('#paypal-button-container');
+      }
 
       // initial render
       renderCart();
+      setDeliveryVisibility();
+      loadPayPalSdk();
     })();
+
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </body>
 </html>

@@ -168,8 +168,8 @@
       }
 
       const params = new URLSearchParams(window.location.search);
-      const transactionId = params.get('tx') || params.get('transaction_id') || 'N/A';
       const order = JSON.parse(localStorage.getItem('bk_last_order') || 'null');
+      const transactionId = order?.paypalTransactionId || order?.paymentId || params.get('tx') || params.get('transaction_id') || 'N/A';
 
       if (!order) {
         document.querySelector('.success-hero h1').textContent = 'Order Received';
@@ -192,7 +192,7 @@
 
       const itemsContainer = document.getElementById('order-items');
       itemsContainer.innerHTML = '';
-      order.items.forEach(item => {
+      (order.items || []).forEach(item => {
         const itemEl = document.createElement('div');
         itemEl.className = 'item-row';
         itemEl.innerHTML = `<span class="item-label">${item.name}</span><span class="item-qty">${item.quantity} × ${formatCurrency(item.price)}</span>`;
@@ -204,15 +204,12 @@
         document.getElementById('order-address').textContent = order.address;
       }
 
-      if (order.scheduleDate || order.scheduleTime) {
+      if (order.schedule) {
         document.getElementById('schedule-info').style.display = 'block';
-        const schedule = [order.scheduleDate || '', order.scheduleTime || ''].filter(Boolean).join(' at ');
-        document.getElementById('order-schedule').textContent = schedule;
+        document.getElementById('order-schedule').textContent = order.schedule;
       }
 
-      if (order.checkoutAt) {
-        try { localStorage.removeItem('bk_cart'); } catch (e) {}
-      }
+      try { localStorage.removeItem('bk_cart'); } catch (e) {}
 
       function formatCurrency(value) {
         return `$${(parseFloat(value)||0).toFixed(2)}`;

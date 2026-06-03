@@ -108,337 +108,127 @@
         </div>
 
         <!-- Divider -->
-        <div class="summary-divider"></div>
-
-        <!-- Pickup/Delivery Info -->
-        <div class="summary-section" id="delivery-section">
-          <div class="summary-row">
-            <span class="summary-label">Order Type</span>
-            <span class="summary-value" id="summary-delivery-type">—</span>
-          </div>
-        </div>
-
-        <!-- Schedule Info -->
-        <div class="summary-section" id="schedule-section" aria-hidden="true">
-          <div class="summary-row">
-            <span class="summary-label">Pickup Date & Time</span>
-            <span class="summary-value" id="summary-schedule">—</span>
-          </div>
-        </div>
-
-        <!-- Address Info -->
-        <div class="summary-section" id="address-section" aria-hidden="true">
-          <div class="summary-row">
-            <span class="summary-label">Delivery Address</span>
-            <span class="summary-value" id="summary-address">—</span>
-          </div>
-        </div>
-
-        <!-- Totals -->
-        <div class="summary-divider"></div>
-        <div class="summary-totals">
-          <div class="summary-row">
-            <span class="summary-label">Subtotal</span>
-            <span class="summary-value" id="summary-subtotal">$0.00</span>
-          </div>
-          <div class="summary-row" id="delivery-fee-row" aria-hidden="true">
-            <span class="summary-label">Delivery Fee</span>
-            <span class="summary-value" id="summary-delivery-fee">$0.00</span>
-          </div>
-          <div class="summary-row summary-total">
-            <span class="summary-label">Total Amount</span>
-            <span class="summary-value-total" id="summary-total">$0.00</span>
-          </div>
-        </div>
-
-        <!-- Trust Badges -->
-        <div class="trust-badges">
-          <div class="badge">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
-            <span>Secure Checkout</span>
-          </div>
-          <div class="badge">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            <span>Fast Processing</span>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- RIGHT SIDE: PAYMENT FORM -->
-    <section class="payment-form-section" aria-label="Payment information">
-      <div class="form-header">
-        <h2 class="form-title">Complete Your Payment</h2>
-        <p class="form-subtitle">Safe, secure, and delicious!</p>
-      </div>
-
-      <form id="payment-form" class="payment-form" novalidate>
-
-        <!-- BILLING INFORMATION -->
-        <fieldset class="form-fieldset">
-          <legend class="fieldset-legend">Billing Information</legend>
-          
-          <div class="form-group">
-            <label for="billing-name">Full Name</label>
-            <input
-              id="billing-name"
-              name="billing-name"
-              type="text"
-              class="payment-input"
-              placeholder="Your full name"
-              autocomplete="name"
-              required
-            />
-            <div class="field-error" id="error-billing-name"></div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="billing-email">Email Address</label>
-              <input
-                id="billing-email"
-                name="billing-email"
-                type="email"
-                class="payment-input"
-                placeholder="your@email.com"
-                autocomplete="email"
-                required
-              />
-              <div class="field-error" id="error-billing-email"></div>
+        <!doctype html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+          <title>Payment — The B&KERY</title>
+          <link rel="stylesheet" href="styles.css" />
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
+          <link rel="icon" type="image/x-icon" href="favicon.ico">
+          <style>
+            .notice-shell{max-width:900px;margin:72px auto;padding:0 18px}
+            .notice-card{background:#fff;border-radius:18px;box-shadow:0 14px 36px rgba(82,47,28,0.08);overflow:hidden}
+            .notice-hero{padding:36px 36px;background:linear-gradient(180deg,rgba(249,199,95,0.12),#fff)}
+            .notice-hero h1{margin:0 0 8px;color:var(--brown)}
+            .notice-body{padding:20px 36px 36px;color:rgba(0,0,0,0.7);line-height:1.7}
+            .notice-actions{display:flex;gap:12px;margin-top:12px}
+          </style>
+        </head>
+        <body class="alan-sans">
+          <header id="header" aria-label="Site header">
+            <nav aria-label="Main navigation">
+              <div class="logo" aria-label="B&KERY Home">
+                <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+              </div>
+              <div class="nav-actions">
+                <button class="search-toggle" id="search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                </button>
+                <div class="search-container" id="search-container" aria-hidden="true">
+                  <div class="search-input-wrapper">
+                    <input type="text" id="search-input" class="search-input" placeholder="Search treats..." autocomplete="off" aria-label="Search bakery products" aria-describedby="search-hint" aria-autocomplete="list" aria-controls="search-results" />
+                    <button class="search-clear" id="search-clear" aria-label="Clear search" type="button">×</button>
+                  </div>
+                </div>
+                <a href="aboutus" class="btn btn-ghost">About Us</a>
+                <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+                <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
+              </div>
+              <div class="mobile-nav">
+                <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                </button>
+                <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+                  <span class="hamburger-line"></span>
+                  <span class="hamburger-line"></span>
+                  <span class="hamburger-line"></span>
+                </button>
+              </div>
+            </nav>
+            <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+              <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+              <a href="aboutus" class="btn btn-ghost">About Us</a>
+              <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+              <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
             </div>
-            <div class="form-group">
-              <label for="billing-phone">Phone Number</label>
-              <input
-                id="billing-phone"
-                name="billing-phone"
-                type="tel"
-                class="payment-input"
-                placeholder="(555) 123-4567"
-                autocomplete="tel"
-                required
-              />
-              <div class="field-error" id="error-billing-phone"></div>
+            <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
+          </header>
+
+          <main class="notice-shell">
+            <div class="notice-card">
+              <div class="notice-hero">
+                <h1>Secure Checkout via PayPal</h1>
+                <p class="lead">We now process payments using PayPal's secure cart checkout to keep your payment information private.</p>
+              </div>
+              <div class="notice-body">
+                <p>To complete payment, please open your <strong>Cart</strong> and click <em>Proceed to Secure Checkout</em>. You will be redirected to PayPal to pay for your items. After successful payment you'll be returned to our confirmation page.</p>
+                <p>If you were redirected here by mistake or need assistance, please return to your cart or contact us at <a href="mailto:mgbikehjoel@gmail.com">mgbikehjoel@gmail.com</a>.</p>
+                <div class="notice-actions">
+                  <a href="cart.html" class="btn btn-brown">Open Cart</a>
+                  <a href="/" class="btn btn-outline">Back to Home</a>
+                </div>
+              </div>
             </div>
-          </div>
+          </main>
 
-          <div class="form-group">
-            <label for="billing-address">Street Address</label>
-            <input
-              id="billing-address"
-              name="billing-address"
-              type="text"
-              class="payment-input"
-              placeholder="123 Main Street"
-              autocomplete="street-address"
-              required
-            />
-            <div class="field-error" id="error-billing-address"></div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="billing-city">City</label>
-              <input
-                id="billing-city"
-                name="billing-city"
-                type="text"
-                class="payment-input"
-                placeholder="New York"
-                autocomplete="address-level2"
-                required
-              />
-              <div class="field-error" id="error-billing-city"></div>
+          <footer id="footer" aria-label="Site footer">
+            <div class="footer-content">
+              <p>&copy; 2026. The B&KERY. You can taste the love! 💛</p>
+              <div class="footer-links">
+                <a href="privacypolicy.html">Privacy Policy</a>
+                <a href="termsandconditions.html">Terms & Conditions</a>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="billing-state">State</label>
-              <input
-                id="billing-state"
-                name="billing-state"
-                type="text"
-                class="payment-input"
-                placeholder="NY"
-                autocomplete="address-level1"
-                required
-              />
-              <div class="field-error" id="error-billing-state"></div>
-            </div>
-            <div class="form-group">
-              <label for="billing-zip">ZIP Code</label>
-              <input
-                id="billing-zip"
-                name="billing-zip"
-                type="text"
-                class="payment-input"
-                placeholder="10001"
-                autocomplete="postal-code"
-                required
-              />
-              <div class="field-error" id="error-billing-zip"></div>
-            </div>
-          </div>
+          </footer>
 
-          <div class="form-group">
-            <label for="billing-country">Country</label>
-            <select
-              id="billing-country"
-              name="billing-country"
-              class="payment-input"
-              autocomplete="country-name"
-              required
-            >
-              <option value="United States" selected>United States</option>
-              <option value="Canada">Canada</option>
-              <option value="Mexico">Mexico</option>
-            </select>
-            <div class="field-error" id="error-billing-country"></div>
-          </div>
-        </fieldset>
+          <script>
+            document.addEventListener('DOMContentLoaded', ()=>{
+              try{
+                const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]');
+                const count = cart.reduce((s,i)=>s+(i.quantity||0),0);
+                document.querySelectorAll('.cart-count').forEach(el=>el.textContent = count);
+              }catch(e){}
 
-        <!-- PAYMENT METHOD -->
-        <fieldset class="form-fieldset">
-          <legend class="fieldset-legend">Payment Method</legend>
-          
-          <div class="payment-method-info">
-            <p>We accept Visa, Mastercard, American Express, and Discover cards securely processed through PayPal.</p>
-          </div>
-
-          <!-- PayPal Hosted Fields Container -->
-          <div id="payment-container">
-            <div id="card-field"></div>
-            <div id="card-expiry-field"></div>
-            <div id="card-cvv-field"></div>
-          </div>
-          <div class="field-error" id="error-card"></div>
-        </fieldset>
-
-        <!-- Form Actions -->
-        <div class="form-actions">
-          <button type="submit" class="btn btn-brown payment-submit-btn" id="payment-submit-btn">
-            <span class="btn-text">Complete Payment</span>
-            <span class="payment-amount" id="payment-amount">$0.00</span>
-          </button>
-          <a href="/" class="btn btn-outline">Cancel</a>
-        </div>
-
-        <div class="form-status" id="form-status" aria-live="polite" aria-atomic="true"></div>
-      </form>
-
-      <!-- Success State -->
-      <div class="success-pane" id="success-pane" aria-hidden="true">
-        <div class="success-icon">
-          <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-        </div>
-        <h2 class="success-title">Order Confirmed!</h2>
-        <p class="success-message">Your payment has been processed successfully.</p>
-        <div class="success-details">
-          <p>Karen & Bruce will begin preparing your delicious treats shortly.</p>
-          <p><em>Preparation times may vary depending on availability and current orders.</em></p>
-          <p>A confirmation email with all order details has been sent to <strong id="success-email"></strong>.</p>
-        </div>
-        <div class="form-actions">
-          <a href="/" class="btn btn-brown">Return to Home</a>
-        </div>
-      </div>
-    </section>
-  </div>
-</main>
-
-<!-- ── Footer ──────────────────────────────────────────────────── -->
-<footer id="footer" aria-label="Site footer">
-  <div class="footer-content">
-    <p>&copy; 2024 The B&KERY. You can taste the love! 💛</p>
-    <div class="footer-links">
-      <a href="privacypolicy.html">Privacy Policy</a>
-      <a href="termsandconditions.html">Terms & Conditions</a>
-    </div>
-  </div>
-</footer>
-
-<!-- ── PayPal SDK ──────────────────────────────────────────────── -->
-<script src="https://www.paypal.com/sdk/js?client-id=AXzNaJhNlZDNxHDH0yg9h5V2VGj1DJquVVzZHzVEd5Kn1qMZWUWaFrJ0gYMOkYsP5hpTNLQqpY0gJE_Y&intent=capture&vault=false&components=hosted-fields,buttons"></script>
-
-<!-- ── Scripts ─────────────────────────────────────────────────── -->
-<script>
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-  try{
-    const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]');
-    const count = cart.reduce((s,i)=>s+(i.quantity||0),0);
-    document.querySelectorAll('.cart-count').forEach(el=>el.textContent = count);
-  }catch(e){}
-});
-</script>
-// ──────────────────────────────────────────────────────────────
-// PAYMENT PAGE INITIALIZATION & ORDER MANAGEMENT
-// ──────────────────────────────────────────────────────────────
-
-let paypalReady = typeof paypal !== 'undefined';
-
-window.addEventListener('load', () => {
-  // Check if PayPal SDK loaded
-  if (typeof paypal === 'undefined') {
-    showSetupWarning('PayPal SDK failed to load. Check your credentials and connection.');
-    return;
-  }
-  
-  initPaymentPage();
-});
-
-function showSetupWarning(message = null) {
-  const warning = document.getElementById('setup-warning');
-  if (warning) {
-    warning.setAttribute('aria-hidden', 'false');
-    const content = warning.querySelector('.setup-warning-content');
-    if (message && content) {
-      const msgEl = document.createElement('p');
-      msgEl.style.color = '#e87777';
-      msgEl.style.fontWeight = '600';
-      msgEl.textContent = message;
-      content.appendChild(msgEl);
-    }
-  }
-}
-
-(function initPaymentPage(){
-  // Check if PayPal is available
-  if (typeof paypal === 'undefined') {
-    console.error('PayPal SDK not loaded');
-    showSetupWarning('PayPal SDK not available. This is usually a temporary issue.');
-    return;
-  }
-
-  // Get order data from sessionStorage
-  const orderData = JSON.parse(sessionStorage.getItem('bakery_order')) || null;
-  
-  if(!orderData){
-    showError('No order found. Please place an order first.');
-    setTimeout(() => window.location.href = '/?openOrder=true', 2000);
-    return;
-  }
-
-  // Initialize UI with order data
-  populateOrderSummary(orderData);
-  populateFormWithCustomerInfo(orderData);
-  initializePayPalFields();
-  attachFormHandlers();
-})();
-
-function populateOrderSummary(orderData){
-  const itemsContainer = document.getElementById('summary-items');
-  const subtotalEl = document.getElementById('summary-subtotal');
-  const totalEl = document.getElementById('summary-total');
-  const deliveryTypeEl = document.getElementById('summary-delivery-type');
-  const scheduleSection = document.getElementById('schedule-section');
-  const scheduleEl = document.getElementById('summary-schedule');
-  const addressSection = document.getElementById('address-section');
-  const addressEl = document.getElementById('summary-address');
+              const toggle = document.querySelector('.mobile-menu-toggle');
+              const panel = document.getElementById('mobile-menu-panel');
+              const backdrop = document.getElementById('mobile-menu-backdrop');
+              const closeButton = document.querySelector('.mobile-menu-close');
+              if(toggle && panel && backdrop && closeButton){
+                const setOpen = open => {
+                  panel.classList.toggle('open', open);
+                  backdrop.classList.toggle('open', open);
+                  toggle.setAttribute('aria-expanded', String(open));
+                  panel.setAttribute('aria-hidden', String(!open));
+                };
+                toggle.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
+                closeButton.addEventListener('click', () => setOpen(false));
+                backdrop.addEventListener('click', () => setOpen(false));
+                panel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+              }
+            });
+          </script>
+        </body>
+        </html>
   const deliveryFeeRow = document.getElementById('delivery-fee-row');
   const deliveryFeeEl = document.getElementById('summary-delivery-fee');
   const paymentAmountEl = document.getElementById('payment-amount');

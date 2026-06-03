@@ -58,27 +58,54 @@ async function getAccessToken() {
   });
 }
 
-async function createPayPalOrder(amount, description = 'Bakery Order') {
+async function createPayPalOrder(payload) {
   try {
     const accessToken = await getAccessToken();
+    const items = (payload.items || []).map(item => ({
+      name: item.name || 'Bakery Item',
+      unit_amount: {
+        currency_code: 'USD',
+        value: (parseFloat(item.price) || 0).toFixed(2)
+      },
+      quantity: String(item.quantity || 1),
+      description: item.description || item.name || 'Bakery treat',
+      sku: item.id || item.name || ''
+    }));
+
+    const subtotalValue = (payload.subtotal || items.reduce((sum,item)=>sum + (parseFloat(item.unit_amount.value)||0)*parseInt(item.quantity),0));
+    const deliveryFee = payload.deliveryFee || 0;
+    const totalValue = (payload.total || subtotalValue + deliveryFee).toFixed(2);
 
     const orderData = {
       intent: 'CAPTURE',
       purchase_units: [
         {
+          reference_id: payload.orderId || `BK-${Date.now()}`,
+          invoice_id: payload.orderId || `BK-${Date.now()}`,
+          description: 'B&KERY Bakery Order',
           amount: {
             currency_code: 'USD',
-            value: amount.toString()
+            value: totalValue,
+            breakdown: {
+              item_total: {
+                currency_code: 'USD',
+                value: subtotalValue.toFixed(2)
+              },
+              shipping: {
+                currency_code: 'USD',
+                value: deliveryFee.toFixed(2)
+              }
+            }
           },
-          description: description
+          items
         }
       ],
       application_context: {
         brand_name: 'The B&KERY',
         landing_page: 'BILLING',
         user_action: 'PAY_NOW',
-        return_url: `${process.env.SITE_URL || 'https://bandkbakery.com'}/payment.html?success=true`,
-        cancel_url: `${process.env.SITE_URL || 'https://bandkbakery.com'}/payment.html?cancel=true`
+        return_url: `${process.env.SITE_URL || 'https://bandkbakery.com'}/success.html`,
+        cancel_url: `${process.env.SITE_URL || 'https://bandkbakery.com'}/cancel.html`
       }
     };
 
@@ -105,7 +132,7 @@ async function createPayPalOrder(amount, description = 'Bakery Order') {
               reject(new Error('Failed to parse PayPal response'));
             }
           } else {
-            reject(new Error(`PayPal order creation failed: ${res.statusCode}`));
+            reject(new Error(`PayPal order creation failed: ${res.statusCode} ${data}`));
           }
         });
       });
@@ -150,22 +177,33 @@ exports.handler = async (event) => {
       };
     }
 
-    // Parse request body
-    const { amount } = JSON.parse(event.body);
+    const payload = JSON.parse(event.body);
+    const { items, total } = payload;
 
-    if (!amount || isNaN(amount) || amount <= 0) {
+    if (!Array.isArray(items) || items.length === 0) {
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({
-          error: 'Invalid amount',
-          message: 'Amount must be a positive number'
+          error: 'Invalid items',
+          message: 'Cart items must be provided and cannot be empty'
+        })
+      };
+    }
+
+    if (!total || isNaN(total) || total <= 0) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: 'Invalid total',
+          message: 'Total must be a positive number'
         })
       };
     }
 
     // Create PayPal order
-    const order = await createPayPalOrder(amount, 'B&KERY Bakery Order');
+    const order = await createPayPalOrder(payload);
 
     return {
       statusCode: 200,
