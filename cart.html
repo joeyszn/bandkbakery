@@ -77,6 +77,12 @@
       .bk-modal-icon{width:60px;height:60px;font-size:28px}
       .bk-modal-button{width:100%;min-width:auto}
     }
+    /* PayPal disabled visual state */
+    .paypal-wrapper{position:relative}
+    .paypal-overlay{position:absolute;inset:0;background:rgba(255,255,255,0.6);backdrop-filter:blur(2px);z-index:20;border-radius:8px;display:none}
+    .paypal-disabled .paypal-overlay{display:block}
+    .paypal-disabled #paypal-button-container{filter:grayscale(60%);opacity:0.6}
+    .payment-helper{font-size:0.95rem;color:#6b4a38;margin-top:8px}
   </style>
 </head>
 <body class="alan-sans">
@@ -234,8 +240,12 @@
         </form>
 
         <div class="paypal-section" style="margin-top:18px">
-          <p style="margin-bottom:14px;color:rgba(0,0,0,0.72);font-size:0.98rem;">When your order details are complete, pay securely with PayPal.</p>
-          <div id="paypal-button-container"></div>
+          <p style="margin-bottom:8px;color:rgba(0,0,0,0.72);font-size:0.98rem;">When your order details are complete, pay securely.</p>
+          <div id="paypal-wrapper" class="paypal-wrapper paypal-disabled" style="margin-top:6px">
+            <div id="paypal-button-container"></div>
+            <div class="paypal-overlay" id="paypal-overlay" aria-hidden="true"></div>
+          </div>
+          <div id="payment-helper" class="payment-helper">Please complete all required information before proceeding to payment.</div>
         </div>
       </aside>
     </div>
@@ -539,11 +549,55 @@
         updateSummary(null, delivery ? 5 : 0);
       }
 
+      // validate + visual enable/disable for PayPal buttons
+      function isEmailValid(email){
+        return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+      }
+
+      function areRequiredFieldsValid(){
+        const v = getCheckoutValues();
+        if(!v.name) return false;
+        if(!v.phone) return false;
+        if(!isCaliforniaPhoneNumber(v.phone)) return false;
+        if(!v.email) return false;
+        if(!isEmailValid(v.email)) return false;
+        if(!v.method) return false;
+        if(v.method === 'Delivery'){
+          if(!v.address || !v.city || !v.state || !v.zip) return false;
+        }
+        return true;
+      }
+
+      function validateAndTogglePayPal(){
+        const valid = areRequiredFieldsValid();
+        const wrapper = document.getElementById('paypal-wrapper');
+        const overlay = document.getElementById('paypal-overlay');
+        const helper = document.getElementById('payment-helper');
+        const container = document.getElementById('paypal-button-container');
+        if(!wrapper || !overlay || !helper || !container) return;
+
+        if(valid){
+          wrapper.classList.remove('paypal-disabled');
+          overlay.setAttribute('aria-hidden','true');
+          container.style.pointerEvents = 'auto';
+          container.style.opacity = '1';
+          helper.textContent = 'Your order is ready for secure checkout.';
+        } else {
+          wrapper.classList.add('paypal-disabled');
+          overlay.setAttribute('aria-hidden','false');
+          container.style.pointerEvents = 'none';
+          container.style.opacity = '0.6';
+          helper.textContent = 'Please complete all required information before proceeding to payment.';
+        }
+      }
+
       form.addEventListener('change', (e)=>{
         if(e.target.name === 'method'){
           setDeliveryVisibility();
         }
+        validateAndTogglePayPal();
       });
+      form.addEventListener('input', validateAndTogglePayPal);
 
       async function createOrderOnServer(orderPayload){
         try {
@@ -625,6 +679,12 @@
         script.onerror = () => {};
 
         document.head.appendChild(script);
+      }
+
+      // Ensure PayPal UI reflects validation state after buttons render
+      function onPayPalRendered(){
+        // initial check
+        validateAndTogglePayPal();
       }
 
       function buildOrderRecord(captureDetails, cart, checkout){
@@ -745,12 +805,14 @@
           onError: async (err) => {
             await showError('Payment Could Not Be Completed', 'There was a problem with the PayPal checkout. Please try again.');
           }
-        }).render('#paypal-button-container');
+        }).render('#paypal-button-container').then(onPayPalRendered).catch(()=>{});
       }
 
       // initial render
       renderCart();
       setDeliveryVisibility();
+      // ensure PayPal buttons reflect current validation state
+      validateAndTogglePayPal();
       loadPayPalSdk();
     })();
 
