@@ -1436,38 +1436,165 @@ window.addEventListener('scroll',()=>{
     const t = document.createElement('div');
     t.className = 'mini-toast';
     t.textContent = message;
-    Object.assign(t.style,{position:'fixed',right:'18px',top:'80px',background:'#fff6e0',color:'#5b3a28',padding:'10px 14px',borderRadius:'8px',boxShadow:'0 6px 18px rgba(82,47,28,.12)',zIndex:9999,fontWeight:600});
+    Object.assign(t.style,{position:'fixed',right:'18px',top:'80px',background:'#fff6e0',color:'#5b3a28',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 8px 24px rgba(82,47,28,.16)',zIndex:9999,fontWeight:700,letterSpacing:'0.01em'});
     document.body.appendChild(t);
-    t.animate([{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'translateY(0)'}],{duration:220,easing:'ease-out'});
-    setTimeout(()=>{ t.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-8px)'}],{duration:220,easing:'ease-in'}).onfinish=()=>t.remove(); },1400);
+    t.animate([{opacity:0,transform:'translateY(-12px)'},{opacity:1,transform:'translateY(0)'}],{duration:240,easing:'cubic-bezier(.2,.8,.2,1)'});
+    setTimeout(()=>{ t.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-12px)'}],{duration:240,easing:'cubic-bezier(.4,.0,.6,1)'}).onfinish=()=>t.remove(); },2200);
+  }
+
+  function getMenuItemId(menuItem){
+    const name = menuItem.querySelector('.menu-name')?.textContent.trim() || 'item';
+    return slugify(name);
+  }
+
+  function getMenuItemData(menuItem){
+    const name = menuItem.querySelector('.menu-name')?.textContent.trim() || 'Item';
+    const price = parsePriceFromNode(menuItem) || 0;
+    const image = menuItem.querySelector('img')?.getAttribute('src') || '';
+    const id = getMenuItemId(menuItem);
+    return { id, name, price, image };
+  }
+
+  function getQuantityFromCart(id){
+    const cart = loadCart();
+    const item = cart.find(i=>i.id===id);
+    return item ? (item.quantity||0) : 0;
+  }
+
+  function createAddToCartButton(menuItem){
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'btn btn-brown add-to-cart';
+    button.textContent = 'Add to Cart';
+    button.style.alignSelf = 'center';
+    const name = menuItem.querySelector('.menu-name')?.textContent.trim();
+    if(name){
+      button.setAttribute('aria-label', `Add ${name} to cart`);
+    }
+    return button;
+  }
+
+  function updateMenuItemControl(menuItem){
+    const menuInfo = menuItem.querySelector('.menu-info');
+    const existingActions = menuInfo.querySelector('.menu-actions');
+    const existingButton = menuInfo.querySelector('.add-to-cart');
+    if(existingActions){ existingActions.remove(); }
+    if(existingButton){ existingButton.remove(); }
+
+    const id = getMenuItemId(menuItem);
+    const quantity = getQuantityFromCart(id);
+    const name = menuItem.querySelector('.menu-name')?.textContent.trim() || 'Item';
+
+    if(quantity > 0){
+      const actions = document.createElement('div');
+      actions.className = 'menu-actions menu-actions-added';
+
+      const quantitySelector = document.createElement('div');
+      quantitySelector.className = 'quantity-selector';
+
+      const decrease = document.createElement('button');
+      decrease.type = 'button';
+      decrease.className = 'qty-btn qty-decrease';
+      decrease.setAttribute('aria-label', `Decrease quantity for ${name}`);
+      decrease.textContent = '-';
+
+      const value = document.createElement('span');
+      value.className = 'qty-value';
+      value.setAttribute('aria-live', 'polite');
+      value.setAttribute('aria-atomic', 'true');
+      value.textContent = quantity;
+
+      const increase = document.createElement('button');
+      increase.type = 'button';
+      increase.className = 'qty-btn qty-increase';
+      increase.setAttribute('aria-label', `Increase quantity for ${name}`);
+      increase.textContent = '+';
+
+      quantitySelector.append(decrease, value, increase);
+
+      const addedLabel = document.createElement('div');
+      addedLabel.className = 'added-count';
+      addedLabel.textContent = `(${quantity} item${quantity === 1 ? '' : 's'} added)`;
+
+      actions.append(quantitySelector, addedLabel);
+      menuInfo.append(actions);
+    } else {
+      const actions = document.createElement('div');
+      actions.className = 'menu-actions';
+      actions.append(createAddToCartButton(menuItem));
+      menuInfo.append(actions);
+    }
+  }
+
+  function renderAllMenuControls(){
+    document.querySelectorAll('.menu-item').forEach(updateMenuItemControl);
+  }
+
+  function changeCartQuantity(menuItem, delta){
+    const itemData = getMenuItemData(menuItem);
+    const cart = loadCart();
+    const existing = cart.find(i=>i.id===itemData.id);
+    const currentQty = existing ? existing.quantity : 0;
+    const nextQty = Math.max(0, currentQty + delta);
+
+    if(nextQty === 0){
+      const index = cart.findIndex(i=>i.id===itemData.id);
+      if(index > -1){ cart.splice(index, 1); }
+      saveCart(cart);
+      updateMenuItemControl(menuItem);
+      updateCartBadge(true);
+      showMiniToast(`${itemData.name} removed from your basket.`);
+      return;
+    }
+
+    if(existing){
+      existing.quantity = nextQty;
+    } else {
+      cart.push({ ...itemData, quantity: nextQty });
+    }
+    saveCart(cart);
+    updateMenuItemControl(menuItem);
+    updateCartBadge(true);
+    showMiniToast(`${nextQty} ${itemData.name}${nextQty === 1 ? '' : 's'} added to your basket.`);
   }
 
   function addToCartFromButton(button){
     const menuItem = button.closest('.menu-item');
     if(!menuItem) return;
-    const nameEl = menuItem.querySelector('.menu-name');
-    const imgEl = menuItem.querySelector('img');
-    const name = nameEl ? nameEl.textContent.trim() : 'Item';
-    const price = parsePriceFromNode(menuItem) || 0;
-    const image = imgEl ? imgEl.getAttribute('src') : '';
-    const id = slugify(name);
-
-    const cart = loadCart();
-    const existing = cart.find(i=>i.id===id);
-    if(existing){ existing.quantity = (existing.quantity||0) + 1; }
-    else { cart.push({ id, name, price, image, quantity: 1 }); }
-    saveCart(cart);
-    updateCartBadge(true);
-    showMiniToast('Added to Cart');
+    changeCartQuantity(menuItem, 1);
   }
 
   document.addEventListener('click', (e) => {
-    const btn = e.target.closest && e.target.closest('.add-to-cart');
-    if(btn){ e.preventDefault(); addToCartFromButton(btn); }
+    const decreaseBtn = e.target.closest && e.target.closest('.qty-decrease');
+    const increaseBtn = e.target.closest && e.target.closest('.qty-increase');
+    const addBtn = e.target.closest && e.target.closest('.add-to-cart');
+
+    if(decreaseBtn){
+      e.preventDefault();
+      const menuItem = decreaseBtn.closest('.menu-item');
+      if(menuItem) changeCartQuantity(menuItem, -1);
+      return;
+    }
+
+    if(increaseBtn){
+      e.preventDefault();
+      const menuItem = increaseBtn.closest('.menu-item');
+      if(menuItem) changeCartQuantity(menuItem, 1);
+      return;
+    }
+
+    if(addBtn){
+      e.preventDefault();
+      addToCartFromButton(addBtn);
+      return;
+    }
   });
 
-  // initial badge render
-  document.addEventListener('DOMContentLoaded', ()=> updateCartBadge(false));
+  // initial render
+  document.addEventListener('DOMContentLoaded', ()=> {
+    renderAllMenuControls();
+    updateCartBadge(false);
+  });
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
