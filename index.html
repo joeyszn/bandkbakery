@@ -1511,12 +1511,25 @@ window.addEventListener('scroll',()=>{
       increase.textContent = '+';
 
       quantitySelector.append(decrease, value, increase);
+      quantitySelector.setAttribute('role', 'group');
+      const labelId = `quantity-label-${id}`;
+
+      const qtyBlock = document.createElement('div');
+      qtyBlock.className = 'quantity-block';
+
+      const labelEl = document.createElement('label');
+      labelEl.className = 'quantity-label';
+      labelEl.id = labelId;
+      labelEl.textContent = 'Quantity';
+
+      quantitySelector.setAttribute('aria-labelledby', labelId);
+      qtyBlock.append(labelEl, quantitySelector);
 
       const addedLabel = document.createElement('div');
       addedLabel.className = 'added-count';
       addedLabel.textContent = `(${quantity} item${quantity === 1 ? '' : 's'} added)`;
 
-      actions.append(quantitySelector, addedLabel);
+      actions.append(qtyBlock, addedLabel);
       menuInfo.append(actions);
     } else {
       const actions = document.createElement('div');

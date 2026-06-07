@@ -1258,6 +1258,20 @@ nav {
   animation: fadeInUp 240ms ease;
 }
 
+.quantity-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantity-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--brown);
+  margin-right: 6px;
+  white-space: nowrap;
+}
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
