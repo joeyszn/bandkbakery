@@ -126,7 +126,7 @@
   <div class="menu-items">
 
     <!-- 1. BABKA -->
-    <article class="menu-item" aria-label="Babka">
+    <article class="menu-item" aria-label="Babka" data-product-id="babka">
       <div class="menu-info">
         <div class="menu-header">
           <div class="menu-num" aria-hidden="true">1</div>
@@ -156,7 +156,7 @@
     </article>
 
     <!-- 2. CHALLAH -->
-    <article class="menu-item reverse" aria-label="Challah">
+    <article class="menu-item reverse" aria-label="Challah" data-product-id="challah">
       <div class="menu-info">
         <div class="menu-header">
           <div class="menu-num" aria-hidden="true">2</div>
@@ -186,7 +186,7 @@
     </article>
 
     <!-- 3. BAGELS -->
-    <article class="menu-item" aria-label="Bagels">
+    <article class="menu-item" aria-label="Bagels" data-product-id="bagels">
       <div class="menu-info">
         <div class="menu-header">
           <div class="menu-num" aria-hidden="true">3</div>
@@ -210,7 +210,7 @@
     </article>
 
     <!-- 4. BIALYS -->
-    <article class="menu-item reverse" aria-label="Bialys">
+    <article class="menu-item reverse" aria-label="Bialys" data-product-id="bialys">
       <div class="menu-info">
         <div class="menu-header">
           <div class="menu-num" aria-hidden="true">4</div>
@@ -236,7 +236,7 @@
     </article>
 
     <!-- 5. RUGELACH -->
-    <article class="menu-item" aria-label="Rugelach">
+    <article class="menu-item" aria-label="Rugelach" data-product-id="rugelach">
       <div class="menu-info">
         <div class="menu-header">
           <div class="menu-num" aria-hidden="true">5</div>
@@ -260,7 +260,7 @@
     </article>
 
     <!-- 6. ALMOND THUMBPRINT COOKIES -->
-    <article class="menu-item reverse" aria-label="Almond Thumbprint Cookies">
+    <article class="menu-item reverse" aria-label="Almond Thumbprint Cookies" data-product-id="almond-thumbprint-cookies">
       <div class="menu-info">
         <div class="menu-header">
           <div class="menu-num" aria-hidden="true">6</div>
@@ -284,7 +284,7 @@
     </article>
 
     <!-- 7. MANDELBROT -->
-    <article class="menu-item" aria-label="Mandelbrot">
+    <article class="menu-item" aria-label="Mandelbrot" data-product-id="mandelbrot">
       <div class="menu-info">
         <div class="menu-header">
           <div class="menu-num" aria-hidden="true">7</div>
@@ -308,7 +308,7 @@
     </article>
 
     <!-- 8. MACARONS -->
-    <article class="menu-item reverse" aria-label="Macarons">
+    <article class="menu-item reverse" aria-label="Macarons" data-product-id="macarons">
       <div class="menu-info">
         <div class="menu-header">
           <div class="menu-num" aria-hidden="true">8</div>
@@ -338,7 +338,7 @@
     </article>
 
     <!-- 9. GREATER-CRUMB COFFEE CAKE -->
-    <article class="menu-item" aria-label="Coffee Cake">
+    <article class="menu-item" aria-label="Coffee Cake" data-product-id="coffee-cake">
       <div class="menu-info">
         <div class="menu-header">
           <div class="menu-num" aria-hidden="true">9</div>
@@ -1395,11 +1395,15 @@ window.addEventListener('scroll',()=>{
 (function(){
   const STORAGE_KEY = 'bk_cart';
   const cartCountEls = Array.from(document.querySelectorAll('.cart-count'));
+  const bc = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('bk_cart_channel') : null;
 
   function loadCart(){
     try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; }
   }
-  function saveCart(cart){ localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }
+  function saveCart(cart){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
+    try{ if(bc) bc.postMessage({ type: 'cart_update', cart }); }catch(e){}
+  }
   function getCount(cart){ return cart.reduce((s,i)=>s+(i.quantity||0),0); }
   function updateCartBadge(anim=true){
     const cart = loadCart();
@@ -1418,6 +1422,11 @@ window.addEventListener('scroll',()=>{
     }
   }
 
+  function getPlaceholderDataUrl(){
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="%23f5e9db" width="100%" height="100%"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23b07a54" font-family="Arial, Helvetica, sans-serif" font-size="20">No image</text></svg>';
+    return 'data:image/svg+xml;utf8,' + svg;
+  }
+
   function slugify(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
 
   function parsePriceFromNode(menuItem){
@@ -1429,6 +1438,7 @@ window.addEventListener('scroll',()=>{
     }
     const mp = menuItem.querySelector('.menu-price');
     if(mp){ const m = mp.textContent.match(/\$(\d+(?:\.\d{1,2})?)/); if(m) return parseFloat(m[1]); }
+    console.warn('Warning: Unable to parse price for menu item. Defaulting to $0. Check .price-badge or .menu-price elements.');
     return 0;
   }
 
@@ -1443,6 +1453,9 @@ window.addEventListener('scroll',()=>{
   }
 
   function getMenuItemId(menuItem){
+    // Prefer an explicit data-product-id attribute for stable ids across pages
+    const explicit = menuItem.getAttribute && menuItem.getAttribute('data-product-id');
+    if(explicit) return slugify(String(explicit));
     const name = menuItem.querySelector('.menu-name')?.textContent.trim() || 'item';
     return slugify(name);
   }
@@ -1450,9 +1463,18 @@ window.addEventListener('scroll',()=>{
   function getMenuItemData(menuItem){
     const name = menuItem.querySelector('.menu-name')?.textContent.trim() || 'Item';
     const price = parsePriceFromNode(menuItem) || 0;
-    const image = menuItem.querySelector('img')?.getAttribute('src') || '';
+    const rawImage = menuItem.querySelector('img')?.getAttribute('src') || '';
+    const image = rawImage || getPlaceholderDataUrl();
     const id = getMenuItemId(menuItem);
     return { id, name, price, image };
+  }
+
+  function getCartQuantityById(id){
+    try{
+      const cart = loadCart();
+      const item = cart.find(i=>i.id===id);
+      return item ? (parseInt(item.quantity||0,10) || 0) : 0;
+    }catch(e){ return 0; }
   }
 
   function createQuantityBlock(menuItem){
@@ -1475,6 +1497,7 @@ window.addEventListener('scroll',()=>{
     value.className = 'qty-value';
     value.setAttribute('aria-live', 'polite');
     value.setAttribute('aria-atomic', 'true');
+    // initialize to 1 by default; actual in-cart count shown separately
     value.textContent = '1';
 
     const increase = document.createElement('button');
@@ -1518,6 +1541,8 @@ window.addEventListener('scroll',()=>{
     }
     const addBtn = menuInfo.querySelector('.add-to-cart');
     if(addBtn && !actions.contains(addBtn)){
+      // Remove inline style and let CSS handle alignment
+      addBtn.removeAttribute('style');
       addBtn.style.alignSelf = 'center';
       const name = menuItem.querySelector('.menu-name')?.textContent.trim();
       if(name){ addBtn.setAttribute('aria-label', `Add ${name} to cart`); }
@@ -1531,6 +1556,20 @@ window.addEventListener('scroll',()=>{
     if(!menuItem.querySelector('.quantity-block')){
       const qtyBlock = createQuantityBlock(menuItem);
       actions.insertBefore(qtyBlock, actions.firstChild);
+    }
+    // Ensure added-count reflects current cart quantity
+    const id = getMenuItemId(menuItem);
+    const existingQty = getCartQuantityById(id);
+    let addedLabel = actions.querySelector('.added-count');
+    if(existingQty > 0){
+      if(!addedLabel){
+        addedLabel = document.createElement('div');
+        addedLabel.className = 'added-count';
+        actions.append(addedLabel);
+      }
+      addedLabel.textContent = `(${existingQty} already in cart)`;
+    } else if(addedLabel){
+      addedLabel.remove();
     }
   }
 
@@ -1586,6 +1625,18 @@ window.addEventListener('scroll',()=>{
     renderAllMenuControls();
     updateCartBadge(false);
   });
+
+  // Sync menu UI when cart changes in other tabs/windows
+  window.addEventListener('storage', (e) => {
+    if(e.key === STORAGE_KEY){
+      renderAllMenuControls();
+      updateCartBadge(false);
+    }
+  });
+
+  // When returning to page (back navigation) or focusing the tab, refresh UI
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ renderAllMenuControls(); updateCartBadge(false); } });
+  window.addEventListener('focus', () => { renderAllMenuControls(); updateCartBadge(false); });
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
