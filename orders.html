@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>My Orders — The B&KERY</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style>
+  /* Orders page specific styles — follow B&KERY theme */
+  .orders-shell{max-width:1100px;margin:106px auto;padding:20px}
+  .orders-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  .orders-title{margin:0;font-size:32px;color:var(--brown)}
+  .orders-sub{margin:6px 0 0;color:var(--lighter-black)}
+  .orders-toolbar{display:flex;gap:12px;align-items:center}
+  .orders-search{padding:10px 12px;border-radius:12px;border:1px solid rgba(82,47,28,.08);min-width:260px}
+  .orders-filters{display:flex;gap:8px}
+  .filter-btn{padding:8px 12px;border-radius:999px;border:1px solid rgba(82,47,28,.06);background:transparent;color:var(--brown);cursor:pointer}
+  .filter-btn.active{background:var(--yellow);border-color:rgba(82,47,28,.06)}
+
+  .orders-list{margin-top:18px;display:grid;gap:18px}
+  .order-card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 12px 30px rgba(82,47,28,0.08);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+  .order-summary{display:flex;flex-direction:column;gap:8px}
+  .order-meta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .order-number{font-weight:800;color:var(--brown)}
+  .order-date{color:#6d4a2d}
+  .order-total{font-weight:900;color:var(--brown)}
+  .order-method{color:rgba(0,0,0,.7)}
+
+  .status-badge{padding:8px 12px;border-radius:999px;font-weight:800}
+  .status-order-received{background:var(--yellow);color:#3d2113}
+  .status-preparing{background:#8b5e46;color:#fff}
+  .status-ready{background:#f6c85a;color:#3d2113}
+  .status-completed{background:#4caf50;color:#fff}
+
+  .order-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .details-panel{margin-top:12px;border-radius:12px;padding:12px;background:linear-gradient(180deg,rgba(249,199,95,0.04),#fff);display:none}
+  .items-list{display:grid;gap:8px}
+  .item-row{display:flex;justify-content:space-between;gap:12px}
+  .item-left{color:var(--brown);font-weight:700}
+  .item-right{color:#6d4a2d}
+
+  .notice{margin-top:8px;color:var(--brown);font-weight:700}
+  .empty-state{display:flex;flex-direction:column;align-items:center;gap:18px;padding:48px;border-radius:18px;background:linear-gradient(180deg,rgba(249,199,95,0.06),#fff);box-shadow:0 10px 28px rgba(82,47,28,0.06)}
+  .empty-ill{width:180px;height:140px;background:linear-gradient(180deg,#fff,rgba(249,199,95,0.06));border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--brown);font-weight:900}
+
+  @media(max-width:900px){
+    .order-card{grid-template-columns:1fr;}
+    .order-actions{align-items:flex-start}
+  }
+</style>
+</head>
+<body class="alan-sans">
+  <header id="header" aria-label="Site header">
+    <nav aria-label="Main navigation">
+      <div class="logo" aria-label="B&KERY Home">
+        <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+      </div>
+      <div class="nav-actions">
+        <button class="search-toggle" id="search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+        <div class="search-container" id="search-container" aria-hidden="true">
+          <div class="search-input-wrapper">
+            <input type="text" id="search-input-global" class="search-input" placeholder="Search treats..." autocomplete="off" aria-label="Search bakery products" />
+            <button class="search-clear" id="search-clear" aria-label="Clear search" type="button">×</button>
+          </div>
+        </div>
+        <a href="aboutus" class="btn btn-ghost">About Us</a>
+        <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+        <a href="orders.html" class="btn btn-ghost">Orders</a>
+        <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span class="cart-count">0</span>)</a>
+      </div>
+      <div class="mobile-nav">
+        <button class="search-toggle mobile-search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+        <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </nav>
+    <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+      <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+      <a href="aboutus" class="btn btn-ghost">About Us</a>
+      <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+      <a href="orders.html" class="btn btn-ghost">Orders</a>
+      <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
+    </div>
+    <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
+  </header>
+
+  <main class="orders-shell" id="orders-main">
+    <div class="orders-header">
+      <div>
+        <h1 class="orders-title">My Orders</h1>
+        <p class="orders-sub">View your bakery orders and order history.</p>
+      </div>
+      <div class="orders-toolbar">
+        <input id="orders-search" class="orders-search" placeholder="Search by order number or product" aria-label="Search orders" />
+        <div class="orders-filters" role="tablist" aria-label="Filter orders">
+          <button class="filter-btn active" data-filter="all">All Orders</button>
+          <button class="filter-btn" data-filter="active">Active Orders</button>
+          <button class="filter-btn" data-filter="completed">Completed Orders</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="orders-list" class="orders-list" aria-live="polite"></div>
+
+  </main>
+
+  <footer id="footer" aria-label="Site footer">
+    <div class="footer-content">
+      <p>&copy; 2026. The B&KERY. You can taste the love! 💛</p>
+      <div class="footer-links">
+        <a href="privacypolicy.html">Privacy Policy</a>
+        <a href="termsandconditions.html">Terms & Conditions</a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+  // Orders page script — reads bk_orders from localStorage and renders cards
+  (function(){
+    const STORAGE_KEY = 'bk_orders';
+
+    function readOrders(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return [];
+        return JSON.parse(raw) || [];
+      }catch(e){
+        console.error('Failed to parse orders', e);
+        return [];
+      }
+    }
+
+    function formatCurrency(n){
+      if (typeof n !== 'number') return '$0.00';
+      return '$' + n.toFixed(2);
+    }
+
+    function statusClass(status){
+      switch((status||'').toLowerCase()){
+        case 'preparing': return 'status-preparing';
+        case 'ready for pickup': return 'status-ready';
+        case 'delivered': return 'status-completed';
+        case 'completed': return 'status-completed';
+        default: return 'status-order-received';
+      }
+    }
+
+    function renderEmpty(){
+      const container = document.getElementById('orders-list');
+      container.innerHTML = `
+        <div class="empty-state" role="status">
+          <div class="empty-ill">🍞</div>
+          <h3 style="margin:0;color:var(--brown)">You have no orders yet</h3>
+          <p style="margin:0;color:var(--lighter-black)">Looks like your basket is still empty.</p>
+          <div style="margin-top:12px"><a href="index.html" class="btn btn-brown">Return to Menu</a></div>
+        </div>
+      `;
+    }
+
+    function renderOrders(list){
+      const container = document.getElementById('orders-list');
+      container.innerHTML = '';
+      list.forEach(order => {
+        const card = document.createElement('article');
+        card.className = 'order-card';
+        const orderId = order.orderNumber || order.orderId || 'BK-0000-0000';
+        const date = order.dateOrdered ? new Date(order.dateOrdered).toLocaleString() : (order.date || '—');
+        const total = order.totalPaid || order.total || 0;
+        const method = order.pickupOrDelivery || order.method || 'Pickup';
+        const status = order.status || 'Order Received';
+
+        card.innerHTML = `
+          <div class="order-summary">
+            <div class="order-meta">
+              <div class="order-number">${orderId}</div>
+              <div class="order-date">${date}</div>
+              <div class="order-total">${formatCurrency(total)}</div>
+              <div class="order-method">${method}</div>
+              <div class="notice">Karen will keep you updated by email as your order progresses.</div>
+            </div>
+          </div>
+          <div class="order-actions">
+            <div class="status-badge ${statusClass(status)}">${status}</div>
+            <button class="btn btn-outline details-toggle" aria-expanded="false">View Details</button>
+          </div>
+        `;
+
+        const details = document.createElement('div');
+        details.className = 'details-panel';
+        let itemsHtml = '';
+        (order.purchasedItems || order.items || []).forEach(it => {
+          const qty = it.quantity || it.qty || 1;
+          const name = it.name || it.productName || 'Item';
+          const price = it.price || it.unitPrice || 0;
+          itemsHtml += `<div class="item-row"><div class="item-left">${qty} × ${name}</div><div class="item-right">${formatCurrency(price)}</div></div>`;
+        });
+
+        const customerInfo = `
+          <div style="margin-top:12px"><strong>Customer</strong>
+            <div>${order.customerName || order.name || '—'}</div>
+            <div>${order.customerEmail || order.email || '—'}</div>
+            <div>${order.phone || order.customerPhone || ''}</div>
+          </div>
+        `;
+
+        const orderInfo = `
+          <div style="margin-top:12px"><strong>Order Info</strong>
+            <div>Method: ${method}</div>
+            <div>Requested Date: ${order.requestedDate || order.requestDate || '—'}</div>
+            <div>Special Instructions: ${order.specialInstructions || order.notes || '—'}</div>
+            ${method.toLowerCase().startsWith('deliver') ? `<div>Address: ${order.address || '—'}</div>` : ''}
+          </div>
+        `;
+
+        const paymentInfo = `
+          <div style="margin-top:12px"><strong>Payment</strong>
+            <div>Status: ${order.paymentStatus || order.status || 'Paid'}</div>
+            <div>PayPal Transaction ID: ${order.paypalTransactionId || order.paymentId || order.transactionId || '—'}</div>
+          </div>
+        `;
+
+        details.innerHTML = `<div class="items-list">${itemsHtml || '<div style="color:#6d4a2d">No items listed</div>'}</div>${customerInfo}${orderInfo}${paymentInfo}`;
+
+        card.appendChild(details);
+
+        // toggle behavior
+        card.querySelector('.details-toggle').addEventListener('click', function(){
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', String(!expanded));
+          details.style.display = expanded ? 'none' : 'block';
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function applySearchAndFilter(all){
+      const q = (document.getElementById('orders-search').value || '').trim().toLowerCase();
+      const filter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+      let list = all.slice();
+      if(filter === 'active'){
+        list = list.filter(o => !( (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered'));
+      } else if(filter === 'completed'){
+        list = list.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered');
+      }
+      if(q){
+        list = list.filter(o => {
+          const orderId = (o.orderNumber||o.orderId||'').toLowerCase();
+          const inItems = (o.purchasedItems||o.items||[]).some(it => (it.name||it.productName||'').toLowerCase().includes(q));
+          return orderId.includes(q) || inItems;
+        });
+      }
+      if(list.length === 0){ renderEmpty(); return; }
+      renderOrders(list);
+    }
+
+    function init(){
+      const all = readOrders();
+      const searchInput = document.getElementById('orders-search');
+      const filterBtns = document.querySelectorAll('.filter-btn');
+
+      document.querySelectorAll('.cart-count').forEach(el => {
+        try{ const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]'); el.textContent = cart.reduce((s,it)=>s+(it.quantity||0),0); }catch(e){}
+      });
+
+      if(!all || all.length === 0){ renderEmpty(); }
+      else { applySearchAndFilter(all); }
+
+      searchInput.addEventListener('input', () => applySearchAndFilter(all));
+      filterBtns.forEach(btn => btn.addEventListener('click', (e) => {
+        filterBtns.forEach(b=>b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        applySearchAndFilter(all);
+      }));
+
+      // sync on storage change
+      window.addEventListener('storage', (ev) => {
+        if(ev.key === STORAGE_KEY){
+          const updated = readOrders();
+          applySearchAndFilter(updated);
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  })();
+</script>
+</body>
+</html>
