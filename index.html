@@ -1455,150 +1455,128 @@ window.addEventListener('scroll',()=>{
     return { id, name, price, image };
   }
 
-  function getQuantityFromCart(id){
-    const cart = loadCart();
-    const item = cart.find(i=>i.id===id);
-    return item ? (item.quantity||0) : 0;
-  }
-
-  function createAddToCartButton(menuItem){
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'btn btn-brown add-to-cart';
-    button.textContent = 'Add to Cart';
-    button.style.alignSelf = 'center';
-    const name = menuItem.querySelector('.menu-name')?.textContent.trim();
-    if(name){
-      button.setAttribute('aria-label', `Add ${name} to cart`);
-    }
-    return button;
-  }
-
-  function updateMenuItemControl(menuItem){
-    const menuInfo = menuItem.querySelector('.menu-info');
-    const existingActions = menuInfo.querySelector('.menu-actions');
-    const existingButton = menuInfo.querySelector('.add-to-cart');
-    if(existingActions){ existingActions.remove(); }
-    if(existingButton){ existingButton.remove(); }
-
-    const id = getMenuItemId(menuItem);
-    const quantity = getQuantityFromCart(id);
+  function createQuantityBlock(menuItem){
     const name = menuItem.querySelector('.menu-name')?.textContent.trim() || 'Item';
+    const id = getMenuItemId(menuItem);
+    const labelId = `quantity-label-${id}`;
 
-    if(quantity > 0){
-      const actions = document.createElement('div');
-      actions.className = 'menu-actions menu-actions-added';
+    const quantitySelector = document.createElement('div');
+    quantitySelector.className = 'quantity-selector';
+    quantitySelector.setAttribute('role', 'group');
+    quantitySelector.setAttribute('aria-labelledby', labelId);
 
-      const quantitySelector = document.createElement('div');
-      quantitySelector.className = 'quantity-selector';
+    const decrease = document.createElement('button');
+    decrease.type = 'button';
+    decrease.className = 'qty-btn qty-decrease';
+    decrease.setAttribute('aria-label', `Decrease quantity for ${name}`);
+    decrease.textContent = '-';
 
-      const decrease = document.createElement('button');
-      decrease.type = 'button';
-      decrease.className = 'qty-btn qty-decrease';
-      decrease.setAttribute('aria-label', `Decrease quantity for ${name}`);
-      decrease.textContent = '-';
+    const value = document.createElement('span');
+    value.className = 'qty-value';
+    value.setAttribute('aria-live', 'polite');
+    value.setAttribute('aria-atomic', 'true');
+    value.textContent = '1';
 
-      const value = document.createElement('span');
-      value.className = 'qty-value';
-      value.setAttribute('aria-live', 'polite');
-      value.setAttribute('aria-atomic', 'true');
-      value.textContent = quantity;
+    const increase = document.createElement('button');
+    increase.type = 'button';
+    increase.className = 'qty-btn qty-increase';
+    increase.setAttribute('aria-label', `Increase quantity for ${name}`);
+    increase.textContent = '+';
 
-      const increase = document.createElement('button');
-      increase.type = 'button';
-      increase.className = 'qty-btn qty-increase';
-      increase.setAttribute('aria-label', `Increase quantity for ${name}`);
-      increase.textContent = '+';
+    quantitySelector.append(decrease, value, increase);
 
-      quantitySelector.append(decrease, value, increase);
-      quantitySelector.setAttribute('role', 'group');
-      const labelId = `quantity-label-${id}`;
+    const qtyBlock = document.createElement('div');
+    qtyBlock.className = 'quantity-block';
 
-      const qtyBlock = document.createElement('div');
-      qtyBlock.className = 'quantity-block';
+    const labelEl = document.createElement('div');
+    labelEl.className = 'quantity-label';
+    labelEl.id = labelId;
+    labelEl.textContent = 'Quantity';
 
-      const labelEl = document.createElement('label');
-      labelEl.className = 'quantity-label';
-      labelEl.id = labelId;
-      labelEl.textContent = 'Quantity';
+    qtyBlock.append(labelEl, quantitySelector);
+    return qtyBlock;
+  }
 
-      quantitySelector.setAttribute('aria-labelledby', labelId);
-      qtyBlock.append(labelEl, quantitySelector);
+  function getSelectedQuantity(menuItem){
+    const valueEl = menuItem.querySelector('.qty-value');
+    const quantity = parseInt(valueEl?.textContent || '1', 10);
+    return Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
+  }
 
-      const addedLabel = document.createElement('div');
-      addedLabel.className = 'added-count';
-      addedLabel.textContent = `(${quantity} item${quantity === 1 ? '' : 's'} added)`;
+  function updateSelectedQuantity(menuItem, quantity){
+    const valueEl = menuItem.querySelector('.qty-value');
+    if(valueEl){ valueEl.textContent = Math.max(1, quantity); }
+  }
 
-      actions.append(qtyBlock, addedLabel);
-      menuInfo.append(actions);
-    } else {
-      const actions = document.createElement('div');
+  function ensureMenuActions(menuItem){
+    const menuInfo = menuItem.querySelector('.menu-info');
+    let actions = menuInfo.querySelector('.menu-actions');
+    if(!actions){
+      actions = document.createElement('div');
       actions.className = 'menu-actions';
-      actions.append(createAddToCartButton(menuItem));
       menuInfo.append(actions);
+    }
+    const addBtn = menuInfo.querySelector('.add-to-cart');
+    if(addBtn && !actions.contains(addBtn)){
+      addBtn.style.alignSelf = 'center';
+      const name = menuItem.querySelector('.menu-name')?.textContent.trim();
+      if(name){ addBtn.setAttribute('aria-label', `Add ${name} to cart`); }
+      actions.append(addBtn);
+    }
+    return actions;
+  }
+
+  function renderMenuItemControls(menuItem){
+    const actions = ensureMenuActions(menuItem);
+    if(!menuItem.querySelector('.quantity-block')){
+      const qtyBlock = createQuantityBlock(menuItem);
+      actions.insertBefore(qtyBlock, actions.firstChild);
     }
   }
 
   function renderAllMenuControls(){
-    document.querySelectorAll('.menu-item').forEach(updateMenuItemControl);
+    document.querySelectorAll('.menu-item').forEach(renderMenuItemControls);
   }
 
-  function changeCartQuantity(menuItem, delta){
+  function addToCartFromMenuItem(menuItem){
+    const quantity = getSelectedQuantity(menuItem);
     const itemData = getMenuItemData(menuItem);
     const cart = loadCart();
     const existing = cart.find(i=>i.id===itemData.id);
-    const currentQty = existing ? existing.quantity : 0;
-    const nextQty = Math.max(0, currentQty + delta);
-
-    if(nextQty === 0){
-      const index = cart.findIndex(i=>i.id===itemData.id);
-      if(index > -1){ cart.splice(index, 1); }
-      saveCart(cart);
-      updateMenuItemControl(menuItem);
-      updateCartBadge(true);
-      showMiniToast(`${itemData.name} removed from your basket.`);
-      return;
-    }
 
     if(existing){
-      existing.quantity = nextQty;
+      existing.quantity += quantity;
     } else {
-      cart.push({ ...itemData, quantity: nextQty });
+      cart.push({ ...itemData, quantity });
     }
-    saveCart(cart);
-    updateMenuItemControl(menuItem);
-    updateCartBadge(true);
-    showMiniToast(`${nextQty} ${itemData.name}${nextQty === 1 ? '' : 's'} added to your basket.`);
-  }
 
-  function addToCartFromButton(button){
-    const menuItem = button.closest('.menu-item');
-    if(!menuItem) return;
-    changeCartQuantity(menuItem, 1);
+    saveCart(cart);
+    updateCartBadge(true);
+    showMiniToast(`Added ${quantity} ${itemData.name}${quantity === 1 ? '' : 's'} to cart.`);
+    updateSelectedQuantity(menuItem, 1);
   }
 
   document.addEventListener('click', (e) => {
-    const decreaseBtn = e.target.closest && e.target.closest('.qty-decrease');
-    const increaseBtn = e.target.closest && e.target.closest('.qty-increase');
-    const addBtn = e.target.closest && e.target.closest('.add-to-cart');
+    const button = e.target.closest('.qty-decrease, .qty-increase, .add-to-cart');
+    if(!button) return;
+    e.preventDefault();
+    const menuItem = button.closest('.menu-item');
+    if(!menuItem) return;
 
-    if(decreaseBtn){
-      e.preventDefault();
-      const menuItem = decreaseBtn.closest('.menu-item');
-      if(menuItem) changeCartQuantity(menuItem, -1);
+    if(button.classList.contains('qty-decrease')){
+      const current = getSelectedQuantity(menuItem);
+      updateSelectedQuantity(menuItem, Math.max(1, current - 1));
       return;
     }
 
-    if(increaseBtn){
-      e.preventDefault();
-      const menuItem = increaseBtn.closest('.menu-item');
-      if(menuItem) changeCartQuantity(menuItem, 1);
+    if(button.classList.contains('qty-increase')){
+      const current = getSelectedQuantity(menuItem);
+      updateSelectedQuantity(menuItem, current + 1);
       return;
     }
 
-    if(addBtn){
-      e.preventDefault();
-      addToCartFromButton(addBtn);
+    if(button.classList.contains('add-to-cart')){
+      addToCartFromMenuItem(menuItem);
       return;
     }
   });
