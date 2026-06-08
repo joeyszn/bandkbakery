@@ -546,7 +546,7 @@
                   <label for="order-item">Bakery Item</label>
                   <select id="order-item" name="item" class="order-select order-item-select" required>
                     <option value="" disabled selected>Select a bakery item</option>
-                    <option value="Babka">Babka — $22.00</option>
+                    <option value="Babka">Babka — $0.10</option>
                     <option value="Challah">Challah — $22.00</option>
                     <option value="Bagels">Bagels — $26.00</option>
                     <option value="Bialys">Bialys — $26.00</option>
@@ -1084,77 +1084,11 @@ window.addEventListener('scroll',()=>{
     // Store order data in sessionStorage
     sessionStorage.setItem('bakery_order', JSON.stringify(orderData));
 
-    // Map item names to specific PayPal links (priority: Babka, Challah, Bagels, Rugelach, Mandelbrot, Macarons, Greater-Crumb Coffee Cake, Almond Thumbprint Cookies)
-    const paypalLinks = {
-      babka: 'https://www.paypal.com/ncp/payment/GFHKZ8EFVCBX4',
-      challah: 'https://www.paypal.com/ncp/payment/JQH3CGKHTQ3K6',
-      bagels: 'https://www.paypal.com/ncp/payment/FHEXTUWT549SW',
-      rugelach: 'https://www.paypal.com/ncp/payment/BBH3653UC4WLY',
-      mandelbrot: 'https://www.paypal.com/ncp/payment/P4EKDTYK4ZRRS',
-      macarons: 'https://www.paypal.com/ncp/payment/7CH6B7R2VUXW8',
-      coffeeCake: 'https://www.paypal.com/ncp/payment/8FBMHDVRUL5JA',
-      almondThumbprintCookies: 'https://www.paypal.com/ncp/payment/JPTFNUWJTC4C6',
-      bialys: 'https://www.paypal.com/ncp/payment/VAF7FTACMAMZ8'
-    };
+    // Store order data in sessionStorage and redirect to cart
+    sessionStorage.setItem('bakery_order', JSON.stringify(orderData));
 
-    const itemNames = items.map(it => (it.name || '').toLowerCase());
-
-    // If Babka is present, redirect to its PayPal link (priority)
-    if(itemNames.some(n => n.includes('babka'))){
-      setTimeout(() => { window.location.href = paypalLinks.babka; }, 300);
-      return;
-    }
-
-    // If Challah is present, redirect to its PayPal link
-    if(itemNames.some(n => n.includes('challah'))){
-      setTimeout(() => { window.location.href = paypalLinks.challah; }, 300);
-      return;
-    }
-
-    // If Bagels are present, redirect to its PayPal link
-    if(itemNames.some(n => n.includes('bagel'))){
-      setTimeout(() => { window.location.href = paypalLinks.bagels; }, 300);
-      return;
-    }
-
-    // If Rugelach is present, redirect to its PayPal link
-    if(itemNames.some(n => n.includes('rugel'))){
-      setTimeout(() => { window.location.href = paypalLinks.rugelach; }, 300);
-      return;
-    }
-
-    // If Mandelbrot is present, redirect to its PayPal link
-    if(itemNames.some(n => n.includes('mandelbrot') || n.includes('mandelbrot'))){
-      setTimeout(() => { window.location.href = paypalLinks.mandelbrot; }, 300);
-      return;
-    }
-
-    // If Macarons are present, redirect to its PayPal link
-    if(itemNames.some(n => n.includes('macaron') || n.includes('macarons'))){
-      setTimeout(() => { window.location.href = paypalLinks.macarons; }, 300);
-      return;
-    }
-
-    // If Greater-Crumb Coffee Cake is present, redirect to its PayPal link
-    if(itemNames.some(n => n.includes('coffee cake') || n.includes('greater-crumb') || n.includes('greater crumb'))){
-      setTimeout(() => { window.location.href = paypalLinks.coffeeCake; }, 300);
-      return;
-    }
-
-    // If Almond Thumbprint Cookies are present, redirect to its PayPal link
-    if(itemNames.some(n => n.includes('almond thumbprint') || n.includes('thumbprint') || n.includes('almond'))){
-      setTimeout(() => { window.location.href = paypalLinks.almondThumbprintCookies; }, 300);
-      return;
-    }
-
-    // If Bialys are present, redirect to its PayPal link
-    if(itemNames.some(n => n.includes('bialy'))){
-      setTimeout(() => { window.location.href = paypalLinks.bialys; }, 300);
-      return;
-    }
-
-    // Otherwise, continue to the standard payment page
-    setTimeout(() => { window.location.href = 'payment.html'; }, 300);
+    // Redirect to cart to complete checkout
+    window.location.href = 'cart.html';
   });
 })();
 
@@ -1641,6 +1575,6 @@ window.addEventListener('scroll',()=>{
   window.addEventListener('focus', () => { renderAllMenuControls(); updateCartBadge(false); });
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 </body>
 </html>

@@ -119,7 +119,7 @@
         <a href="aboutus" class="btn btn-ghost">About Us</a>
         <a href="index.html#menu" class="btn btn-ghost">Menu</a>
         <a href="orders.html" class="btn btn-ghost">Orders</a>
-        <a href="cart" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
+        <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
       </div>
       <div class="mobile-nav">
         <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
@@ -140,7 +140,7 @@
       <a href="aboutus" class="btn btn-ghost">About Us</a>
       <a href="index.html#menu" class="btn btn-ghost">Menu</a>
       <a href="orders.html" class="btn btn-ghost">Orders</a>
-      <a href="cart" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
+      <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
     </div>
     <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
   </header>
@@ -280,6 +280,16 @@
       function loadCart(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
       function saveCart(cart){ localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }
       function saveLastOrder(order){ localStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order)); }
+
+      function saveOrderToOrders(orderRecord){
+        try {
+          const existing = JSON.parse(localStorage.getItem('bk_orders') || '[]');
+          existing.unshift(orderRecord);
+          localStorage.setItem('bk_orders', JSON.stringify(existing));
+        } catch (e) {
+          console.error('Failed to save order to orders list', e);
+        }
+      }
 
       function formatMoney(n){ return '$'+(n||0).toFixed(2); }
 
@@ -695,13 +705,14 @@
             const checkout = JSON.parse(localStorage.getItem('bk_checkout') || 'null') || {};
             const orderRecord = buildOrderRecord(captureDetails, cart, checkout);
             saveLastOrder(orderRecord);
+            saveOrderToOrders(orderRecord);
             await sendOrderEmails(orderRecord);
             saveCart([]);
-            window.location.href = `success?orderId=${encodeURIComponent(orderRecord.orderId)}`;
+            window.location.href = `success.html?orderId=${encodeURIComponent(orderRecord.orderId)}`;
           },
 
           onCancel: () => {
-            window.location.href = 'cancel';
+            window.location.href = 'cancel.html';
           },
 
           onError: async (err) => {
@@ -716,7 +727,68 @@
       // ─── Init ─────────────────────────────────────────────────────────────────
       renderCart();
       setDeliveryVisibility();
+
+      // Pre-populate cart from sessionStorage if user came from index.html order form
+      try {
+        const bakeryOrder = JSON.parse(sessionStorage.getItem('bakery_order') || 'null');
+        if (bakeryOrder && bakeryOrder.items && Array.isArray(bakeryOrder.items)) {
+          const cart = loadCart();
+          if (!cart || cart.length === 0) {
+            const newCart = bakeryOrder.items.map(it => ({
+              id: it.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'item-' + Math.random().toString(36).slice(2, 8),
+              name: it.name || 'Bakery item',
+              price: parseFloat(it.price) || 0,
+              quantity: parseInt(it.quantity) || 1,
+              image: ''
+            }));
+            saveCart(newCart);
+            renderCart();
+          }
+        }
+      } catch (e) {}
+
       validateAndTogglePayPal();
+
+      // Pre-populate form from sessionStorage if user came from index.html order form
+      try {
+        const bakeryOrder = JSON.parse(sessionStorage.getItem('bakery_order') || 'null');
+        if (bakeryOrder && bakeryOrder.name) {
+          const nameEl = document.getElementById('cust-name');
+          const phoneEl = document.getElementById('cust-phone');
+          const emailEl = document.getElementById('cust-email');
+          const dateEl = document.getElementById('cust-date');
+          const timeEl = document.getElementById('cust-time');
+          const notesEl = document.getElementById('cust-notes');
+          const addressEl = document.getElementById('cust-address');
+          const cityEl = document.getElementById('cust-city');
+          const stateEl = document.getElementById('cust-state');
+          const zipEl = document.getElementById('cust-zip');
+
+          if (nameEl && !nameEl.value) nameEl.value = bakeryOrder.name || '';
+          if (phoneEl && !phoneEl.value) phoneEl.value = bakeryOrder.phone || '';
+          if (emailEl && !emailEl.value) emailEl.value = bakeryOrder.email || '';
+          if (dateEl && !dateEl.value) dateEl.value = bakeryOrder.schedule ? bakeryOrder.schedule.split(' at ')[0] : '';
+          if (timeEl && !timeEl.value) timeEl.value = bakeryOrder.schedule && bakeryOrder.schedule.includes(' at ') ? bakeryOrder.schedule.split(' at ')[1] : '';
+          if (notesEl && !notesEl.value) notesEl.value = bakeryOrder.notes || '';
+          if (addressEl && !addressEl.value) addressEl.value = bakeryOrder.address || '';
+
+          if (bakeryOrder.method === 'Delivery' && bakeryOrder.address) {
+            const parts = bakeryOrder.address.split(',').map(s => s.trim());
+            if (parts.length >= 3) {
+              if (addressEl) addressEl.value = parts[0];
+              if (cityEl) cityEl.value = parts[1];
+              if (stateEl) stateEl.value = parts[2].split(' ')[0];
+              if (zipEl) zipEl.value = parts[2].split(' ')[1] || '';
+            }
+          }
+
+          if (bakeryOrder.method === 'Delivery') {
+            const deliveryRadio = form.querySelector('input[name="method"][value="Delivery"]');
+            if (deliveryRadio) deliveryRadio.checked = true;
+          }
+        }
+      } catch (e) {}
+
       loadPayPalSdk();
 
     })();

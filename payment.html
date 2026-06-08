@@ -3,68 +3,29 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Secure Checkout — The B&KERY</title>
+  <title>Your Payment — The B&KERY</title>
   <link rel="stylesheet" href="styles.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
-<body class="alan-sans payment-page">
+<body class="alan-sans">
 
 <!-- Progress Bar -->
 <div id="progress-bar" role="progressbar" aria-label="Page scroll progress"></div>
 
-<!-- ── Header ──────────────────────────────────────────────────── -->
+<!-- Header -->
 <header id="header" aria-label="Site header">
   <nav aria-label="Main navigation">
     <div class="logo" aria-label="B&KERY Home">
-      <a href="/">
-        <img src="Logo.png" width="140" alt="The B&KERY logo">
-      </a>
+      <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
     </div>
     <div class="nav-actions">
-      <button class="search-toggle" id="search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
-      </button>
-      <div class="search-container" id="search-container" aria-hidden="true">
-        <div class="search-input-wrapper">
-          <input
-            type="text"
-            id="search-input"
-            class="search-input"
-            placeholder="Search treats..."
-            autocomplete="off"
-            aria-label="Search bakery products"
-            aria-describedby="search-hint"
-            aria-autocomplete="list"
-            aria-controls="search-results"
-          />
-          <button class="search-clear" id="search-clear" aria-label="Clear search" type="button">×</button>
-        </div>
-        <div class="search-hint" id="search-hint">Type to find your favorite treats</div>
-        <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
-      </div>
       <a href="aboutus" class="btn btn-ghost">About Us</a>
       <a href="index.html#menu" class="btn btn-ghost">Menu</a>
       <a href="orders.html" class="btn btn-ghost">Orders</a>
       <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
-    </div>
-    <div class="mobile-nav">
-      <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
-      </button>
-      <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
     </div>
   </nav>
   <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
@@ -77,599 +38,223 @@
   <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
 </header>
 
-<!-- ── Setup Warning (Development Mode) ──────────────────────── -->
-<div id="setup-warning" class="setup-warning" aria-hidden="true">
-  <div class="setup-warning-content">
-    <h3>⚙️ Payment System Setup Required</h3>
-    <p>The payment system needs to be configured with PayPal credentials before processing real payments.</p>
-    <p><strong>For testing:</strong> Use sandbox credentials. See <a href="PAYMENT_SETUP.md">PAYMENT_SETUP.md</a> for instructions.</p>
-    <p><strong>What's needed:</strong></p>
-    <ul style="text-align: left; margin: 0; padding-left: 20px;">
-      <li>PayPal Business account</li>
-      <li>PayPal API Client ID and Secret</li>
-      <li>Netlify environment variables configured</li>
-      <li>Email service setup (SendGrid or Mailgun)</li>
-    </ul>
-  </div>
-</div>
-
-<!-- ── Checkout Container ──────────────────────────────────────── -->
-<main id="checkout-main" class="checkout-main" role="main">
+<main class="checkout-main" role="main">
   <div class="checkout-container">
-    <!-- LEFT SIDE: ORDER SUMMARY -->
+
     <aside class="order-summary-section" aria-label="Order summary">
       <div class="summary-header">
         <h1 class="summary-title">Order Summary</h1>
         <p class="summary-subtitle">Review your bakery order</p>
       </div>
-
       <div class="summary-card">
-        <!-- Items List -->
-        <div class="summary-items" id="summary-items">
-          <!-- Dynamically populated -->
+        <div class="summary-items" id="summary-items"></div>
+        <hr style="border:none;border-top:1px solid #f2e9e0;margin:12px 0" />
+        <div class="summary-totals">
+          <div class="summary-row"><span>Subtotal</span><span id="summary-subtotal">$0.00</span></div>
+          <div class="summary-row" id="delivery-fee-row" style="display:none"><span>Delivery Fee</span><span id="summary-delivery-fee">$5.00</span></div>
+          <div class="summary-row summary-total"><span>Total</span><span class="summary-value-total" id="payment-amount">$0.00</span></div>
         </div>
-
-        <!-- Divider -->
-        <!doctype html>
-        <html lang="en">
-        <head>
-          <meta charset="utf-8" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <title>Payment — The B&KERY</title>
-          <link rel="stylesheet" href="styles.css" />
-          <link rel="preconnect" href="https://fonts.googleapis.com">
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-          <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
-          <link rel="icon" type="image/x-icon" href="favicon.ico">
-          <style>
-            .notice-shell{max-width:900px;margin:72px auto;padding:0 18px}
-            .notice-card{background:#fff;border-radius:18px;box-shadow:0 14px 36px rgba(82,47,28,0.08);overflow:hidden}
-            .notice-hero{padding:36px 36px;background:linear-gradient(180deg,rgba(249,199,95,0.12),#fff)}
-            .notice-hero h1{margin:0 0 8px;color:var(--brown)}
-            .notice-body{padding:20px 36px 36px;color:rgba(0,0,0,0.7);line-height:1.7}
-            .notice-actions{display:flex;gap:12px;margin-top:12px}
-          </style>
-        </head>
-        <body class="alan-sans">
-          <header id="header" aria-label="Site header">
-            <nav aria-label="Main navigation">
-              <div class="logo" aria-label="B&KERY Home">
-                <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
-              </div>
-              <div class="nav-actions">
-                <button class="search-toggle" id="search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                  </svg>
-                </button>
-                <div class="search-container" id="search-container" aria-hidden="true">
-                  <div class="search-input-wrapper">
-                    <input type="text" id="search-input" class="search-input" placeholder="Search treats..." autocomplete="off" aria-label="Search bakery products" aria-describedby="search-hint" aria-autocomplete="list" aria-controls="search-results" />
-                    <button class="search-clear" id="search-clear" aria-label="Clear search" type="button">×</button>
-                  </div>
-                </div>
-                <a href="aboutus" class="btn btn-ghost">About Us</a>
-                <a href="index.html#menu" class="btn btn-ghost">Menu</a>
-                <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
-              </div>
-              <div class="mobile-nav">
-                <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                  </svg>
-                </button>
-                <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
-                  <span class="hamburger-line"></span>
-                  <span class="hamburger-line"></span>
-                  <span class="hamburger-line"></span>
-                </button>
-              </div>
-            </nav>
-            <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
-              <button class="mobile-menu-close" aria-label="Close navigation">×</button>
-              <a href="aboutus" class="btn btn-ghost">About Us</a>
-              <a href="index.html#menu" class="btn btn-ghost">Menu</a>
-              <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
-            </div>
-            <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
-          </header>
-
-          <main class="notice-shell">
-            <div class="notice-card">
-              <div class="notice-hero">
-                <h1>Secure Checkout via PayPal</h1>
-                <p class="lead">We now process payments using PayPal's secure cart checkout to keep your payment information private.</p>
-              </div>
-              <div class="notice-body">
-                <p>To complete payment, please open your <strong>Cart</strong> and click <em>Proceed to Secure Checkout</em>. You will be redirected to PayPal to pay for your items. After successful payment you'll be returned to our confirmation page.</p>
-                <p>If you were redirected here by mistake or need assistance, please return to your cart or contact us at <a href="mailto:mgbikehjoel@gmail.com">mgbikehjoel@gmail.com</a>.</p>
-                <div class="notice-actions">
-                  <a href="cart.html" class="btn btn-brown">Open Cart</a>
-                  <a href="/" class="btn btn-outline">Back to Home</a>
-                </div>
-              </div>
-            </div>
-          </main>
-
-          <footer id="footer" aria-label="Site footer">
-            <div class="footer-content">
-              <p>&copy; 2026. The B&KERY. You can taste the love! 💛</p>
-              <div class="footer-links">
-                <a href="privacypolicy.html">Privacy Policy</a>
-                <a href="termsandconditions.html">Terms & Conditions</a>
-              </div>
-            </div>
-          </footer>
-
-          <script>
-            document.addEventListener('DOMContentLoaded', ()=>{
-              try{
-                const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]');
-                const count = cart.reduce((s,i)=>s+(i.quantity||0),0);
-                document.querySelectorAll('.cart-count').forEach(el=>el.textContent = count);
-              }catch(e){}
-
-              const toggle = document.querySelector('.mobile-menu-toggle');
-              const panel = document.getElementById('mobile-menu-panel');
-              const backdrop = document.getElementById('mobile-menu-backdrop');
-              const closeButton = document.querySelector('.mobile-menu-close');
-              if(toggle && panel && backdrop && closeButton){
-                const setOpen = open => {
-                  panel.classList.toggle('open', open);
-                  backdrop.classList.toggle('open', open);
-                  toggle.setAttribute('aria-expanded', String(open));
-                  panel.setAttribute('aria-hidden', String(!open));
-                };
-                toggle.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
-                closeButton.addEventListener('click', () => setOpen(false));
-                backdrop.addEventListener('click', () => setOpen(false));
-                panel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
-              }
-            });
-          </script>
-        </body>
-        </html>
-  const deliveryFeeRow = document.getElementById('delivery-fee-row');
-  const deliveryFeeEl = document.getElementById('summary-delivery-fee');
-  const paymentAmountEl = document.getElementById('payment-amount');
-
-  itemsContainer.innerHTML = '';
-  let subtotal = 0;
-
-  // Add items
-  if(orderData.items && Array.isArray(orderData.items)){
-    orderData.items.forEach((item, index) => {
-      const itemName = item.name || '';
-      const quantity = parseInt(item.quantity) || 1;
-      const price = parseFloat(item.price) || 0;
-      const itemTotal = price * quantity;
-      subtotal += itemTotal;
-
-      const itemEl = document.createElement('div');
-      itemEl.className = 'summary-item';
-      itemEl.innerHTML = `
-        <div class="item-name-qty">
-          <span class="item-name">${escapeHtml(itemName)}</span>
-          <span class="item-qty">× ${quantity}</span>
-        </div>
-        <span class="item-price">$${itemTotal.toFixed(2)}</span>
-      `;
-      itemsContainer.appendChild(itemEl);
-    });
-  }
-
-  // Delivery type
-  const method = orderData.method || 'Pickup';
-  deliveryTypeEl.textContent = method;
-
-  // Schedule
-  if(orderData.schedule){
-    scheduleSection.setAttribute('aria-hidden', 'false');
-    const date = new Date(orderData.schedule);
-    scheduleEl.textContent = formatDate(date);
-  }
-
-  // Address (show if delivery)
-  if(method === 'Delivery' && orderData.address){
-    addressSection.setAttribute('aria-hidden', 'false');
-    addressEl.textContent = escapeHtml(orderData.address);
-  }
-
-  // Calculate totals
-  let deliveryFee = 0;
-  if(method === 'Delivery'){
-    deliveryFee = 5.00;
-    deliveryFeeRow.setAttribute('aria-hidden', 'false');
-    deliveryFeeEl.textContent = `$${deliveryFee.toFixed(2)}`;
-  }
-
-  const total = subtotal + deliveryFee;
-  subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-  totalEl.textContent = `$${total.toFixed(2)}`;
-  paymentAmountEl.textContent = `$${total.toFixed(2)}`;
-
-  // Store total for payment
-  window.orderTotal = total;
-}
-
-function populateFormWithCustomerInfo(orderData){
-  const name = orderData.name || '';
-  const email = orderData.email || '';
-  const phone = orderData.phone || '';
-  const address = orderData.address || '';
-
-  // Parse address if available
-  if(address){
-    document.getElementById('billing-address').value = address;
-  }
-
-  document.getElementById('billing-name').value = name;
-  document.getElementById('billing-email').value = email;
-  document.getElementById('billing-phone').value = phone;
-}
-
-function formatDate(date){
-  const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-  return date.toLocaleDateString('en-US', options);
-}
-
-function escapeHtml(text){
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-function showError(message){
-  const statusEl = document.getElementById('form-status');
-  statusEl.className = 'form-status error';
-  statusEl.textContent = message;
-}
-
-// ──────────────────────────────────────────────────────────────
-// PAYPAL HOSTED FIELDS SETUP
-// ──────────────────────────────────────────────────────────────
-
-let hostedFields;
-
-function initializePayPalFields(){
-  // Check if PayPal is available
-  if (typeof paypal === 'undefined' || !paypal.HostedFields) {
-    console.warn('PayPal HostedFields not available, showing fallback UI');
-    showPayPalFallback();
-    return;
-  }
-
-  paypal.HostedFields.render({
-    fields: {
-      number: {
-        selector: '#card-field',
-        placeholder: 'Card number'
-      },
-      expirationDate: {
-        selector: '#card-expiry-field',
-        placeholder: 'MM/YY'
-      },
-      cvv: {
-        selector: '#card-cvv-field',
-        placeholder: 'CVV'
-      }
-    },
-    styles: {
-      input: {
-        'font-family': '"Alan Sans", sans-serif',
-        'font-size': '15px',
-        'color': '#000',
-        'padding': '12px 14px'
-      },
-      'input:focus': {
-        'border-color': '#f9c75f',
-        'box-shadow': '0 0 0 4px rgba(249, 199, 95, .18)'
-      },
-      'input::placeholder': {
-        'color': '#9a9a9a'
-      }
-    },
-    onError: function(err){
-      console.error('PayPal Hosted Fields error:', err);
-      showError('Card field error: ' + err.message);
-      showPayPalFallback();
-    }
-  }).then(function(instance){
-    hostedFields = instance;
-    attachPaymentFormHandlers(instance);
-  }).catch(function(err){
-    console.error('PayPal Hosted Fields initialization error:', err);
-    showError('Payment system initialization failed.');
-    showPayPalFallback();
-  });
-}
-
-function showPayPalFallback(){
-  const container = document.getElementById('payment-container');
-  if (container) {
-    container.innerHTML = `
-      <div style="background: #fff5e1; padding: 16px; border-radius: 12px; border: 1px solid var(--border-brown);">
-        <p style="margin: 0; color: var(--brown); font-size: 14px;">
-          <strong>⚠️ PayPal fields unavailable:</strong> Payment system is being configured.
-        </p>
-        <p style="margin: 8px 0 0; color: var(--gray); font-size: 13px;">
-          Please verify your PayPal credentials are set up in Netlify environment variables.
-          See PAYMENT_SETUP.md for instructions.
-        </p>
       </div>
-    `;
-  }
-}
+      <div style="margin-top:16px;padding:14px 16px;background:rgba(249,199,95,0.08);border-radius:14px;border:1px solid rgba(249,199,95,0.2)">
+        <p style="font-size:14px;color:var(--brown);margin:0 0 8px"><strong>Important:</strong></p>
+        <p style="font-size:13px;color:var(--lighter-black);margin:0">Please use the <a href="cart.html" style="color:var(--brown);font-weight:700">Cart page</a> to complete your PayPal checkout. This page shows your order details.</p>
+      </div>
+    </aside>
 
-function attachPaymentFormHandlers(instance){
-  const form = document.getElementById('payment-form');
-  
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    // Validate form
-    if(!validatePaymentForm()){
+    <section class="payment-form-section" aria-label="Payment form">
+      <div class="form-header">
+        <h2>Payment Details</h2>
+        <p>Complete your payment securely</p>
+      </div>
+
+      <div id="no-order-notice" style="display:none;background:#fff5e1;padding:18px;border-radius:14px;border:1px solid var(--border-brown);margin-bottom:16px">
+        <p style="margin:0;color:var(--brown);font-weight:600">No order data found.</p>
+        <p style="margin:6px 0 0;color:var(--lighter-black);font-size:14px">Please add items to your cart and proceed to checkout.</p>
+        <a href="cart.html" class="btn btn-brown" style="margin-top:10px;display:inline-flex">Go to Cart</a>
+      </div>
+
+      <form id="payment-form" class="payment-form" novalidate>
+        <div id="order-summary-mini" style="background:rgba(249,199,95,0.08);border:1px solid rgba(249,199,95,0.2);border-radius:14px;padding:14px 16px;margin-bottom:8px">
+          <p style="font-weight:700;color:var(--brown);margin:0 0 6px">Order Summary</p>
+          <div id="payment-items-container" style="display:flex;flex-direction:column;gap:6px"></div>
+          <hr style="border:none;border-top:1px solid rgba(82,47,28,0.1);margin:10px 0" />
+          <div style="display:flex;justify-content:space-between;font-weight:800;color:var(--brown)">
+            <span>Total</span><span id="payment-total-mini">$0.00</span>
+          </div>
+        </div>
+
+        <div class="form-fieldset">
+          <legend class="fieldset-legend">Billing Information</legend>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="billing-name">Full Name</label>
+              <input id="billing-name" type="text" class="payment-input" placeholder="Your full name" required />
+              <div class="field-error" id="error-billing-name"></div>
+            </div>
+            <div class="form-group">
+              <label for="billing-email">Email</label>
+              <input id="billing-email" type="email" class="payment-input" placeholder="you@example.com" required />
+              <div class="field-error" id="error-billing-email"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="billing-phone">Phone Number</label>
+            <input id="billing-phone" type="tel" class="payment-input" placeholder="(555) 123-4567" required />
+            <div class="field-error" id="error-billing-phone"></div>
+          </div>
+        </div>
+
+        <div class="form-fieldset">
+          <legend class="fieldset-legend">Billing Address</legend>
+          <div class="form-group">
+            <label for="billing-address">Street Address</label>
+            <input id="billing-address" type="text" class="payment-input" placeholder="123 Main St" required />
+            <div class="field-error" id="error-billing-address"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="billing-city">City</label>
+              <input id="billing-city" type="text" class="payment-input" placeholder="City" required />
+              <div class="field-error" id="error-billing-city"></div>
+            </div>
+            <div class="form-group">
+              <label for="billing-state">State</label>
+              <input id="billing-state" type="text" class="payment-input" placeholder="CA" required />
+              <div class="field-error" id="error-billing-state"></div>
+            </div>
+            <div class="form-group">
+              <label for="billing-zip">ZIP Code</label>
+              <input id="billing-zip" type="text" class="payment-input" placeholder="95121" required />
+              <div class="field-error" id="error-billing-zip"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="billing-country">Country</label>
+            <input id="billing-country" type="text" class="payment-input" value="United States" required />
+            <div class="field-error" id="error-billing-country"></div>
+          </div>
+        </div>
+
+        <div id="payment-container" style="padding:12px 0">
+          <p style="color:var(--gray);font-size:14px;text-align:center;padding:20px">
+            Complete the form above and return to the <a href="cart.html" style="color:var(--brown);font-weight:700">Cart</a> to process payment via PayPal.
+          </p>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-brown" onclick="window.location.href='cart.html'" id="payment-submit-btn">
+            <span class="btn-text">Proceed to PayPal Checkout</span>
+          </button>
+        </div>
+
+        <div class="form-status" id="form-status"></div>
+      </form>
+
+      <div id="success-pane" class="success-pane" aria-hidden="true">
+        <div class="success-icon" aria-hidden="true">✓</div>
+        <h3 class="success-title">Payment Successful!</h3>
+        <p class="success-message">Your order has been confirmed. Karen & Bruce will prepare your treats shortly.</p>
+        <div class="success-details">
+          <p><strong>Order ID:</strong> <span id="success-order-id">—</span></p>
+          <p><strong>Total Paid:</strong> <span id="success-total">—</span></p>
+        </div>
+        <a href="index.html" class="btn btn-brown">Return to Home</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer id="footer" aria-label="Site footer">
+  <div class="footer-content">
+    <p>&copy; 2026. The B&KERY. You can taste the love! 💛</p>
+    <div class="footer-links">
+      <a href="privacypolicy.html">Privacy Policy</a>
+      <a href="termsandconditions.html">Terms & Conditions</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let orderData = null;
+    try {
+      orderData = JSON.parse(sessionStorage.getItem('bakery_order') || 'null');
+    } catch (e) {}
+
+    if (!orderData) {
+      document.getElementById('no-order-notice').style.display = 'block';
+      document.getElementById('payment-form').style.display = 'none';
       return;
     }
 
-    // Check if PayPal fields are initialized
-    if (!instance) {
-      showError('Payment fields not initialized. Please refresh the page.');
-      return;
+    const cart = JSON.parse(localStorage.getItem('bk_cart') || '[]');
+    const count = cart.reduce((s, i) => s + (i.quantity || 0), 0);
+    document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
+
+    const container = document.getElementById('payment-items-container');
+    let subtotal = 0;
+
+    if (orderData.items && Array.isArray(orderData.items)) {
+      orderData.items.forEach(it => {
+        const qty = parseInt(it.quantity || 1);
+        const price = parseFloat(it.price || 0);
+        const itemTotal = price * qty;
+        subtotal += itemTotal;
+        if (container) {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex;justify-content:space-between;font-size:14px;color:var(--brown);padding:4px 0';
+          row.innerHTML = '<span>' + escapeHtml(it.name || 'Item') + ' &times; ' + qty + '</span><span style="font-weight:700">$' + itemTotal.toFixed(2) + '</span>';
+          container.appendChild(row);
+        }
+      });
     }
 
-    const submitBtn = document.getElementById('payment-submit-btn');
-    submitBtn.disabled = true;
-    submitBtn.classList.add('loading');
-
-    try {
-      // Request a payment source token from Hosted Fields
-      const { cards } = await instance.getState();
-      const card = cards[0];
-
-      if(!card){
-        showError('Please enter a valid card.');
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('loading');
-        return;
-      }
-
-      if(card.type === 'INVALID'){
-        showError('The card information is invalid. Please check and try again.');
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('loading');
-        return;
-      }
-
-      // Process payment with PayPal
-      await processPayment(instance);
-      
-    } catch(error){
-      showError('Payment processing failed. Please try again.');
-      console.error('Payment error:', error);
-      submitBtn.disabled = false;
-      submitBtn.classList.remove('loading');
-    }
-  });
-}
-
-async function processPayment(instance){
-  const submitBtn = document.getElementById('payment-submit-btn');
-  
-  try {
-    // Create order on PayPal
-    const orderResponse = await fetch('/.netlify/functions/create-paypal-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount: window.orderTotal.toFixed(2)
-      })
-    });
-
-    if(!orderResponse.ok){
-      throw new Error(`Server error: ${orderResponse.status}`);
+    let deliveryFee = 0;
+    if (orderData.method === 'Delivery') {
+      deliveryFee = 5.00;
+      const deliveryFeeRow = document.getElementById('delivery-fee-row');
+      if (deliveryFeeRow) deliveryFeeRow.style.display = 'flex';
+      const deliveryFeeEl = document.getElementById('summary-delivery-fee');
+      if (deliveryFeeEl) deliveryFeeEl.textContent = '$' + deliveryFee.toFixed(2);
     }
 
-    const orderResult = await orderResponse.json();
-    
-    if (orderResult.error) {
-      throw new Error(orderResult.message || 'Failed to create payment order');
-    }
+    const total = subtotal + deliveryFee;
+    const summarySubtotal = document.getElementById('summary-subtotal');
+    const paymentAmount = document.getElementById('payment-amount');
+    const paymentTotalMini = document.getElementById('payment-total-mini');
+    if (summarySubtotal) summarySubtotal.textContent = '$' + subtotal.toFixed(2);
+    if (paymentAmount) paymentAmount.textContent = '$' + total.toFixed(2);
+    if (paymentTotalMini) paymentTotalMini.textContent = '$' + total.toFixed(2);
 
-    const orderId = orderResult.id;
-    if (!orderId) {
-      throw new Error('No order ID returned from server');
-    }
+    window.orderTotal = total;
 
-    // Create payment source from hosted fields
-    let source;
-    try {
-      const tokenResult = await instance.tokenize();
-      source = tokenResult.source;
-    } catch (e) {
-      throw new Error('Card validation failed: ' + e.message);
-    }
+    if (orderData.name) document.getElementById('billing-name').value = orderData.name;
+    if (orderData.email) document.getElementById('billing-email').value = orderData.email;
+    if (orderData.phone) document.getElementById('billing-phone').value = orderData.phone;
+    if (orderData.address) document.getElementById('billing-address').value = orderData.address;
 
-    if (!source || !source.id) {
-      throw new Error('Failed to generate payment token');
-    }
+    document.getElementById('payment-submit-btn').disabled = false;
 
-    // Confirm payment with PayPal
-    const confirmResponse = await fetch('/.netlify/functions/confirm-payment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        orderId,
-        sourceId: source.id,
-        amount: window.orderTotal.toFixed(2),
-        customerEmail: document.getElementById('billing-email').value,
-        customerName: document.getElementById('billing-name').value
-      })
-    });
-
-    if(!confirmResponse.ok){
-      throw new Error(`Server error: ${confirmResponse.status}`);
-    }
-
-    const confirmData = await confirmResponse.json();
-
-    if (confirmData.error) {
-      throw new Error(confirmData.message || 'Payment confirmation failed');
-    }
-
-    if(confirmData.status === 'APPROVED' || confirmData.status === 'COMPLETED'){
-      // Payment successful
-      showPaymentSuccess();
-      
-      // Send confirmation email
-      await sendConfirmationEmail();
-      
-      // Clear order data
-      sessionStorage.removeItem('bakery_order');
-    } else {
-      throw new Error('Payment was not approved. Status: ' + confirmData.status);
-    }
-  } catch(error){
-    let userMessage = 'An error occurred during payment processing.';
-    
-    if (error.message.includes('fetch')) {
-      userMessage = 'Connection error. Please check your internet and try again.';
-    } else if (error.message.includes('Card')) {
-      userMessage = 'Card error: ' + error.message;
-    } else if (error.message.includes('credentials')) {
-      userMessage = 'Payment system not configured. Please contact the bakery.';
-    }
-    
-    showError(userMessage);
-    console.error('Payment processing error:', error);
-    submitBtn.disabled = false;
-    submitBtn.classList.remove('loading');
-  }
-}
-
-function validatePaymentForm(){
-  const form = document.getElementById('payment-form');
-  const fields = ['billing-name', 'billing-email', 'billing-phone', 'billing-address', 'billing-city', 'billing-state', 'billing-zip', 'billing-country'];
-  
-  let isValid = true;
-
-  // Clear previous errors
-  document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
-  document.querySelectorAll('.payment-input').forEach(el => el.classList.remove('error-field'));
-
-  // Validate each field
-  fields.forEach(fieldId => {
-    const input = document.getElementById(fieldId);
-    const errorEl = document.getElementById('error-' + fieldId);
-    
-    if(!input.value.trim()){
-      input.classList.add('error-field');
-      if(errorEl) errorEl.textContent = 'This field is required.';
-      isValid = false;
-    }
-
-    // Email validation
-    if(fieldId === 'billing-email'){
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if(!emailRegex.test(input.value)){
-        input.classList.add('error-field');
-        if(errorEl) errorEl.textContent = 'Please enter a valid email address.';
-        isValid = false;
-      }
-    }
-
-    // Phone validation
-    if(fieldId === 'billing-phone'){
-      const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-      if(!phoneRegex.test(input.value)){
-        input.classList.add('error-field');
-        if(errorEl) errorEl.textContent = 'Please enter a valid phone number.';
-        isValid = false;
-      }
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
   });
 
-  return isValid;
-}
+  window.addEventListener('scroll', () => {
+    const bar = document.getElementById('progress-bar');
+    if (!bar) return;
+    const st = document.documentElement.scrollTop;
+    const dh = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (dh > 0 ? Math.min(100, (st / dh) * 100) : 0) + '%';
+  }, { passive: true });
 
-function showPaymentSuccess(){
-  const form = document.getElementById('payment-form');
-  const successPane = document.getElementById('success-pane');
-  const successEmail = document.getElementById('success-email');
-  
-  const email = document.getElementById('billing-email').value;
-  successEmail.textContent = email;
-
-  // Hide form, show success
-  form.style.display = 'none';
-  successPane.setAttribute('aria-hidden', 'false');
-}
-
-async function sendConfirmationEmail(){
-  try {
-    const orderData = JSON.parse(sessionStorage.getItem('bakery_order')) || {};
-    
-    await fetch('/.netlify/functions/send-confirmation-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: document.getElementById('billing-email').value,
-        name: document.getElementById('billing-name').value,
-        orderData: orderData,
-        total: window.orderTotal.toFixed(2)
-      })
-    });
-  } catch(error){
-    console.error('Email sending failed:', error);
-    // Continue even if email fails
-  }
-}
-
-function attachFormHandlers(){
-  // Add real-time validation feedback
-  const inputs = document.querySelectorAll('.payment-input');
-  
-  inputs.forEach(input => {
-    input.addEventListener('blur', () => {
-      const fieldId = input.id;
-      const errorEl = document.getElementById('error-' + fieldId);
-      
-      if(!input.value.trim()){
-        input.classList.add('error-field');
-        if(errorEl) errorEl.textContent = 'This field is required.';
-      } else {
-        input.classList.remove('error-field');
-        if(errorEl) errorEl.textContent = '';
-      }
-    });
-
-    input.addEventListener('focus', () => {
-      input.classList.remove('error-field');
-      const errorEl = document.getElementById('error-' + input.id);
-      if(errorEl) errorEl.textContent = '';
-    });
-  });
-}
-
-// ──────────────────────────────────────────────────────────────
-// HEADER & PROGRESS BAR
-// ──────────────────────────────────────────────────────────────
-
-window.addEventListener('scroll', () => {
-  const bar = document.getElementById('progress-bar');
-  const st = document.documentElement.scrollTop;
-  const dh = document.documentElement.scrollHeight - window.innerHeight;
-  bar.style.width = (dh > 0 ? Math.min(100, (st / dh) * 100) : 0) + '%';
-}, { passive: true });
-
-window.addEventListener('scroll', () => {
-  const nav = document.querySelector('nav');
-  nav.style.boxShadow = window.scrollY > 200
-    ? '0 2px 20px rgba(82,47,28,.15)' : 'none';
-}, { passive: true });
-
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (!nav) return;
+    nav.style.boxShadow = window.scrollY > 200 ? '0 2px 20px rgba(82,47,28,.15)' : 'none';
+  }, { passive: true });
 </script>
 
 </body>
