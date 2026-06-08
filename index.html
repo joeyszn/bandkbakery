@@ -63,7 +63,7 @@
         <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
       </div>
       <a href="#menu" class="btn btn-ghost">Menu</a>
-      <a href="orders.html" class="btn btn-ghost">Orders</a>
+      <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
       <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
       <a href="aboutus" class="btn btn-ghost">About Us</a>
     </div>
@@ -84,7 +84,7 @@
     <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
     <button class="mobile-menu-close" aria-label="Close navigation">×</button>
     <a href="#menu" class="btn btn-ghost">Menu</a>
-    <a href="orders.html" class="btn btn-ghost">Orders</a>
+    <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
     <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
     <a href="aboutus" class="btn btn-ghost">About Us</a>
   </div>
@@ -1562,11 +1562,22 @@ window.addEventListener('scroll',()=>{
     updateCartBadge(false);
   });
 
+  const updateOrdersBadge = () => {
+    try {
+      const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]');
+      document.querySelectorAll('.orders-count').forEach(el => el.textContent = orders.length);
+    } catch (e) {}
+  };
+  updateOrdersBadge();
+  window.addEventListener('storage', (e) => { if(e.key === 'bk_orders') updateOrdersBadge(); });
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') updateOrdersBadge(); });
+
   // Sync menu UI when cart changes in other tabs/windows
   window.addEventListener('storage', (e) => {
     if(e.key === STORAGE_KEY){
       renderAllMenuControls();
       updateCartBadge(false);
+      updateOrdersBadge();
     }
   });
 

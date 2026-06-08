@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
-    .success-shell{max-width:940px;margin:72px auto 72px;padding:0 18px;}
+    .success-shell{max-width:940px;margin:72px auto 72px; margin-top: 100px;padding:0 18px;}
     .success-card{background:#fff;border-radius:24px;box-shadow:0 18px 44px rgba(82,47,28,0.12);overflow:hidden}
     .success-hero{padding:42px 40px 32px;background:linear-gradient(180deg,rgba(249,199,95,0.14),rgba(255,255,255,0.96));}
     .success-hero h1{font-size:2.6rem;margin:0 0 12px;color:var(--brown)}
@@ -57,7 +57,7 @@
           <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
         </div>
         <a href="index.html#menu" class="btn btn-ghost">Menu</a>
-        <a href="orders.html" class="btn btn-ghost">Orders</a>
+        <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
         <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span class="cart-count">0</span>)</a>
         <a href="aboutus" class="btn btn-ghost">About Us</a>
       </div>
@@ -78,7 +78,7 @@
     <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
       <button class="mobile-menu-close" aria-label="Close navigation">×</button>
       <a href="index.html#menu" class="btn btn-ghost">Menu</a>
-      <a href="orders.html" class="btn btn-ghost">Orders</a>
+      <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
       <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
       <a href="aboutus" class="btn btn-ghost">About Us</a>
     </div>
@@ -146,6 +146,15 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]');
+        document.querySelectorAll('.orders-count').forEach(el => el.textContent = orders.length);
+      } catch (e) {}
+      try {
+        const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]');
+        const count = cart.reduce((sum,item)=>sum + (item.quantity||0),0);
+        document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
+      } catch (e) {}
       try {
         const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]');
         const count = cart.reduce((sum,item)=>sum + (item.quantity||0),0);

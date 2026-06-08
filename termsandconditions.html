@@ -160,29 +160,10 @@
                             <div class="search-hint" id="search-hint">Type to find your favorite treats</div>
                             <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
                         </div>
-                        <a href="aboutus" class="btn btn-ghost">About Us</a>
-                        <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+                <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+                        <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
                         <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
-                    </div>
-                    <div class="mobile-nav">
-                        <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <path d="m21 21-4.35-4.35"></path>
-                            </svg>
-                        </button>
-                        <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
-                            <span class="hamburger-line"></span>
-                            <span class="hamburger-line"></span>
-                            <span class="hamburger-line"></span>
-                        </button>
-                    </div>
-            </nav>
-            <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
-                    <button class="mobile-menu-close" aria-label="Close navigation">×</button>
-                    <a href="index.html#menu" class="btn btn-ghost">Menu</a>
-                    <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
-                    <a href="aboutus" class="btn btn-ghost">About Us</a>
+                        <a href="aboutus" class="btn btn-ghost">About Us</a>
             </div>
             <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
             </header>
@@ -389,6 +370,10 @@
     </script>
     <script>
     document.addEventListener('DOMContentLoaded', ()=>{
+        try{
+            const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]');
+            document.querySelectorAll('.orders-count').forEach(el=>el.textContent = orders.length);
+        }catch(e){}
         try{
             const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]');
             const count = cart.reduce((s,i)=>s+(i.quantity||0),0);
