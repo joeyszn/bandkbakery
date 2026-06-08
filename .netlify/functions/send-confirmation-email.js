@@ -33,8 +33,8 @@ function generateCustomerEmailHTML(orderData, customerName, customerEmail, total
     : `<p><strong>Pickup:</strong> Karen & Bruce's bakery</p>`;
 
   const scheduleInfo = orderData.schedule
-    ? `<p><strong>Requested Date/Time:</strong> ${new Date(orderData.schedule).toLocaleString()}</p>`
-    : `<p><strong>Timing:</strong> Earliest available (please allow 3-4 hours)</p>`;
+    ? `<p><strong>Requested Date/Time:</strong> ${orderData.schedule}</p>`
+    : `<p><strong>Requested Date/Time:</strong> N/A — not specified</p>`;
 
   return `
 <!DOCTYPE html>
@@ -119,7 +119,7 @@ function generateCustomerEmailHTML(orderData, customerName, customerEmail, total
       </div>
 
       <div class="section">
-        ${orderData.notes ? `<p><strong>Special Requests:</strong> ${orderData.notes}</p>` : ''}
+        ${orderData.notes ? `<p><strong>Special Instructions:</strong> ${orderData.notes}</p>` : `<p><strong>Special Instructions:</strong> N/A — not provided</p>`}
         <p><strong>Confirmation Number:</strong> ${Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
       </div>
 
@@ -186,9 +186,8 @@ function generateBakeryEmailHTML(orderData, customerName, customerEmail, total) 
     <p>
       <strong>Method:</strong> ${orderData.method}<br>
       ${orderData.method === 'Delivery' ? `<strong>Delivery Address:</strong> ${orderData.address}<br>` : ''}
-      ${orderData.schedule ? `<strong>Requested Schedule:</strong> ${new Date(orderData.schedule).toLocaleString()}<br>` : ''}
-      <strong>Total Amount:</strong> $${total}<br>
-      ${orderData.notes ? `<strong>Special Notes:</strong> ${orderData.notes}<br>` : ''}
+      ${orderData.schedule ? `<strong>Requested Date/Time:</strong> ${orderData.schedule}<br>` : `<strong>Requested Date/Time:</strong> N/A — not specified<br>`}
+      ${orderData.notes ? `<strong>Special Instructions:</strong> ${orderData.notes}<br>` : `<strong>Special Instructions:</strong> N/A — not provided<br>`}
     </p>
   </div>
 </body>

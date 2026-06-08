@@ -72,10 +72,10 @@
             <button class="search-clear" id="search-clear" aria-label="Clear search" type="button">×</button>
           </div>
         </div>
-        <a href="aboutus" class="btn btn-ghost">About Us</a>
         <a href="index.html#menu" class="btn btn-ghost">Menu</a>
         <a href="orders.html" class="btn btn-ghost">Orders</a>
         <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span class="cart-count">0</span>)</a>
+        <a href="aboutus" class="btn btn-ghost">About Us</a>
       </div>
       <div class="mobile-nav">
         <button class="search-toggle mobile-search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
@@ -93,10 +93,10 @@
     </nav>
     <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
       <button class="mobile-menu-close" aria-label="Close navigation">×</button>
-      <a href="aboutus" class="btn btn-ghost">About Us</a>
       <a href="index.html#menu" class="btn btn-ghost">Menu</a>
       <a href="orders.html" class="btn btn-ghost">Orders</a>
       <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
+      <a href="aboutus" class="btn btn-ghost">About Us</a>
     </div>
     <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
   </header>
@@ -223,8 +223,8 @@
         const orderInfo = `
           <div style="margin-top:12px"><strong>Order Info</strong>
             <div>Method: ${method}</div>
-            <div>Requested Date: ${order.requestedDate || order.requestDate || '—'}</div>
-            <div>Special Instructions: ${order.specialInstructions || order.notes || '—'}</div>
+            <div>Requested Date/Time: ${order.schedule || 'N/A — not specified'}</div>
+            <div>Special Instructions: ${order.notes || order.specialInstructions || 'N/A — not provided'}</div>
             ${method.toLowerCase().startsWith('deliver') ? `<div>Address: ${order.address || '—'}</div>` : ''}
           </div>
         `;
@@ -293,6 +293,12 @@
       // sync on storage change
       window.addEventListener('storage', (ev) => {
         if(ev.key === STORAGE_KEY){
+          const updated = readOrders();
+          applySearchAndFilter(updated);
+        }
+      });
+      document.addEventListener('visibilitychange', () => {
+        if(document.visibilityState === 'visible'){
           const updated = readOrders();
           applySearchAndFilter(updated);
         }

@@ -116,10 +116,10 @@
           <div class="search-hint" id="search-hint">Type to find your favorite treats</div>
           <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
         </div>
-        <a href="aboutus" class="btn btn-ghost">About Us</a>
         <a href="index.html#menu" class="btn btn-ghost">Menu</a>
         <a href="orders.html" class="btn btn-ghost">Orders</a>
         <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
+        <a href="aboutus" class="btn btn-ghost">About Us</a>
       </div>
       <div class="mobile-nav">
         <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
@@ -137,10 +137,10 @@
     </nav>
     <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
       <button class="mobile-menu-close" aria-label="Close navigation">×</button>
-      <a href="aboutus" class="btn btn-ghost">About Us</a>
       <a href="index.html#menu" class="btn btn-ghost">Menu</a>
       <a href="orders.html" class="btn btn-ghost">Orders</a>
       <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
+      <a href="aboutus" class="btn btn-ghost">About Us</a>
     </div>
     <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
   </header>
@@ -355,6 +355,7 @@
         // update payment helper prefix so messages include live cart count
         const helper = document.getElementById('payment-helper');
         if(helper){ helper.dataset.countPrefix = `${items} item${items===1? '':'s'} in cart. `; }
+       validateAndTogglePayPal();
       }
 
       // ─── Modal ────────────────────────────────────────────────────────────────
@@ -508,6 +509,9 @@
         if(!v.email || !isEmailValid(v.email)) return false;
         if(!v.method) return false;
         if(v.method === 'Delivery' && (!v.address || !v.city || !v.state || !v.zip)) return false;
+        const cart = loadCart();
+        const totalQty = cart.reduce((s,i)=>s+(i.quantity||0),0);
+        if(totalQty === 0) return false;
         return true;
       }
 
@@ -767,8 +771,24 @@
           if (nameEl && !nameEl.value) nameEl.value = bakeryOrder.name || '';
           if (phoneEl && !phoneEl.value) phoneEl.value = bakeryOrder.phone || '';
           if (emailEl && !emailEl.value) emailEl.value = bakeryOrder.email || '';
-          if (dateEl && !dateEl.value) dateEl.value = bakeryOrder.schedule ? bakeryOrder.schedule.split(' at ')[0] : '';
-          if (timeEl && !timeEl.value) timeEl.value = bakeryOrder.schedule && bakeryOrder.schedule.includes(' at ') ? bakeryOrder.schedule.split(' at ')[1] : '';
+          if (dateEl && !dateEl.value) {
+            if (bakeryOrder.schedule) {
+              if (bakeryOrder.schedule.includes(' at ')) {
+                dateEl.value = bakeryOrder.schedule.split(' at ')[0];
+              } else {
+                dateEl.value = bakeryOrder.schedule.split('T')[0];
+              }
+            }
+          }
+          if (timeEl && !timeEl.value) {
+            if (bakeryOrder.schedule) {
+              if (bakeryOrder.schedule.includes(' at ')) {
+                timeEl.value = bakeryOrder.schedule.split(' at ')[1];
+              } else if (bakeryOrder.schedule.includes('T')) {
+                timeEl.value = bakeryOrder.schedule.split('T')[1];
+              }
+            }
+          }
           if (notesEl && !notesEl.value) notesEl.value = bakeryOrder.notes || '';
           if (addressEl && !addressEl.value) addressEl.value = bakeryOrder.address || '';
 
