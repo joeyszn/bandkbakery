@@ -198,31 +198,40 @@
             <input id="cust-email" type="email" required class="order-input" />
           </div>
 
-          <div style="margin-bottom:8px">
-            <label>Pickup or Delivery</label>
-            <div class="radio-group">
-              <label><input type="radio" name="method" value="Pickup" checked /> Pickup</label>
-              <label><input type="radio" name="method" value="Delivery" /> Delivery</label>
-            </div>
-          </div>
-
-          <div id="delivery-address-block" style="display:none;margin-bottom:8px">
+          <div id="pickup-delivery-block" style="margin-bottom:8px">
             <div style="margin-bottom:8px">
-               <label>Address<span style="color:#dc2626;font-weight:700">*</span></label>
-              <input id="cust-address" class="order-input" />
+              <label>Pickup or Delivery</label>
+              <div class="radio-group">
+                <label><input type="radio" name="method" value="Pickup" checked /> Pickup</label>
+                <label><input type="radio" name="method" value="Delivery" /> Delivery</label>
+              </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-              <div>
-                 <label>City<span style="color:#dc2626;font-weight:700">*</span></label>
-                <input id="cust-city" class="order-input" />
+            <div id="pickup-location-block">
+              <select id="cust-pickup-location" class="order-input">
+                <option value="" disabled selected>Select a pickup location</option>
+                <option value="Main Street Bakery">Main Street Bakery — 123 Main St</option>
+                <option value="Downtown Shop">Downtown Shop — 45 Oak Avenue</option>
+                <option value="Westside Stand">Westside Stand — 88 Maple Drive</option>
+              </select>
+            </div>
+            <div id="delivery-address-block" style="display:none;margin-top:8px">
+              <div style="margin-bottom:8px">
+                 <label>Address<span style="color:#dc2626;font-weight:700">*</span></label>
+                <input id="cust-address" class="order-input" />
               </div>
-              <div>
-                 <label>State<span style="color:#dc2626;font-weight:700">*</span></label>
-                <input id="cust-state" class="order-input" />
-              </div>
-              <div>
-                <label>ZIP Code</label>
-                <input id="cust-zip" class="order-input" />
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                <div>
+                   <label>City<span style="color:#dc2626;font-weight:700">*</span></label>
+                  <input id="cust-city" class="order-input" />
+                </div>
+                <div>
+                   <label>State<span style="color:#dc2626;font-weight:700">*</span></label>
+                  <input id="cust-state" class="order-input" />
+                </div>
+                <div>
+                  <label>ZIP Code</label>
+                  <input id="cust-zip" class="order-input" />
+                </div>
               </div>
             </div>
           </div>
@@ -451,12 +460,14 @@
       const form = document.getElementById('customer-form');
 
       function getCheckoutValues(){
+        const method = form.querySelector('input[name="method"]:checked').value;
         return {
           name: document.getElementById('cust-name').value.trim(),
           phone: document.getElementById('cust-phone').value.trim(),
           email: document.getElementById('cust-email').value.trim(),
-          method: form.querySelector('input[name="method"]:checked').value,
-          address: document.getElementById('cust-address').value.trim(),
+          method,
+          address: method === 'Delivery' ? document.getElementById('cust-address').value.trim() : '',
+          pickupLocation: method === 'Pickup' ? document.getElementById('cust-pickup-location').value.trim() : '',
           city: document.getElementById('cust-city').value.trim(),
           state: document.getElementById('cust-state').value.trim(),
           zip: document.getElementById('cust-zip').value.trim(),
@@ -485,6 +496,9 @@
         if(!values.phone) { errors.push('Phone Number is required.'); }
         else if(!isCaliforniaPhoneNumber(values.phone)) { errors.push('Please enter a valid California phone number to complete checkout.'); }
         if(!values.email) errors.push('Email Address is required.');
+        if(values.method === 'Pickup'){
+          if(!values.pickupLocation) errors.push('Please choose a pickup location.');
+        }
         if(values.method === 'Delivery'){
           if(!values.address) errors.push('Delivery address is required for delivery.');
           if(!values.city) errors.push('Delivery city is required.');
@@ -498,7 +512,8 @@
           phone: values.phone,
           email: values.email,
           method: values.method,
-          address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : '',
+          address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
+          pickupLocation: values.pickupLocation,
           city: values.city,
           state: values.state,
           zip: values.zip,
@@ -517,6 +532,7 @@
         if(!v.phone || !isCaliforniaPhoneNumber(v.phone)) return false;
         if(!v.email || !isEmailValid(v.email)) return false;
         if(!v.method) return false;
+        if(v.method === 'Pickup' && !v.pickupLocation) return false;
         if(v.method === 'Delivery' && (!v.address || !v.city || !v.state || !v.zip)) return false;
         const cart = loadCart();
         const totalQty = cart.reduce((s,i)=>s+(i.quantity||0),0);
@@ -548,6 +564,7 @@
 
       function setDeliveryVisibility(){
         const isDelivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
+        document.getElementById('pickup-location-block').style.display = isDelivery ? 'none' : 'block';
         document.getElementById('delivery-address-block').style.display = isDelivery ? 'block' : 'none';
         updateSummary(null, isDelivery ? 5 : 0);
       }
@@ -605,7 +622,9 @@
         const subtotal = cart.reduce((sum,item)=>sum + (parseFloat(item.price)||0)*(parseInt(item.quantity)||0),0);
         const deliveryFee = checkout.method === 'Delivery' ? 5 : 0;
         const total = subtotal + deliveryFee;
-        const schedule = [checkout.scheduleDate, checkout.scheduleTime].filter(Boolean).join(' at ');
+        const scheduleDate = checkout.scheduleDate || '';
+        const scheduleTime = checkout.scheduleTime || '';
+        const schedule = [scheduleDate, scheduleTime].filter(Boolean).join(' at ');
         const orderId = `BK-${new Date().getFullYear()}-${Math.floor(Math.random()*9000)+1000}`;
         return {
           orderId,
@@ -614,10 +633,13 @@
           email: checkout.email,
           method: checkout.method,
           address: checkout.address,
+          pickupLocation: checkout.pickupLocation || '',
           city: checkout.city,
           state: checkout.state,
           zip: checkout.zip,
           schedule,
+          scheduleDate,
+          scheduleTime,
           notes: checkout.notes,
           items: cart,
           subtotal,
@@ -799,21 +821,30 @@
             }
           }
           if (notesEl && !notesEl.value) notesEl.value = bakeryOrder.notes || '';
-          if (addressEl && !addressEl.value) addressEl.value = bakeryOrder.address || '';
 
-          if (bakeryOrder.method === 'Delivery' && bakeryOrder.address) {
-            const parts = bakeryOrder.address.split(',').map(s => s.trim());
-            if (parts.length >= 3) {
-              if (addressEl) addressEl.value = parts[0];
-              if (cityEl) cityEl.value = parts[1];
-              if (stateEl) stateEl.value = parts[2].split(' ')[0];
-              if (zipEl) zipEl.value = parts[2].split(' ')[1] || '';
-            }
+          if (bakeryOrder.method === 'Pickup') {
+            const pickupRadio = form.querySelector('input[name="method"][value="Pickup"]');
+            if (pickupRadio) pickupRadio.checked = true;
+            const pickupLocationSelect = document.getElementById('cust-pickup-location');
+            if (pickupLocationSelect && bakeryOrder.address) pickupLocationSelect.value = bakeryOrder.address;
           }
 
           if (bakeryOrder.method === 'Delivery') {
             const deliveryRadio = form.querySelector('input[name="method"][value="Delivery"]');
             if (deliveryRadio) deliveryRadio.checked = true;
+            if (bakeryOrder.address) {
+              const parts = bakeryOrder.address.split(',').map(s => s.trim());
+              if (parts.length >= 3) {
+                if (addressEl) addressEl.value = parts[0];
+                if (cityEl) cityEl.value = parts[1];
+                if (stateEl) stateEl.value = parts[2].split(' ')[0];
+                if (zipEl) zipEl.value = parts[2].split(' ')[1] || '';
+              }
+            }
+          }
+
+          if (bakeryOrder.method) {
+            setDeliveryVisibility();
           }
         }
       } catch (e) {}

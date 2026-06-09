@@ -584,9 +584,15 @@
           <div class="order-field-error" id="error-order-method"></div>
         </div>
 
-        <div class="form-group" id="address-group" aria-hidden="true">
-          <label for="order-address">Address / Location</label>
-          <input id="order-address" name="address" type="text" class="order-input" autocomplete="street-address" />
+        <div class="form-group" id="address-group">
+          <label for="order-address">Location / Address</label>
+          <select id="pickup-location" name="pickupLocation" class="order-select" style="display:none">
+            <option value="" disabled selected>Select a pickup location</option>
+            <option value="Main Street Bakery">Main Street Bakery — 123 Main St</option>
+            <option value="Downtown Shop">Downtown Shop — 45 Oak Avenue</option>
+            <option value="Westside Stand">Westside Stand — 88 Maple Drive</option>
+          </select>
+          <input id="order-address" name="address" type="text" class="order-input" autocomplete="street-address" style="display:none" />
           <div class="order-field-error" id="error-order-address"></div>
         </div>
 
@@ -766,81 +772,7 @@ window.addEventListener('scroll',()=>{
   const scheduleInput = document.getElementById('order-schedule');
   const addressGroup = document.getElementById('address-group');
   const addressInput = document.getElementById('order-address');
-  const methodRadios = Array.from(document.querySelectorAll('input[name="order-method"]'));
-  const successPane = document.getElementById('order-success');
-  const successMessage = document.getElementById('success-message');
-  const scheduleSuccessNote = document.getElementById('success-schedule-note');
-  const body = document.body;
-  const focusSelectors = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
-  let lastFocused = null;
-  let focusable = [];
-  let firstFocusable = null;
-  let lastFocusable = null;
-
-  if(!backdrop || !modal || !orderForm || !orderItemsContainer) return;
-
-  const orderItemOptionsHTML = orderItemInput ? orderItemInput.innerHTML : '';
-
-  const orderButtons = Array.from(document.querySelectorAll('a.btn')).filter(el => el.textContent.trim().toLowerCase() === 'place order');
-
-  const getOrderRows = () => Array.from(orderItemsContainer.querySelectorAll('.order-item-row'));
-
-  const updateRowTitles = () => {
-    const rows = getOrderRows();
-    rows.forEach((row, index) => {
-      const title = row.querySelector('.order-item-row-title');
-      if(title) title.textContent = `Item ${index + 1}`;
-      const removeButton = row.querySelector('.remove-order-item');
-      if(removeButton) removeButton.disabled = rows.length === 1;
-    });
-  };
-
-  const createOrderItemRow = (selected = '', quantity = 1) => {
-    const row = document.createElement('div');
-    row.className = 'order-item-row';
-    row.innerHTML = `
-      <div class="order-item-card">
-        <div class="order-item-row-top">
-          <p class="order-item-row-title">Item</p>
-          <button type="button" class="btn btn-ghost remove-order-item" aria-label="Remove this bakery item">Remove</button>
-        </div>
-        <div class="form-group">
-          <label>Bakery Item</label>
-          <select class="order-select order-item-select" required>
-            ${orderItemOptionsHTML}
-          </select>
-          <div class="order-field-error"></div>
-        </div>
-        <div class="form-group">
-          <label>Quantity</label>
-          <input type="number" min="1" value="${quantity}" class="order-input order-item-quantity" required />
-          <div class="order-field-error"></div>
-        </div>
-      </div>
-    `;
-    const select = row.querySelector('.order-item-select');
-    if(select && selected) select.value = selected;
-    return row;
-  };
-
-  const resetOrderItems = (itemName = '') => {
-    orderItemsContainer.innerHTML = '';
-    const firstRow = createOrderItemRow(itemName, 1);
-    orderItemsContainer.appendChild(firstRow);
-    requestAnimationFrame(() => firstRow.classList.add('show'));
-    updateRowTitles();
-  };
-
-  const updateAddressVisibility = () => {
-    const delivery = methodRadios.some(r => r.checked && r.value === 'Delivery');
-    addressGroup.style.display = delivery ? 'flex' : 'none';
-    addressGroup.setAttribute('aria-hidden', String(!delivery));
-    if(!delivery){
-      addressInput.value = '';
-      document.getElementById('error-order-address').textContent = '';
-      addressInput.classList.remove('error-field');
-    }
-  };
+  const pickupLocationSelect = document.getElementById('pickup-location');
 
   const focusModal = () => {
     focusable = Array.from(modal.querySelectorAll(focusSelectors)).filter(el => el.offsetParent !== null);
@@ -1005,7 +937,7 @@ window.addEventListener('scroll',()=>{
     const phone = document.getElementById('order-phone').value.trim();
     const email = document.getElementById('order-email').value.trim();
     const method = methodRadios.find(r => r.checked)?.value || '';
-    const address = addressInput.value.trim();
+    const address = method === 'Delivery' ? addressInput.value.trim() : pickupLocationSelect.value.trim();
     const schedule = scheduleInput.value.trim();
     const notes = document.getElementById('order-notes').value.trim();
 
@@ -1075,7 +1007,8 @@ window.addEventListener('scroll',()=>{
       email,
       items,
       method,
-      address: method === 'Delivery' ? address : '',
+      address: method === 'Delivery' ? address : pickupLocationSelect.value.trim(),
+      pickupLocation: method === 'Pickup' ? pickupLocationSelect.value.trim() : '',
       schedule,
       notes,
       submittedAt: new Date().toISOString()

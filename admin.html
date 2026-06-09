@@ -23,7 +23,9 @@
   .filter-divider{width:1px;height:24px;background:rgba(82,47,28,.12);margin:0 4px;flex-shrink:0}
 
   .orders-table-wrap{overflow-x:auto;background:#fff;border-radius:18px;box-shadow:0 12px 30px rgba(82,47,28,0.08);margin-top:18px}
-  table.orders-table{width:100%;border-collapse:collapse;font-size:14px;min-width:900px}
+  .orders-table-wrap::-webkit-scrollbar{height:10px}
+  .orders-table-wrap::-webkit-scrollbar-thumb{background:rgba(82,47,28,.18);border-radius:999px}
+  .orders-table{width:100%;border-collapse:collapse;font-size:14px;min-width:1400px}
   table.orders-table thead{background:var(--cream)}
   table.orders-table th{padding:14px 16px;text-align:left;font-weight:700;color:var(--brown);font-size:13px;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid rgba(82,47,28,.08);white-space:nowrap}
   table.orders-table td{padding:14px 16px;border-bottom:1px solid rgba(82,47,28,.05);vertical-align:top;color:var(--black)}
@@ -274,7 +276,9 @@ function renderAdmin(){
   const rows = orders.map((o, idx) => {
     const id = o.orderId || o.orderNumber || `#${idx+1}`;
     const customer = escapeHtml(o.name||'—');
-    const email = escapeHtml(o.email||'—');
+    const emailRaw = o.email||'—';
+    const emailMailto = encodeURIComponent(emailRaw);
+    const emailDisplay = escapeHtml(emailRaw);
     const phone = escapeHtml(o.phone||o.customerPhone||'—');
     const method = escapeHtml(o.method||'Pickup');
     const address = [o.address, o.city, o.state, o.zip].filter(Boolean).map(escapeHtml).join(', ') || '—';
@@ -292,12 +296,13 @@ function renderAdmin(){
         <div>
           <div class="detail-section"><h4>Customer</h4>
             <div class="detail-row"><span class="label">Name</span><span class="value">${customer}</span></div>
-            <div class="detail-row"><span class="label">Email</span><span class="value">${email}</span></div>
+            <div class="detail-row"><span class="label">Email</span><span class="value"><a href="mailto:${emailMailto}?body=${encodeURIComponent('Hi there')}">${emailDisplay}</a></span></div>
             <div class="detail-row"><span class="label">Phone</span><span class="value">${phone}</span></div>
           </div>
           <div class="detail-section"><h4>Order</h4>
             <div class="detail-row"><span class="label">Method</span><span class="value">${method}</span></div>
-            ${method.toLowerCase()!=='delivery'?'':`<div class="detail-row"><span class="label">Address</span><span class="value">${address}</span></div>`}
+            ${o.pickupLocation && !o.address ? `<div class="detail-row"><span class="label">Pickup Location</span><span class="value">${escapeHtml(o.pickupLocation)}</span></div>` : ''}
+            ${address!=='—'?`<div class="detail-row"><span class="label">${o.pickupLocation && !o.address ? 'Location' : 'Address'}</span><span class="value">${address}</span></div>`:''}
             <div class="detail-row"><span class="label">Schedule</span><span class="value">${schedule}</span></div>
             ${notes?`<div class="detail-row" style="display:block"><span class="label">Special Instructions</span><div class="notes-box">${notes}</div></div>`:''}
           </div>
@@ -320,21 +325,23 @@ function renderAdmin(){
     return `<tr onclick="toggleDetails(this)" aria-expanded="false">
       <td class="order-id">${id}</td>
       <td>${customer}</td>
-      <td>${email}</td>
+      <td><a href="mailto:${emailMailto}?body=${encodeURIComponent('Hi there')}" style="color:var(--brown)">${emailDisplay}</a></td>
       <td>${phone}</td>
       <td>${method}</td>
       <td style="white-space:nowrap">${schedule}</td>
+      <td style="white-space:nowrap">${escapeHtml(o.pickupLocation||'')}</td>
+      <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${escapeHtml(o.notes||'')}">${notes||''}</td>
       <td class="order-total">${tot}</td>
       <td>${statusBadge(payStatus)}</td>
       <td style="text-align:right;font-size:16px;color:var(--brown)">▼</td>
-    </tr><tr class="detail-row-wrapper"><td colspan="9" style="padding:0"><div class="detail-panel" style="display:none">${details}</div></td></tr>`;
+    </tr><tr class="detail-row-wrapper"><td colspan="11" style="padding:0"><div class="detail-panel" style="display:none">${details}</div></td></tr>`;
   }).join('');
 
   document.getElementById('admin-content').innerHTML = `
     <div class="orders-table-wrap">
       <table class="orders-table">
         <thead><tr>
-          <th>Order ID</th><th>Customer</th><th>Email</th><th>Phone</th><th>Method</th><th>Schedule</th><th>Total</th><th>Payment</th><th style="text-align:right"></th>
+          <th>Order ID</th><th>Customer</th><th>Email</th><th>Phone</th><th>Method</th><th>Schedule</th><th>Pickup/Address</th><th>Notes</th><th>Total</th><th>Payment</th><th style="text-align:right"></th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>

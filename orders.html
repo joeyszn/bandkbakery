@@ -152,6 +152,22 @@
       return '$' + n.toFixed(2);
     }
 
+    function formatOrderDateTime(dateStr){
+      if(!dateStr) return '—';
+      const d = new Date(dateStr);
+      if(isNaN(d.getTime())) return '—';
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const month = months[d.getMonth()];
+      const day = d.getDate();
+      const year = d.getFullYear();
+      let hours = d.getHours();
+      const minutes = d.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const minStr = minutes < 10 ? '0'+minutes : minutes;
+      return `${month} ${day}, ${year} at ${hours}:${minStr} ${ampm}`;
+    }
+
     function statusClass(status){
       switch((status||'').toLowerCase()){
         case 'preparing': return 'status-preparing';
@@ -181,7 +197,7 @@
         const card = document.createElement('article');
         card.className = 'order-card';
         const orderId = order.orderNumber || order.orderId || 'BK-0000-0000';
-        const date = order.dateOrdered ? new Date(order.dateOrdered).toLocaleString() : (order.date || '—');
+        const date = formatOrderDateTime(order.dateOrdered || order.date);
         const total = order.totalPaid || order.total || 0;
         const method = order.pickupOrDelivery || order.method || 'Pickup';
         const status = order.status || 'Order Received';
