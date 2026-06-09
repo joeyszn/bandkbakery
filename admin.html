@@ -228,7 +228,7 @@ function renderAdmin(){
   const raw = localStorage.getItem(STORAGE_KEY);
   if(!raw){
     document.getElementById('admin-meta').innerHTML = '';
-    document.getElementById('admin-content').innerHTML = renderEmpty('bk_orders is empty in localStorage.');
+    document.getElementById('admin-content').innerHTML = renderEmpty('You do not have any orders yet.');
     return;
   }
   let orders = [];
