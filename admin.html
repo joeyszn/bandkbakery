@@ -81,7 +81,6 @@
 </head>
 <body class="alan-sans">
 
-<!-- Password gate -->
 <div id="pwd-gate" class="pwd-screen">
   <div style="font-size:48px;margin-bottom:12px">🔒</div>
   <h2>Admin Access</h2>
@@ -95,7 +94,6 @@
   <p style="margin-top:14px;font-size:12px;color:var(--gray)">Tip: ask Karen for the password.</p>
 </div>
 
-<!-- Admin panel (hidden until password correct) -->
 <div id="admin-panel" style="display:none">
 <header id="header" aria-label="Site header">
   <nav aria-label="Main navigation">
@@ -217,124 +215,155 @@ function formatDate(iso){
 function getItemsHtml(items){
   if(!items || !items.length) return '<div style="color:var(--gray);font-style:italic">No items</div>';
   let rows = items.map(it=>{
-    const qty = it.quantity || it.qty || 1;
+    const qty = Number(it.quantity || it.qty || 1);
     const name = escapeHtml(it.name || it.productName || 'Item');
-    const price = formatCurrency(it.price || it.unitPrice || 0);
-    const lineTotal = formatCurrency((it.price||it.unitPrice||0) * qty);
-    return `<tr><td>${name}</td><td style="text-align:center">${qty}</td><td style="text-align:right">${price}</td><td style="text-align:right;font-weight:700">${lineTotal}</td></tr>`;
+    const price = Number(it.price || it.unitPrice || 0);
+    const lineTotal = (price * qty).toFixed(2);
+    return `<tr><td>${name}</td><td style="text-align:center">${qty}</td><td style="text-align:right">$${price.toFixed(2)}</td><td style="text-align:right;font-weight:700">$${lineTotal}</td></tr>`;
   }).join('');
   return `<table class="items-table"><thead><tr><th>Item</th><th style="text-align:center">Qty</th><th style="text-align:right">Unit Price</th><th style="text-align:right">Line Total</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-function renderAdmin(){
+function loadOrders(){
   const raw = localStorage.getItem(STORAGE_KEY);
-  if(!raw){
-    document.getElementById('admin-meta').innerHTML = '';
-    document.getElementById('admin-content').innerHTML = renderEmpty('You do not have any orders yet.');
-    return;
-  }
-  let orders = [];
-  try { orders = JSON.parse(raw) || []; } catch(e){ orders = []; }
+  let localOrders = [];
+  try { localOrders = JSON.parse(raw) || []; } catch(e) { localOrders = []; }
+  return { raw, localOrders };
+}
 
+async function fetchGlobalOrders(){
+  try {
+    const resp = await fetch('/api/orders');
+    if (resp.ok) {
+      const globalOrders = await resp.json();
+      if (Array.isArray(globalOrders)) return globalOrders;
+    }
+  } catch(e) {}
+  return [];
+}
+
+async function renderAdmin(){
+  const globalOrders = await fetchGlobalOrders();
+  const { localOrders } = loadOrders();
+  let orders = [...globalOrders];
+  const globalIds = new Set(globalOrders.map(o => o.orderId));
+  for (const local of localOrders) {
+   if (!globalIds.has(local.orderId)) {
+    orders.push(local);
+   }
+  }
+  orders.sort((a, b) => {
+   const da = new Date(b.createdAt || b.capturedAt || b.dateOrdered || 0);
+   const db = new Date(a.createdAt || a.capturedAt || a.dateOrdered || 0);
+   return da - db;
+  });
+
+  if(!orders.length){
+   document.getElementById('admin-meta').innerHTML = '';
+   document.getElementById('admin-content').innerHTML = renderEmpty('No orders yet. They will appear here once customers place them.');
+   return;
+  }
+
+  let filtered = orders;
   const searchQ = (document.getElementById('admin-search').value||'').trim().toLowerCase();
 
-  if(activeFilter==='Pickup'){
-    orders = orders.filter(o => (o.method||'').toLowerCase()==='pickup');
-  } else if(activeFilter==='Delivery'){
-    orders = orders.filter(o => (o.method||'').toLowerCase()==='delivery');
-  } else   if(activeFilter==='Pending'){
-    orders = orders.filter(o => {
-      const s = (o.status||o.paymentStatus||'').toLowerCase();
-      return !(s.includes('completed') || s.includes('delivered'));
-    });
-  } else if(activeFilter==='Completed'){
-    orders = orders.filter(o => {
-      const s = (o.status||o.paymentStatus||'').toLowerCase();
-      return s.includes('completed') || s.includes('delivered');
-    });
+  if(activeFilter === 'Pickup'){
+   filtered = orders.filter(o => (o.method||'').toLowerCase() === 'pickup');
+  } else if(activeFilter === 'Delivery'){
+   filtered = orders.filter(o => (o.method||'').toLowerCase() === 'delivery');
+  } else if(activeFilter === 'Pending'){
+   filtered = orders.filter(o => {
+    const s = (o.status||o.paymentStatus||'').toLowerCase();
+    return !(s.includes('completed') || s.includes('delivered'));
+   });
+  } else if(activeFilter === 'Completed'){
+   filtered = orders.filter(o => {
+    const s = (o.status||o.paymentStatus||'').toLowerCase();
+    return s.includes('completed') || s.includes('delivered');
+   });
   }
 
   if(searchQ){
-    orders = orders.filter(o => {
-      const id = (o.orderId||o.orderNumber||'').toLowerCase();
-      const name = (o.name||'').toLowerCase();
-      const email = (o.email||'').toLowerCase();
-      const phone = (o.phone||o.customerPhone||'').toLowerCase();
-      const inItems = (o.items||o.purchasedItems||[]).some(it => (it.name||it.productName||'').toLowerCase().includes(searchQ));
-      const notes = (o.notes||'').toLowerCase();
-      return id.includes(searchQ) || name.includes(searchQ) || email.includes(searchQ) || phone.includes(searchQ) || inItems || notes.includes(searchQ);
-    });
+   filtered = filtered.filter(o => {
+    const id = (o.orderId||o.orderNumber||'').toLowerCase();
+    const name = (o.name||'').toLowerCase();
+    const email = (o.email||'').toLowerCase();
+    const phone = (o.phone||o.customerPhone||'').toLowerCase();
+    const inItems = (o.items||o.purchasedItems||[]).some(it => (it.name||it.productName||'').toLowerCase().includes(searchQ));
+    const notes = (o.notes||'').toLowerCase();
+    return id.includes(searchQ) || name.includes(searchQ) || email.includes(searchQ) || phone.includes(searchQ) || inItems || notes.includes(searchQ);
+   });
   }
 
-  document.getElementById('admin-meta').innerHTML = `Showing <strong>${orders.length}</strong> of <strong>${raw ? parseInt(JSON.parse(raw).length||0) : 0}</strong> orders`;
+  document.getElementById('admin-meta').innerHTML = `Showing <strong>${filtered.length}</strong> of <strong>${orders.length}</strong> orders`;
 
-  if(!orders.length){
-    document.getElementById('admin-content').innerHTML = renderEmpty('No orders match your search/filter.');
-    return;
+  if(!filtered.length){
+   document.getElementById('admin-content').innerHTML = renderEmpty('No orders match your search/filter.');
+   return;
   }
 
-  const rows = orders.map((o, idx) => {
-    const id = o.orderId || o.orderNumber || `#${idx+1}`;
-    const customer = escapeHtml(o.name||'—');
-    const emailRaw = o.email||'—';
-    const emailMailto = encodeURIComponent(emailRaw);
-    const emailDisplay = escapeHtml(emailRaw);
-    const phone = escapeHtml(o.phone||o.customerPhone||'—');
-    const method = escapeHtml(o.method||'Pickup');
-    const address = [o.address, o.city, o.state, o.zip].filter(Boolean).map(escapeHtml).join(', ') || '—';
-    const schedule = escapeHtml(o.schedule||'—');
-    const notes = escapeHtml(o.notes||'');
-    const sub = formatCurrency(o.subtotal||0);
-    const fee = formatCurrency(o.deliveryFee||0);
-    const tot = formatCurrency(o.total||o.totalPaid||0);
-    const payPalId = escapeHtml(o.paypalTransactionId||o.paymentId||o.transactionId||'—');
-    const payStatus = escapeHtml(o.paymentStatus||o.status||'—');
-    const created = formatDate(o.createdAt||o.dateOrdered||o.capturedAt);
+  const rows = filtered.map((o, idx) => {
+   const id = o.orderId || o.orderNumber || `#${idx+1}`;
+   const customer = escapeHtml(o.name||'—');
+   const emailRaw = o.email||'—';
+   const emailMailto = encodeURIComponent(emailRaw);
+   const emailDisplay = escapeHtml(emailRaw);
+   const phone = escapeHtml(o.phone||o.customerPhone||'—');
+   const method = escapeHtml(o.method||'Pickup');
+   const address = [o.address, o.city, o.state, o.zip].filter(Boolean).map(escapeHtml).join(', ') || '—';
+   const schedule = escapeHtml(o.schedule||'—');
+   const notes = escapeHtml(o.notes||'');
+   const sub = formatCurrency(o.subtotal||0);
+   const fee = formatCurrency(o.deliveryFee||0);
+   const tot = formatCurrency(o.total||o.totalPaid||0);
+   const payPalId = escapeHtml(o.paypalTransactionId||o.paymentId||o.transactionId||'—');
+   const payStatus = escapeHtml(o.paymentStatus||o.status||'—');
+   const created = formatDate(o.createdAt||o.dateOrdered||o.capturedAt);
 
-    const details = `
-      <div class="detail-grid">
-        <div>
-          <div class="detail-section"><h4>Customer</h4>
-            <div class="detail-row"><span class="label">Name</span><span class="value">${customer}</span></div>
-            <div class="detail-row"><span class="label">Email</span><span class="value"><a href="mailto:${emailMailto}?body=${encodeURIComponent('Hi there')}">${emailDisplay}</a></span></div>
-            <div class="detail-row"><span class="label">Phone</span><span class="value">${phone}</span></div>
-          </div>
-          <div class="detail-section"><h4>Order</h4>
-            <div class="detail-row"><span class="label">Method</span><span class="value">${method}</span></div>
-            ${o.pickupLocation && !o.address ? `<div class="detail-row"><span class="label">Pickup Location</span><span class="value">${escapeHtml(o.pickupLocation)}</span></div>` : ''}
-            ${address!=='—'?`<div class="detail-row"><span class="label">${o.pickupLocation && !o.address ? 'Location' : 'Address'}</span><span class="value">${address}</span></div>`:''}
-            <div class="detail-row"><span class="label">Schedule</span><span class="value">${schedule}</span></div>
-            ${notes?`<div class="detail-row" style="display:block"><span class="label">Special Instructions</span><div class="notes-box">${notes}</div></div>`:''}
-          </div>
-          <div class="detail-section"><h4>Payment</h4>
-            <div class="detail-row"><span class="label">Status</span><span class="value">${statusBadge(payStatus)}</span></div>
-            <div class="detail-row"><span class="label">PayPal ID</span><span class="value" style="font-size:11px;word-break:break-all">${payPalId}</span></div>
-            <div class="detail-row"><span class="label">Created</span><span class="value">${created}</span></div>
-          </div>
-        </div>
-        <div>
-          <div class="detail-section"><h4>Items</h4>
-            ${getItemsHtml(o.items||o.purchasedItems)}
-            <div class="detail-row" style="margin-top:10px"><span class="label">Subtotal</span><span class="value">${sub}</span></div>
-            ${o.deliveryFee?`<div class="detail-row"><span class="label">Delivery Fee</span><span class="value">${fee}</span></div>`:''}
-            <div class="detail-row"><span class="label" style="font-weight:800">Total</span><span class="value" style="font-weight:800;font-size:15px">${tot}</span></div>
-          </div>
-        </div>
-      </div>`;
+   const details = `
+     <div class="detail-grid">
+       <div>
+         <div class="detail-section"><h4>Customer</h4>
+           <div class="detail-row"><span class="label">Name</span><span class="value">${customer}</span></div>
+           <div class="detail-row"><span class="label">Email</span><span class="value"><a href="mailto:${emailMailto}?body=${encodeURIComponent('Hi there')}">${emailDisplay}</a></span></div>
+           <div class="detail-row"><span class="label">Phone</span><span class="value">${phone}</span></div>
+         </div>
+         <div class="detail-section"><h4>Order</h4>
+           <div class="detail-row"><span class="label">Method</span><span class="value">${method}</span></div>
+           ${o.pickupLocation && !o.address ? `<div class="detail-row"><span class="label">Pickup Location</span><span class="value">${escapeHtml(o.pickupLocation)}</span></div>` : ''}
+           ${address!=='—'?`<div class="detail-row"><span class="label">${o.pickupLocation && !o.address ? 'Location' : 'Address'}</span><span class="value">${address}</span></div>`:''}
+           <div class="detail-row"><span class="label">Schedule</span><span class="value">${schedule}</span></div>
+           ${notes?`<div class="detail-row" style="display:block"><span class="label">Special Instructions</span><div class="notes-box">${notes}</div></div>`:''}
+         </div>
+         <div class="detail-section"><h4>Payment</h4>
+           <div class="detail-row"><span class="label">Status</span><span class="value">${statusBadge(payStatus)}</span></div>
+           <div class="detail-row"><span class="label">PayPal ID</span><span class="value" style="font-size:11px;word-break:break-all">${payPalId}</span></div>
+           <div class="detail-row"><span class="label">Created</span><span class="value">${created}</span></div>
+         </div>
+       </div>
+       <div>
+         <div class="detail-section"><h4>Items</h4>
+           ${getItemsHtml(o.items||o.purchasedItems)}
+           <div class="detail-row" style="margin-top:10px"><span class="label">Subtotal</span><span class="value">${sub}</span></div>
+           ${o.deliveryFee?`<div class="detail-row"><span class="label">Delivery Fee</span><span class="value">${fee}</span></div>`:''}
+           <div class="detail-row"><span class="label" style="font-weight:800">Total</span><span class="value" style="font-weight:800;font-size:15px">${tot}</span></div>
+         </div>
+       </div>
+     </div>`;
 
-    return `<tr onclick="toggleDetails(this)" aria-expanded="false">
-      <td class="order-id">${id}</td>
-      <td>${customer}</td>
-      <td><a href="mailto:${emailMailto}?body=${encodeURIComponent('Hi there')}" style="color:var(--brown)">${emailDisplay}</a></td>
-      <td>${phone}</td>
-      <td>${method}</td>
-      <td style="white-space:nowrap">${schedule}</td>
-      <td style="white-space:nowrap">${escapeHtml(o.pickupLocation||'')}</td>
-      <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${escapeHtml(o.notes||'')}">${notes||''}</td>
-      <td class="order-total">${tot}</td>
-      <td>${statusBadge(payStatus)}</td>
-      <td style="text-align:right;font-size:16px;color:var(--brown)">▼</td>
-    </tr><tr class="detail-row-wrapper"><td colspan="11" style="padding:0"><div class="detail-panel" style="display:none">${details}</div></td></tr>`;
+   return `<tr onclick="toggleDetails(this)" aria-expanded="false">
+     <td class="order-id">${id}</td>
+     <td>${customer}</td>
+     <td><a href="mailto:${emailMailto}?body=${encodeURIComponent('Hi there')}" style="color:var(--brown)">${emailDisplay}</a></td>
+     <td>${phone}</td>
+     <td>${method}</td>
+     <td style="white-space:nowrap">${schedule}</td>
+     <td style="white-space:nowrap">${escapeHtml(o.pickupLocation||'')}</td>
+     <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${escapeHtml(o.notes||'')}">${notes||''}</td>
+     <td class="order-total">${tot}</td>
+     <td>${statusBadge(payStatus)}</td>
+     <td style="text-align:right;font-size:16px;color:var(--brown)">▼</td>
+   </tr><tr class="detail-row-wrapper"><td colspan="11" style="padding:0"><div class="detail-panel" style="display:none">${details}</div></td></tr>`;
   }).join('');
 
   document.getElementById('admin-content').innerHTML = `

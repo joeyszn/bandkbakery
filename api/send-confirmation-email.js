@@ -1,22 +1,6 @@
-/**
- * Send Confirmation Email
- * 
- * This function sends order confirmation emails to both the customer
- * and the bakery owner using SendGrid or Mailgun.
- * 
- * REQUIRED: Set these environment variables in Netlify:
- * - EMAIL_SERVICE: 'sendgrid' or 'mailgun'
- * - SENDGRID_API_KEY: Your SendGrid API key (if using SendGrid)
- * - MAILGUN_API_KEY: Your Mailgun API key (if using Mailgun)
- * - MAILGUN_DOMAIN: Your Mailgun domain (if using Mailgun)
- * - BAKERY_EMAIL: Your bakery email address
- */
-
-const https = require('https');
-
-const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'sendgrid';
 const BAKERY_EMAIL = process.env.BAKERY_EMAIL || 'bronxkaren1@gmail.com';
 const BAKERY_NAME = 'The B&KERY';
+const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'sendgrid';
 
 function generateCustomerEmailHTML(orderData, customerName, customerEmail, total) {
   const items = orderData.items || [];
@@ -56,7 +40,6 @@ function generateCustomerEmailHTML(orderData, customerName, customerEmail, total
     .totals-table td { padding: 10px 0; border-bottom: 1px solid #e8e8e8; }
     .totals-table .total-row { border-bottom: 2px solid #f9c75f; font-size: 18px; font-weight: 700; }
     .total-amount { text-align: right; color: #522f1c; }
-    .cta-button { display: inline-block; padding: 12px 24px; background: #522f1c; color: white; text-decoration: none; border-radius: 25px; font-weight: 600; margin-top: 20px; }
     .footer { border-top: 1px solid #e8e8e8; padding-top: 20px; text-align: center; font-size: 12px; color: #9a9a9a; }
     .warm-note { background: rgba(249, 199, 95, 0.1); padding: 15px; border-radius: 10px; margin: 20px 0; color: #522f1c; }
   </style>
@@ -67,14 +50,12 @@ function generateCustomerEmailHTML(orderData, customerName, customerEmail, total
       <p class="logo">${BAKERY_NAME}</p>
       <p class="tagline">You can taste the love! 💛</p>
     </div>
-
     <div class="content">
       <div class="section">
         <h2>Order Confirmed!</h2>
         <p>Dear ${customerName},</p>
         <p>Thank you for your order! Your payment has been received and we're excited to prepare your delicious treats.</p>
       </div>
-
       <div class="section">
         <h2>Order Details</h2>
         <table class="order-table">
@@ -89,7 +70,6 @@ function generateCustomerEmailHTML(orderData, customerName, customerEmail, total
             ${itemsHTML}
           </tbody>
         </table>
-
         <table class="totals-table">
           <tr>
             <td style="font-weight: 500;">Subtotal:</td>
@@ -107,22 +87,18 @@ function generateCustomerEmailHTML(orderData, customerName, customerEmail, total
           </tr>
         </table>
       </div>
-
       <div class="section">
         <h2>Pickup Details</h2>
         ${deliveryInfo}
         ${scheduleInfo}
       </div>
-
       <div class="warm-note">
         <strong>🎉 Preparation Note:</strong> Karen & Bruce will begin preparing your treats right away! Preparation times may vary depending on availability and current orders. Please allow 3-4 hours.
       </div>
-
       <div class="section">
         ${orderData.notes ? `<p><strong>Special Instructions:</strong> ${orderData.notes}</p>` : `<p><strong>Special Instructions:</strong> N/A — not provided</p>`}
         <p><strong>Confirmation Number:</strong> ${Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
       </div>
-
       <div class="footer">
         <p>&copy; 2024 ${BAKERY_NAME}. All treats are handmade with love.</p>
         <p>Questions? Contact us at ${BAKERY_EMAIL}</p>
@@ -160,14 +136,12 @@ function generateBakeryEmailHTML(orderData, customerName, customerEmail, total) 
 <body>
   <div class="container">
     <h2>📦 New Order Received!</h2>
-    
     <h3>Customer Information</h3>
     <p>
       <strong>Name:</strong> ${customerName}<br>
       <strong>Email:</strong> ${customerEmail}<br>
       <strong>Phone:</strong> ${orderData.phone}
     </p>
-
     <h3>Order Details</h3>
     <table class="order-table">
       <thead>
@@ -181,7 +155,6 @@ function generateBakeryEmailHTML(orderData, customerName, customerEmail, total) 
         ${itemsHTML}
       </tbody>
     </table>
-
     <h3>Order Information</h3>
     <p>
       <strong>Method:</strong> ${orderData.method}<br>
@@ -195,103 +168,63 @@ function generateBakeryEmailHTML(orderData, customerName, customerEmail, total) 
   `;
 }
 
-async function sendSendGridEmail(to, subject, htmlContent) {
-  return new Promise((resolve, reject) => {
-    const data = JSON.stringify({
-      personalizations: [{
-        to: [{ email: to }]
-      }],
-      from: { email: BAKERY_EMAIL, name: BAKERY_NAME },
-      subject,
-      content: [{ type: 'text/html', value: htmlContent }]
-    });
-
-    const options = {
-      hostname: 'api.sendgrid.com',
-      path: '/v3/mail/send',
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(data)
-      }
-    };
-
-    const req = https.request(options, (res) => {
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        resolve();
-      } else {
-        reject(new Error(`SendGrid error: ${res.statusCode}`));
-      }
-      res.on('data', () => {});
-    });
-
-    req.on('error', reject);
-    req.write(data);
-    req.end();
-  });
-}
-
-exports.handler = async (event) => {
-  const allowedOrigin = process.env.SITE_URL || '*';
+export default async function handler(req, res) {
   const headers = {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: ''
-    };
+  if (req.method === 'OPTIONS') {
+    return res.status(200).json({});
   }
 
   try {
-    const { email, name, orderData, total } = JSON.parse(event.body);
+    const { email, name, orderData, total } = req.body || {};
 
     if (!email || !name || !orderData || !total) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({
-          error: 'Missing required fields'
-        })
-      };
+      return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Generate email HTML
     const customerHTML = generateCustomerEmailHTML(orderData, name, email, total);
     const bakeryHTML = generateBakeryEmailHTML(orderData, name, email, total);
 
-    // Send emails based on configured service
     if (EMAIL_SERVICE === 'sendgrid' && process.env.SENDGRID_API_KEY) {
-      await Promise.all([
-        sendSendGridEmail(email, `Order Confirmation - ${BAKERY_NAME}`, customerHTML),
-        sendSendGridEmail(BAKERY_EMAIL, `New Order from ${name}`, bakeryHTML)
-      ]);
+      const data = JSON.stringify({
+        personalizations: [{ to: [{ email }] }, { to: [{ email: BAKERY_EMAIL }] }],
+        from: { email: BAKERY_EMAIL, name: BAKERY_NAME },
+        subject: `Order Confirmation - ${BAKERY_NAME}`,
+        content: [{ type: 'text/html', value: customerHTML + bakeryHTML }]
+      });
+
+      const options = {
+        hostname: 'api.sendgrid.com',
+        path: '/v3/mail/send',
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(data)
+        }
+      };
+
+      await new Promise((resolve, reject) => {
+        const req = require('https').request(options, (res) => {
+          if (res.statusCode >= 200 && res.statusCode < 300) resolve();
+          else reject(new Error(`SendGrid error: ${res.statusCode}`));
+        });
+        req.on('error', reject);
+        req.write(data);
+        req.end();
+      });
     } else {
-      // Fallback: service not configured — log generic message (do not include PII)
       console.log('Email service not configured; skipping send.');
     }
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        message: 'Confirmation email sent successfully'
-      })
-    };
+    return res.status(200).json({ message: 'Confirmation email sent successfully' });
   } catch (error) {
     console.error('Email sending error');
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({
-        error: 'Failed to send confirmation email'
-      })
-    };
+    return res.status(500).json({ error: 'Failed to send confirmation email' });
   }
-};
+}

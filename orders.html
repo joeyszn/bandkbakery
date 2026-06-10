@@ -148,8 +148,9 @@
     }
 
     function formatCurrency(n){
-      if (typeof n !== 'number') return '$0.00';
-      return '$' + n.toFixed(2);
+      const num = Number(n);
+      if(isNaN(num)) return '$0.00';
+      return '$' + num.toFixed(2);
     }
 
     function formatOrderDateTime(dateStr){
@@ -198,7 +199,7 @@
         card.className = 'order-card';
         const orderId = order.orderNumber || order.orderId || 'BK-0000-0000';
         const date = formatOrderDateTime(order.dateOrdered || order.date);
-        const total = order.totalPaid || order.total || 0;
+        const total = Number(order.totalPaid || order.total || 0);
         const method = order.pickupOrDelivery || order.method || 'Pickup';
         const status = order.status || 'Order Received';
 
@@ -222,10 +223,11 @@
         details.className = 'details-panel';
         let itemsHtml = '';
         (order.purchasedItems || order.items || []).forEach(it => {
-          const qty = it.quantity || it.qty || 1;
+          const qty = Number(it.quantity || it.qty || 1);
           const name = it.name || it.productName || 'Item';
-          const price = it.price || it.unitPrice || 0;
-          itemsHtml += `<div class="item-row"><div class="item-left">${qty} × ${name}</div><div class="item-right">${formatCurrency(price)}</div></div>`;
+          const price = Number(it.price || it.unitPrice || 0);
+          const itemTotal = (price * qty).toFixed(2);
+          itemsHtml += `<div class="item-row"><div class="item-left">${qty} × ${name}</div><div class="item-right">$${itemTotal}</div></div>`;
         });
 
         const customerInfo = `

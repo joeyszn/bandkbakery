@@ -298,6 +298,16 @@
         } catch (e) {
           console.error('Failed to save order to orders list', e);
         }
+        // Also save to global API for cross-device persistence
+        try {
+          fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderRecord)
+          }).catch(()=>{});
+        } catch (e) {
+          console.warn('Could not save to global orders API', e);
+        }
       }
 
       function formatMoney(n){ return '$'+(n||0).toFixed(2); }
