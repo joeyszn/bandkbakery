@@ -35,6 +35,7 @@
   .status-preparing{background:#8b5e46;color:#fff}
   .status-ready{background:#f6c85a;color:#3d2113}
   .status-completed{background:#4caf50;color:#fff}
+  .status-pending{background:#ff9800;color:#fff}
 
   .order-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
   .details-panel{margin-top:12px;border-radius:12px;padding:12px;background:linear-gradient(180deg,rgba(249,199,95,0.04),#fff);display:none}
@@ -101,7 +102,7 @@
     <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
   </header>
 
-  <main class="orders-shell" id="orders-main">
+<main class="orders-shell" id="orders-main">
     <div class="orders-header">
       <div>
         <h1 class="orders-title">My Orders</h1>
@@ -113,6 +114,7 @@
           <button class="filter-btn active" data-filter="all">All Orders</button>
           <button class="filter-btn" data-filter="active">Active Orders</button>
           <button class="filter-btn" data-filter="completed">Completed Orders</button>
+          <button class="filter-btn" data-filter="pending">Pending Orders</button>
         </div>
       </div>
     </div>
@@ -135,6 +137,7 @@
   // Orders page script — reads bk_orders from localStorage and renders cards
   (function(){
     const STORAGE_KEY = 'bk_orders';
+    const DRAFT_STORAGE_KEY = 'bk_pending_orders';
 
     function readOrders(){
       try{
@@ -143,6 +146,16 @@
         return JSON.parse(raw) || [];
       }catch(e){
         console.error('Failed to parse orders', e);
+        return [];
+      }
+    }
+
+    function readPendingOrders(){
+      try{
+        const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+        if(!raw) return [];
+        return JSON.parse(raw) || [];
+      }catch(e){
         return [];
       }
     }
@@ -181,46 +194,79 @@
 
     function renderEmpty(){
       const container = document.getElementById('orders-list');
-      container.innerHTML = `
-        <div class="empty-state" role="status">
-          <div class="empty-ill">🍞</div>
-          <h3 style="margin:0;color:var(--brown)">You have no orders yet</h3>
-          <p style="margin:0;color:var(--lighter-black)">Looks like your basket is still empty.</p>
-          <div style="margin-top:12px"><a href="index.html" class="btn btn-brown">Return to Menu</a></div>
-        </div>
-      `;
+      const filter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+      if(filter === 'pending'){
+        container.innerHTML = `
+          <div class="empty-state" role="status">
+            <div class="empty-ill">📝</div>
+            <h3 style="margin:0;color:var(--brown)">No pending orders</h3>
+            <p style="margin:0;color:var(--lighter-black)">You have no incomplete orders. Start shopping to create one.</p>
+            <div style="margin-top:12px"><a href="index.html" class="btn btn-brown">Return to Menu</a></div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="empty-state" role="status">
+            <div class="empty-ill">🍞</div>
+            <h3 style="margin:0;color:var(--brown)">You have no orders yet</h3>
+            <p style="margin:0;color:var(--lighter-black)">Looks like your basket is still empty.</p>
+            <div style="margin-top:12px"><a href="index.html" class="btn btn-brown">Return to Menu</a></div>
+          </div>
+        `;
+      }
     }
 
-    function renderOrders(list){
+    function renderOrders(list, isPending = false){
       const container = document.getElementById('orders-list');
       container.innerHTML = '';
       list.forEach(order => {
         const card = document.createElement('article');
         card.className = 'order-card';
-        const orderId = order.orderNumber || order.orderId || 'BK-0000-0000';
-        const date = formatOrderDateTime(order.dateOrdered || order.date);
+        const orderId = order.orderNumber || order.orderId || order.id || 'Pending';
+        const date = formatOrderDateTime(order.dateOrdered || order.date || order.savedAt);
         const total = Number(order.totalPaid || order.total || 0);
         const method = order.pickupOrDelivery || order.method || 'Pickup';
         const status = order.status || 'Order Received';
 
-        card.innerHTML = `
-          <div class="order-summary">
-            <div class="order-meta">
-              <div class="order-number">${orderId}</div>
-              <div class="order-date">${date}</div>
-              <div class="order-total">${formatCurrency(total)}</div>
-              <div class="order-method">${method}</div>
-              <div class="notice">Karen will keep you updated by email as your order progresses.</div>
+        if(isPending){
+          const subtotal = (order.items || []).reduce((sum, it) => sum + (Number(it.price) || 0) * (Number(it.quantity) || 1), 0);
+          const deliveryFee = method === 'Delivery' ? 5 : 0;
+          const computedTotal = subtotal + deliveryFee;
+          card.innerHTML = `
+            <div class="order-summary">
+              <div class="order-meta">
+                <div class="order-number">Incomplete Order</div>
+                <div class="order-date">${date}</div>
+                <div class="order-total">${formatCurrency(computedTotal)}</div>
+                <div class="order-method">${method}</div>
+              </div>
             </div>
-          </div>
-          <div class="order-actions">
-            <div class="status-badge ${statusClass(status)}">${status}</div>
-            <button class="btn btn-outline details-toggle" aria-expanded="false">View Details</button>
-          </div>
-        `;
+            <div class="order-actions">
+              <div class="status-badge status-pending">Pending</div>
+              <button class="btn btn-outline continue-checkout" data-order-id="${order.id}">Continue Checkout</button>
+            </div>
+          `;
+        } else {
+          card.innerHTML = `
+            <div class="order-summary">
+              <div class="order-meta">
+                <div class="order-number">${orderId}</div>
+                <div class="order-date">${date}</div>
+                <div class="order-total">${formatCurrency(total)}</div>
+                <div class="order-method">${method}</div>
+                <div class="notice">Karen will keep you updated by email as your order progresses.</div>
+              </div>
+            </div>
+            <div class="order-actions">
+              <div class="status-badge ${statusClass(status)}">${status}</div>
+              <button class="btn btn-outline details-toggle" aria-expanded="false">View Details</button>
+            </div>
+          `;
+        }
 
         const details = document.createElement('div');
         details.className = 'details-panel';
+        details.style.display = 'block';
         let itemsHtml = '';
         (order.purchasedItems || order.items || []).forEach(it => {
           const qty = Number(it.quantity || it.qty || 1);
@@ -247,23 +293,61 @@
           </div>
         `;
 
-        const paymentInfo = `
-          <div style="margin-top:12px"><strong>Payment</strong>
-            <div>Status: ${order.paymentStatus || order.status || 'Paid'}</div>
-            <div>PayPal Transaction ID: ${order.paypalTransactionId || order.paymentId || order.transactionId || '—'}</div>
-          </div>
-        `;
+        if(isPending){
+          details.innerHTML = `<div class="items-list">${itemsHtml || '<div style="color:#6d4a2d">No items listed</div>'}</div>${customerInfo}${orderInfo}`;
+          card.appendChild(details);
+        } else {
+          const paymentInfo = `
+            <div style="margin-top:12px"><strong>Payment</strong>
+              <div>Status: ${order.paymentStatus || order.status || 'Paid'}</div>
+              <div>PayPal Transaction ID: ${order.paypalTransactionId || order.paymentId || order.transactionId || '—'}</div>
+            </div>
+          `;
+          details.innerHTML = `<div class="items-list">${itemsHtml || '<div style="color:#6d4a2d">No items listed</div>'}</div>${customerInfo}${orderInfo}${paymentInfo}`;
+          card.appendChild(details);
+          const detailsToggle = card.querySelector('.details-toggle');
+          if(detailsToggle){
+            detailsToggle.addEventListener('click', function(){
+              const expanded = this.getAttribute('aria-expanded') === 'true';
+              this.setAttribute('aria-expanded', String(!expanded));
+              details.style.display = expanded ? 'none' : 'block';
+            });
+          }
+        }
 
-        details.innerHTML = `<div class="items-list">${itemsHtml || '<div style="color:#6d4a2d">No items listed</div>'}</div>${customerInfo}${orderInfo}${paymentInfo}`;
-
-        card.appendChild(details);
-
-        // toggle behavior
-        card.querySelector('.details-toggle').addEventListener('click', function(){
-          const expanded = this.getAttribute('aria-expanded') === 'true';
-          this.setAttribute('aria-expanded', String(!expanded));
-          details.style.display = expanded ? 'none' : 'block';
-        });
+        if(isPending){
+          const continueBtn = card.querySelector('.continue-checkout');
+          if(continueBtn){
+            continueBtn.addEventListener('click', function(){
+              const orderId = this.getAttribute('data-order-id');
+              const pending = readPendingOrders();
+              const pendingOrder = pending.find(o => o.id === orderId);
+              if(pendingOrder){
+                const cart = pendingOrder.items || [];
+                localStorage.setItem('bk_cart', JSON.stringify(cart));
+                const formValues = {
+                  name: pendingOrder.customerName,
+                  phone: pendingOrder.customerPhone,
+                  email: pendingOrder.customerEmail,
+                  method: pendingOrder.pickupOrDelivery,
+                  address: pendingOrder.address,
+                  pickupLocation: pendingOrder.pickupLocation,
+                  city: pendingOrder.city,
+                  state: pendingOrder.state,
+                  zip: pendingOrder.zip,
+                  scheduleDate: pendingOrder.scheduleDate,
+                  scheduleTime: pendingOrder.scheduleTime,
+                  notes: pendingOrder.notes
+                };
+                const idx = pending.findIndex(o => o.id === orderId);
+                if(idx >= 0) pending.splice(idx, 1);
+                localStorage.setItem('bk_pending_orders', JSON.stringify(pending));
+                sessionStorage.setItem('bakery_order', JSON.stringify(formValues));
+                window.location.href = 'cart.html';
+              }
+            });
+          }
+        }
 
         container.appendChild(card);
       });
@@ -277,8 +361,19 @@
         list = list.filter(o => !( (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered'));
       } else if(filter === 'completed'){
         list = list.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered');
+      } else if(filter === 'pending'){
+        const pending = readPendingOrders();
+        if(!q && pending.length > 0){
+          list = pending;
+        } else if (pending.length > 0) {
+          list = pending.filter(o => {
+            const orderId = (o.id||'').toLowerCase();
+            const inItems = (o.items||[]).some(it => (it.name||'').toLowerCase().includes(q));
+            return orderId.includes(q) || inItems;
+          });
+        }
       }
-      if(q){
+      if(q && filter !== 'pending'){
         list = list.filter(o => {
           const orderId = (o.orderNumber||o.orderId||'').toLowerCase();
           const inItems = (o.purchasedItems||o.items||[]).some(it => (it.name||it.productName||'').toLowerCase().includes(q));
@@ -286,7 +381,7 @@
         });
       }
       if(list.length === 0){ renderEmpty(); return; }
-      renderOrders(list);
+      renderOrders(list, filter === 'pending');
     }
 
     function init(){
@@ -310,9 +405,8 @@
         applySearchAndFilter(all);
       }));
 
-      // sync on storage change
       window.addEventListener('storage', (ev) => {
-        if(ev.key === STORAGE_KEY){
+        if(ev.key === STORAGE_KEY || ev.key === DRAFT_STORAGE_KEY){
           const updated = readOrders();
           applySearchAndFilter(updated);
         }

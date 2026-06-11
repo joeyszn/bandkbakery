@@ -183,20 +183,21 @@
 
         <hr style="border:none;border-top:1px solid #f2e9e0;margin:12px 0" />
 
-        <form id="customer-form">
-          <div style="margin-bottom:8px">
-            <label>Full name<span style="color:#dc2626;font-weight:700">*</span></label>
-            <input id="cust-name" required class="order-input" />
-          </div>
-          <div style="margin-bottom:8px">
-            <label>Phone number<span style="color:#dc2626;font-weight:700">*</span></label>
-            <input id="cust-phone" type="tel" placeholder="e.g. 415-555-1234" required class="order-input" />
-            <small style="display:block;color:rgba(0,0,0,0.6);margin-top:6px;font-size:0.92rem;">California phone numbers only</small>
-          </div>
-          <div style="margin-bottom:8px">
-            <label>Email address<span style="color:#dc2626;font-weight:700">*</span></label>
-            <input id="cust-email" type="email" required class="order-input" />
-          </div>
+<form id="customer-form">
+           <div style="margin-bottom:8px">
+             <label>Full name<span style="color:#dc2626;font-weight:700">*</span></label>
+             <input id="cust-name" required class="order-input" />
+           </div>
+           <div style="margin-bottom:8px">
+             <label>Phone number<span style="color:#dc2626;font-weight:700">*</span></label>
+             <input id="cust-phone" type="tel" placeholder="e.g. 415-555-1234" required class="order-input" />
+             <small style="display:block;color:rgba(0,0,0,0.6);margin-top:6px;font-size:0.92rem;">California phone numbers only</small>
+           </div>
+           <div style="margin-bottom:8px">
+             <label>Email address<span style="color:#dc2626;font-weight:700">*</span></label>
+             <input id="cust-email" type="email" required class="order-input" />
+           </div>
+           <div id="save-pending-indicator" style="display:none;margin-bottom:8px;padding:8px 12px;border-radius:8px;background:rgba(249,199,95,0.15);color:var(--brown);font-size:0.85rem;font-weight:600">Your order is being saved...</div>
 
           <div id="pickup-delivery-block" style="margin-bottom:8px">
             <div style="margin-bottom:8px">
@@ -499,44 +500,76 @@
 
       function isEmailValid(email){ return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email); }
 
-      function validateCheckoutForm(){
-        const values = getCheckoutValues();
-        const errors = [];
-        if(!values.name) errors.push('Full Name is required.');
-        if(!values.phone) { errors.push('Phone Number is required.'); }
-        else if(!isCaliforniaPhoneNumber(values.phone)) { errors.push('Please enter a valid California phone number to complete checkout.'); }
-        if(!values.email) errors.push('Email Address is required.');
-        if(values.method === 'Pickup'){
-          if(!values.pickupLocation) errors.push('Please choose a pickup location.');
-        }
-        if(values.method === 'Delivery'){
-          if(!values.address) errors.push('Delivery address is required for delivery.');
-          if(!values.city) errors.push('Delivery city is required.');
-          if(!values.state) errors.push('Delivery state is required.');
-          if(!values.zip) errors.push('Delivery ZIP code is required.');
-        }
-        if(errors.length) return { valid: false, errors, checkout: null };
+function validateCheckoutForm(){
+         const values = getCheckoutValues();
+         const cart = loadCart();
+         const errors = [];
+         if(!values.name) errors.push('Full Name is required.');
+         if(!values.phone) { errors.push('Phone Number is required.'); }
+         else if(!isCaliforniaPhoneNumber(values.phone)) { errors.push('Please enter a valid California phone number to complete checkout.'); }
+         if(!values.email) errors.push('Email Address is required.');
+         if(values.method === 'Pickup'){
+           if(!values.pickupLocation) errors.push('Please choose a pickup location.');
+         }
+         if(values.method === 'Delivery'){
+           if(!values.address) errors.push('Delivery address is required for delivery.');
+           if(!values.city) errors.push('Delivery city is required.');
+           if(!values.state) errors.push('Delivery state is required.');
+           if(!values.zip) errors.push('Delivery ZIP code is required.');
+         }
+         if(errors.length) return { valid: false, errors, checkout: null };
 
-        const checkout = {
-          name: values.name,
-          phone: values.phone,
-          email: values.email,
-          method: values.method,
-          address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
-          pickupLocation: values.pickupLocation,
-          city: values.city,
-          state: values.state,
-          zip: values.zip,
-          scheduleDate: values.date,
-          scheduleTime: values.time,
-          notes: values.notes,
-          savedAt: new Date().toISOString()
-        };
-        localStorage.setItem('bk_checkout', JSON.stringify(checkout));
-        return { valid: true, errors: [], checkout };
-      }
+         const checkout = {
+           name: values.name,
+           phone: values.phone,
+           email: values.email,
+           method: values.method,
+           address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
+           pickupLocation: values.pickupLocation,
+           city: values.city,
+           state: values.state,
+           zip: values.zip,
+           scheduleDate: values.date,
+           scheduleTime: values.time,
+           notes: values.notes,
+           cart: cart,
+           savedAt: new Date().toISOString()
+};
+         return { valid: true, errors: [], checkout };
+       }
 
-      function areRequiredFieldsValid(){
+       function savePendingOrder(checkout){
+         try {
+           const cart = loadCart();
+           const pendingOrder = {
+             id: 'pending-' + Date.now(),
+             customerName: checkout.name,
+             customerEmail: checkout.email,
+             customerPhone: checkout.phone,
+             pickupOrDelivery: checkout.method,
+             address: checkout.address,
+             pickupLocation: checkout.pickupLocation,
+             city: checkout.city,
+             state: checkout.state,
+             zip: checkout.zip,
+             schedule: [checkout.scheduleDate, checkout.scheduleTime].filter(Boolean).join(' at '),
+             scheduleDate: checkout.scheduleDate,
+             scheduleTime: checkout.scheduleTime,
+             notes: checkout.notes,
+             items: checkout.cart || cart,
+             savedAt: checkout.savedAt
+           };
+           const existing = JSON.parse(localStorage.getItem('bk_pending_orders') || '[]');
+           const idx = existing.findIndex(o => o.customerEmail === pendingOrder.customerEmail);
+           if (idx >= 0) existing[idx] = pendingOrder;
+           else existing.unshift(pendingOrder);
+           localStorage.setItem('bk_pending_orders', JSON.stringify(existing));
+           const indicator = document.getElementById('save-pending-indicator');
+           if (indicator) { indicator.style.display = 'block'; setTimeout(() => indicator.style.display = 'none', 2000); }
+         } catch(e) { console.error('Failed to save pending order', e); }
+       }
+
+       function areRequiredFieldsValid(){
         const v = getCheckoutValues();
         if(!v.name) return false;
         if(!v.phone || !isCaliforniaPhoneNumber(v.phone)) return false;
@@ -572,18 +605,28 @@
         }
       }
 
-      function setDeliveryVisibility(){
-        const isDelivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
-        document.getElementById('pickup-location-block').style.display = isDelivery ? 'none' : 'block';
-        document.getElementById('delivery-address-block').style.display = isDelivery ? 'block' : 'none';
-        updateSummary(null, isDelivery ? 5 : 0);
-      }
+function setDeliveryVisibility(){
+         const isDelivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
+         document.getElementById('pickup-location-block').style.display = isDelivery ? 'none' : 'block';
+         document.getElementById('delivery-address-block').style.display = isDelivery ? 'block' : 'none';
+         updateSummary(null, isDelivery ? 5 : 0);
+       }
 
-      form.addEventListener('change', (e)=>{
-        if(e.target.name === 'method') setDeliveryVisibility();
-        validateAndTogglePayPal();
-      });
-      form.addEventListener('input', validateAndTogglePayPal);
+       form.addEventListener('change', (e)=>{
+         if(e.target.name === 'method') setDeliveryVisibility();
+         validateAndTogglePayPal();
+         if (areRequiredFieldsValid()) {
+           const { valid, checkout } = validateCheckoutForm();
+           if (valid && checkout) savePendingOrder(checkout);
+         }
+       });
+       form.addEventListener('input', (e) => {
+         validateAndTogglePayPal();
+         if (areRequiredFieldsValid()) {
+           const { valid, checkout } = validateCheckoutForm();
+           if (valid && checkout) savePendingOrder(checkout);
+         }
+       });
 
       // Keep cart page in sync when other tabs/windows update the cart
       // BroadcastChannel updates (faster) and storage fallback
