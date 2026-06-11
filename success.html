@@ -15,7 +15,7 @@
     .success-hero{padding:42px 40px 32px;background:linear-gradient(180deg,rgba(249,199,95,0.14),rgba(255,255,255,0.96));}
     .success-hero h1{font-size:2.6rem;margin:0 0 12px;color:var(--brown)}
     .success-hero p{margin:0;color:rgba(0,0,0,.68);line-height:1.8;max-width:780px}
-    .success-meta{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:28px 40px;border-bottom:1px solid #f3e8de;}
+    .success-meta{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:16px 16px;border-bottom:1px solid #f3e8de;}
     .success-meta div{background:rgba(249,199,95,0.08);padding:18px;border-radius:18px;}
     .success-meta strong{display:block;font-size:0.95rem;color:var(--brown);margin-bottom:6px}
     .success-details{padding:28px 40px;display:grid;gap:24px}
@@ -147,7 +147,10 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       try {
-        const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]');
+        const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]').filter(order => {
+          const status = `${order.status || ''} ${order.paymentStatus || ''}`.toLowerCase();
+          return !(status.includes('pending') || status.includes('draft') || status.includes('incomplete'));
+        });
         document.querySelectorAll('.orders-count').forEach(el => el.textContent = orders.length);
       } catch (e) {}
       try {

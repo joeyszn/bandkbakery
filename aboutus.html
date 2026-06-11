@@ -631,8 +631,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
   try{
-    const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]');
-    document.querySelectorAll('.orders-count').forEach(el=>el.textContent = orders.length);
+  const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]').filter(order => {
+    const status = `${order.status || ''} ${order.paymentStatus || ''}`.toLowerCase();
+    return !(status.includes('pending') || status.includes('draft') || status.includes('incomplete'));
+  });
+  document.querySelectorAll('.orders-count').forEach(el=>el.textContent = orders.length);
   }catch(e){}
   try{
     const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]');

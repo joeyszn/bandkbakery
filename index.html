@@ -769,10 +769,95 @@ window.addEventListener('scroll',()=>{
   const orderItemInput = document.getElementById('order-item');
   const orderItemsContainer = document.getElementById('order-items');
   const addOrderItemBtn = document.getElementById('add-order-item');
+  const orderButtons = Array.from(document.querySelectorAll('.add-to-cart'));
   const scheduleInput = document.getElementById('order-schedule');
   const addressGroup = document.getElementById('address-group');
   const addressInput = document.getElementById('order-address');
   const pickupLocationSelect = document.getElementById('pickup-location');
+  const methodRadios = Array.from(document.querySelectorAll('input[name="order-method"]'));
+  const body = document.body;
+  const successPane = document.getElementById('order-success');
+  const scheduleSuccessNote = document.getElementById('success-schedule-note');
+  const focusSelectors = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+  let focusable = [];
+  let firstFocusable = null;
+  let lastFocusable = null;
+
+  function createOrderItemRow(itemName = '', quantity = 1){
+    const row = document.createElement('div');
+    row.className = 'order-item-row';
+    row.innerHTML = `
+      <div class="order-item-card">
+        <div class="order-item-row-top">
+          <p class="order-item-row-title">Item 1</p>
+          <button type="button" class="btn btn-ghost remove-order-item" aria-label="Remove this bakery item">Remove</button>
+        </div>
+        <div class="form-group">
+          <label for="order-item">Bakery Item</label>
+          <select id="order-item" name="item" class="order-select order-item-select" required>
+            <option value="" disabled selected>Select a bakery item</option>
+            <option value="Babka">Babka — $0.10</option>
+            <option value="Challah">Challah — $22.00</option>
+            <option value="Bagels">Bagels — $26.00</option>
+            <option value="Bialys">Bialys — $26.00</option>
+            <option value="Rugelach">Rugelach — $10.00</option>
+            <option value="Almond Thumbprint Cookies">Almond Thumbprint Cookies — $14.00</option>
+            <option value="Mandelbrot">Mandelbrot — $10.00</option>
+            <option value="Macarons">Macarons — $12.00</option>
+            <option value="Greater-Crumb Coffee Cake">Greater-Crumb Coffee Cake — $30.00</option>
+          </select>
+          <div class="order-field-error"></div>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input name="quantity" type="number" min="1" value="1" class="order-input order-item-quantity" required />
+          <div class="order-field-error"></div>
+        </div>
+      </div>`;
+    const select = row.querySelector('.order-item-select');
+    if(itemName && [...select.options].some(option => option.value === itemName)){
+      select.value = itemName;
+    }
+    row.querySelector('.order-item-quantity').value = quantity;
+    return row;
+  }
+
+  function getOrderRows(){
+    return Array.from(orderItemsContainer.querySelectorAll('.order-item-row'));
+  }
+
+  function updateRowTitles(){
+    const rows = getOrderRows();
+    rows.forEach((row, index) => {
+      const title = row.querySelector('.order-item-row-title');
+      if(title) title.textContent = `Item ${index + 1}`;
+      const remove = row.querySelector('.remove-order-item');
+      if(remove) remove.disabled = rows.length <= 1;
+    });
+  }
+
+  function resetOrderItems(itemName = ''){
+    orderItemsContainer.innerHTML = '';
+    const row = createOrderItemRow(itemName, 1);
+    orderItemsContainer.appendChild(row);
+    requestAnimationFrame(() => row.classList.add('show'));
+    updateRowTitles();
+  }
+
+  function updateAddressVisibility(){
+    const method = methodRadios.find(radio => radio.checked)?.value || 'Pickup';
+    if(method === 'Delivery'){
+      pickupLocationSelect.style.display = 'none';
+      pickupLocationSelect.required = false;
+      addressInput.style.display = '';
+      addressInput.required = true;
+    } else {
+      pickupLocationSelect.style.display = '';
+      pickupLocationSelect.required = true;
+      addressInput.style.display = 'none';
+      addressInput.required = false;
+    }
+  }
 
   const focusModal = () => {
     focusable = Array.from(modal.querySelectorAll(focusSelectors)).filter(el => el.offsetParent !== null);
@@ -1035,8 +1120,8 @@ window.addEventListener('scroll',()=>{
   const setOpen = open => {
     panel.classList.toggle('open', open);
     backdrop.classList.toggle('open', open);
-    toggle.setAttribute('aria-expanded', open);
-    panel.setAttribute('aria-hidden', !open);
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.setAttribute('aria-hidden', String(!open));
   };
 
   const closeMenu = () => setOpen(false);
@@ -1084,9 +1169,28 @@ window.addEventListener('scroll',()=>{
   };
 
   const openSearch = () => {
+    positionSearchContainer();
     searchContainer.setAttribute('aria-hidden', 'false');
     searchToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
     searchInput.focus();
+  };
+
+  const getVisibleSearchToggle = () => searchToggles.find(toggle => {
+    const style = getComputedStyle(toggle);
+    return style.display !== 'none' && style.visibility !== 'hidden' && toggle.getClientRects().length > 0;
+  }) || searchToggles[0];
+
+  const positionSearchContainer = () => {
+    const toggle = getVisibleSearchToggle();
+    if(!toggle) return;
+    const toggleRect = toggle.getBoundingClientRect();
+    const width = Math.min(320, Math.max(260, window.innerWidth - 16));
+    const left = Math.max(8, toggleRect.right - width);
+    searchContainer.style.position = 'fixed';
+    searchContainer.style.top = `${toggleRect.bottom + 8}px`;
+    searchContainer.style.width = `${width}px`;
+    searchContainer.style.left = `${left}px`;
+    searchContainer.style.right = 'auto';
   };
 
   const closeSearch = () => {
@@ -1144,35 +1248,22 @@ window.addEventListener('scroll',()=>{
   };
 
   const scrollToProduct = (product) => {
-    const section = document.querySelector(
-      `article[aria-label="${product.name}"]` ||
-      `article:has(.menu-name:contains("${product.name}"))`
-    );
+    const safeName = product.name.replace(/"/g, '\\"');
+    const section = document.querySelector(`article[aria-label="${safeName}"]`);
+    const target = section || Array.from(document.querySelectorAll('.menu-item')).find(item => {
+      const menuName = item.querySelector('.menu-name');
+      return menuName && menuName.textContent.trim() === product.name;
+    });
 
-    if(section){
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Add subtle highlight animation
-      const originalBg = section.style.backgroundColor;
-      section.style.backgroundColor = 'rgba(249, 199, 95, .2)';
+    if(target){
+      const headerOffset = document.getElementById('header')?.offsetHeight || 0;
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset - 16;
+      window.scrollTo({ top: targetTop, behavior: 'smooth' });
+      const originalBg = target.style.backgroundColor;
+      target.style.backgroundColor = 'rgba(249, 199, 95, .2)';
       setTimeout(() => {
-        section.style.backgroundColor = originalBg;
+        target.style.backgroundColor = originalBg;
       }, 1500);
-      section.focus();
-    } else {
-      // Fallback: search by menu-name text content
-      const menuItems = Array.from(document.querySelectorAll('.menu-item'));
-      const target = menuItems.find(item => {
-        const menuName = item.querySelector('.menu-name');
-        return menuName && menuName.textContent.trim() === product.name;
-      });
-      if(target){
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const originalBg = target.style.backgroundColor;
-        target.style.backgroundColor = 'rgba(249, 199, 95, .2)';
-        setTimeout(() => {
-          target.style.backgroundColor = originalBg;
-        }, 1500);
-      }
     }
   };
 
@@ -1201,6 +1292,7 @@ window.addEventListener('scroll',()=>{
   };
 
   searchToggles.forEach(toggle => toggle.addEventListener('click', toggleSearch));
+  window.addEventListener('resize', positionSearchContainer);
 
   searchInput.addEventListener('input', (e) => {
     filterProducts(e.target.value);
@@ -1495,14 +1587,25 @@ window.addEventListener('scroll',()=>{
     updateCartBadge(false);
   });
 
+  const getSubmittedOrderCount = () => {
+    try {
+      const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]') || [];
+      return orders.filter(order => {
+        const status = `${order.status || ''} ${order.paymentStatus || ''}`.toLowerCase();
+        return !(status.includes('pending') || status.includes('draft') || status.includes('incomplete'));
+      }).length;
+    } catch (e) {
+      return 0;
+    }
+  };
+
   const updateOrdersBadge = () => {
     try {
-      const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]');
-      document.querySelectorAll('.orders-count').forEach(el => el.textContent = orders.length);
+      document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
     } catch (e) {}
   };
   updateOrdersBadge();
-  window.addEventListener('storage', (e) => { if(e.key === 'bk_orders') updateOrdersBadge(); });
+  window.addEventListener('storage', (e) => { if(e.key === 'bk_orders' || e.key === 'bk_pending_orders') updateOrdersBadge(); });
   document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') updateOrdersBadge(); });
 
   // Sync menu UI when cart changes in other tabs/windows

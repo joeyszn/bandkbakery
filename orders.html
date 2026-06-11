@@ -52,6 +52,13 @@
     .order-card{grid-template-columns:1fr;}
     .order-actions{align-items:flex-start}
   }
+
+  @media(max-width:600px){
+    .orders-toolbar{align-items:stretch;flex-direction:column; width:100%;}
+    .orders-search{width:100%;min-width:0}
+    .orders-filters{width:100%;flex-direction:column}
+    .filter-btn{width:100%}
+  }
 </style>
 </head>
 <body class="alan-sans">
@@ -101,6 +108,31 @@
     </div>
     <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
   </header>
+
+  <script>
+    (function initMobileMenu(){
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      const panel = document.getElementById('mobile-menu-panel');
+      const backdrop = document.getElementById('mobile-menu-backdrop');
+      const closeButton = document.querySelector('.mobile-menu-close');
+      if(!toggle || !panel || !backdrop || !closeButton) return;
+
+      const setOpen = open => {
+        panel.classList.toggle('open', open);
+        backdrop.classList.toggle('open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        panel.setAttribute('aria-hidden', String(!open));
+      };
+
+      const closeMenu = () => setOpen(false);
+      const toggleMenu = () => setOpen(!panel.classList.contains('open'));
+
+      toggle.addEventListener('click', toggleMenu);
+      closeButton.addEventListener('click', closeMenu);
+      backdrop.addEventListener('click', closeMenu);
+      panel.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+    })();
+  </script>
 
 <main class="orders-shell" id="orders-main">
     <div class="orders-header">
@@ -404,6 +436,18 @@
       renderOrders(list, filter === 'pending');
     }
 
+    function getSubmittedOrderCount(){
+      try{
+        const orders = readOrders() || [];
+        return orders.filter(order => {
+          const status = `${order.status || ''} ${order.paymentStatus || ''}`.toLowerCase();
+          return !(status.includes('pending') || status.includes('draft') || status.includes('incomplete'));
+        }).length;
+      }catch(e){
+        return 0;
+      }
+    }
+
     function init(){
       const all = readOrders();
       const searchInput = document.getElementById('orders-search');
@@ -412,8 +456,7 @@
       document.querySelectorAll('.cart-count').forEach(el => {
         try{ const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]'); el.textContent = cart.reduce((s,it)=>s+(it.quantity||0),0); }catch(e){}
       });
-      try { document.querySelectorAll('.orders-count').forEach(el => el.textContent = all.length); } catch (e) {}
-      try { const ordersCount = (readOrders() || []).length; document.querySelectorAll('.orders-count').forEach(el => el.textContent = ordersCount); } catch (e) {}
+      try { document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount()); } catch (e) {}
 
       if(!all || all.length === 0){ renderEmpty(); }
       else { applySearchAndFilter(all); }
@@ -428,12 +471,14 @@
       window.addEventListener('storage', (ev) => {
         if(ev.key === STORAGE_KEY || ev.key === DRAFT_STORAGE_KEY){
           const updated = readOrders();
+          document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
           applySearchAndFilter(updated);
         }
       });
       document.addEventListener('visibilitychange', () => {
         if(document.visibilityState === 'visible'){
           const updated = readOrders();
+          document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
           applySearchAndFilter(updated);
         }
       });

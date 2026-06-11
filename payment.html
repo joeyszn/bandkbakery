@@ -27,6 +27,13 @@
       <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
       <a href="aboutus" class="btn btn-ghost">About Us</a>
     </div>
+    <div class="mobile-nav">
+      <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
   </nav>
   <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
     <button class="mobile-menu-close" aria-label="Close navigation">×</button>
@@ -37,6 +44,31 @@
   </div>
   <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
 </header>
+
+<script>
+  (function initMobileMenu(){
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    const panel = document.getElementById('mobile-menu-panel');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const closeButton = document.querySelector('.mobile-menu-close');
+    if(!toggle || !panel || !backdrop || !closeButton) return;
+
+    const setOpen = open => {
+      panel.classList.toggle('open', open);
+      backdrop.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      panel.setAttribute('aria-hidden', String(!open));
+    };
+
+    const closeMenu = () => setOpen(false);
+    const toggleMenu = () => setOpen(!panel.classList.contains('open'));
+
+    toggle.addEventListener('click', toggleMenu);
+    closeButton.addEventListener('click', closeMenu);
+    backdrop.addEventListener('click', closeMenu);
+    panel.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+  })();
+</script>
 
 <main class="checkout-main" role="main">
   <div class="checkout-container">
@@ -190,7 +222,7 @@
     const cart = JSON.parse(localStorage.getItem('bk_cart') || '[]');
     const count = cart.reduce((s, i) => s + (i.quantity || 0), 0);
     document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
-    try { const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]'); document.querySelectorAll('.orders-count').forEach(el => el.textContent = orders.length); } catch (e) {}
+    try { const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]').filter(order => { const status = `${order.status || ''} ${order.paymentStatus || ''}`.toLowerCase(); return !(status.includes('pending') || status.includes('draft') || status.includes('incomplete')); }); document.querySelectorAll('.orders-count').forEach(el => el.textContent = orders.length); } catch (e) {}
 
     const container = document.getElementById('payment-items-container');
     let subtotal = 0;

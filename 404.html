@@ -219,6 +219,26 @@
         <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span class="cart-count">0</span>)</a>
         <a href="aboutus" class="btn btn-ghost">About Us</a>
     </div>
+    <div class="mobile-nav">
+      <button class="search-toggle mobile-search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+      <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+    <div class="mobile-menu-panel" id="mobile-menu-panel" aria-hidden="true">
+      <button class="mobile-menu-close" aria-label="Close navigation">×</button>
+      <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+      <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
+      <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
+      <a href="aboutus" class="btn btn-ghost">About Us</a>
+    </div>
     <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
   </header>
   <script>
@@ -236,10 +256,13 @@
         panel.setAttribute('aria-hidden', String(!open));
       };
 
-      toggle.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
-      closeButton.addEventListener('click', () => setOpen(false));
-      backdrop.addEventListener('click', () => setOpen(false));
-      panel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+      const closeMenu = () => setOpen(false);
+      const toggleMenu = () => setOpen(!panel.classList.contains('open'));
+
+      toggle.addEventListener('click', toggleMenu);
+      closeButton.addEventListener('click', closeMenu);
+      backdrop.addEventListener('click', closeMenu);
+      panel.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
     })();
   </script>
 

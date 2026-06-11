@@ -848,28 +848,26 @@
         // Mobile menu functionality
         function initMobileMenu() {
             const toggle = document.querySelector('.mobile-menu-toggle');
-            const panel = document.querySelector('.mobile-menu-panel');
-            const backdrop = document.querySelector('.mobile-menu-backdrop');
-
-            if (!toggle) return;
-
-            toggle.addEventListener('click', () => {
-                panel.classList.add('open');
-                backdrop.classList.add('open');
-            });
-
+            const panel = document.getElementById('mobile-menu-panel');
+            const backdrop = document.getElementById('mobile-menu-backdrop');
             const closeBtn = document.querySelector('.mobile-menu-close');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => {
-                    panel.classList.remove('open');
-                    backdrop.classList.remove('open');
-                });
-            }
 
-            backdrop.addEventListener('click', () => {
-                panel.classList.remove('open');
-                backdrop.classList.remove('open');
-            });
+            if (!toggle || !panel || !backdrop || !closeBtn) return;
+
+            const setOpen = open => {
+                panel.classList.toggle('open', open);
+                backdrop.classList.toggle('open', open);
+                toggle.setAttribute('aria-expanded', String(open));
+                panel.setAttribute('aria-hidden', String(!open));
+            };
+
+            const closeMenu = () => setOpen(false);
+            const toggleMenu = () => setOpen(!panel.classList.contains('open'));
+
+            toggle.addEventListener('click', toggleMenu);
+            closeBtn.addEventListener('click', closeMenu);
+            backdrop.addEventListener('click', closeMenu);
+            panel.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
         }
 
         // Progress bar
@@ -897,7 +895,10 @@
     <script>
     document.addEventListener('DOMContentLoaded', ()=>{
         try{
-            const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]');
+            const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]').filter(order => {
+                const status = `${order.status || ''} ${order.paymentStatus || ''}`.toLowerCase();
+                return !(status.includes('pending') || status.includes('draft') || status.includes('incomplete'));
+            });
             document.querySelectorAll('.orders-count').forEach(el=>el.textContent = orders.length);
         }catch(e){}
         try{

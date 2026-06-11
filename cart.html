@@ -290,6 +290,17 @@
       function loadCart(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
       function saveCart(cart){ localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }
       function saveLastOrder(order){ localStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order)); }
+      function getSubmittedOrderCount(){
+        try {
+          const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]') || [];
+          return orders.filter(order => {
+            const status = `${order.status || ''} ${order.paymentStatus || ''}`.toLowerCase();
+            return !(status.includes('pending') || status.includes('draft') || status.includes('incomplete'));
+          }).length;
+        } catch (e) {
+          return 0;
+        }
+      }
 
       function saveOrderToOrders(orderRecord){
         try {
@@ -322,10 +333,9 @@
         cartItemsEl.innerHTML = `<div class="empty-cart"><h3>Looks like your basket is empty. Let's fix that.</h3><p style="color:var(--brown)">Freshly baked treats are waiting.</p><a href="index.html#menu" class="btn btn-yellow" style="margin-top:14px">Return to Menu</a></div>`;
       }
 
-       try {
-         const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]');
-         document.querySelectorAll('.orders-count').forEach(el => el.textContent = orders.length);
-       } catch (e) {}
+         try {
+           document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
+         } catch (e) {}
 
        function renderCart(){
         const cart = loadCart();
@@ -365,8 +375,7 @@
         attachItemHandlers();
         updateSummary(cart);
         try {
-          const orders = JSON.parse(localStorage.getItem('bk_orders') || '[]');
-          document.querySelectorAll('.orders-count').forEach(el => el.textContent = orders.length);
+          document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
         } catch (e) {}
       }
 
