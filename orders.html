@@ -42,7 +42,7 @@
   .items-list{display:grid;gap:8px}
   .item-row{display:flex;justify-content:space-between;gap:12px}
   .item-left{color:var(--brown);font-weight:700}
-  .item-right{color:#6d4a2d}
+  .item-right{color:#6d4a2d; font-weight: 700;}
 
   .notice{margin-top:8px;color:var(--brown);font-weight:700}
   .empty-state{display:flex;flex-direction:column;align-items:center;gap:18px;padding:48px;border-radius:18px;background:linear-gradient(180deg,rgba(249,199,95,0.06),#fff);box-shadow:0 10px 28px rgba(82,47,28,0.06)}
@@ -182,6 +182,23 @@
       return `${month} ${day}, ${year} at ${hours}:${minStr} ${ampm}`;
     }
 
+    function escapeHtml(str){
+      if(!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function getFirstName(name){
+      const first = String(name || '').trim().split(/\s+/)[0];
+      return first || 'there';
+    }
+
+    function emailLink(email, name){
+      const emailValue = String(email || '').trim();
+      if(!emailValue || emailValue === '—') return '—';
+      const body = encodeURIComponent(`Hello ${getFirstName(name)}`);
+      return `<a href="mailto:${escapeHtml(emailValue)}?body=${body}" style="color:var(--brown)">${escapeHtml(emailValue)}</a>`;
+    }
+
     function statusClass(status){
       switch((status||'').toLowerCase()){
         case 'preparing': return 'status-preparing';
@@ -276,11 +293,14 @@
           itemsHtml += `<div class="item-row"><div class="item-left">${qty} × ${name}</div><div class="item-right">$${itemTotal}</div></div>`;
         });
 
+        const customerName = order.customerName || order.name || '—';
+        const customerEmail = order.customerEmail || order.email || '—';
+        const customerPhone = order.phone || order.customerPhone || '—';
         const customerInfo = `
-          <div style="margin-top:12px"><strong>Customer</strong>
-            <div>${order.customerName || order.name || '—'}</div>
-            <div>${order.customerEmail || order.email || '—'}</div>
-            <div>${order.phone || order.customerPhone || ''}</div>
+          <div style="margin-top:12px"><strong>Customer Info</strong>
+            <div>${escapeHtml(customerName)}</div>
+            <div>${emailLink(customerEmail, customerName)}</div>
+            <div>${escapeHtml(customerPhone)}</div>
           </div>
         `;
 

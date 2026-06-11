@@ -98,7 +98,7 @@
 <header id="header" aria-label="Site header">
   <nav aria-label="Main navigation">
     <div class="logo" aria-label="B&KERY Home">
-      <a href="index.html" onclick="location.reload();return false"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+      <a href="index.html"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
     </div>
     <div class="nav-actions">
       <button class="btn btn-ghost" onclick="logout()" style="font-size:13px">Logout</button>
@@ -306,8 +306,10 @@ async function renderAdmin(){
    const id = o.orderId || o.orderNumber || `#${idx+1}`;
    const customer = escapeHtml(o.name||'—');
    const emailRaw = o.email||'—';
-   const emailMailto = encodeURIComponent(emailRaw);
    const emailDisplay = escapeHtml(emailRaw);
+   const firstName = String(o.name||'there').trim().split(/\s+/)[0] || 'there';
+   const emailBody = encodeURIComponent(`Hello ${firstName}`);
+   const emailLink = emailRaw && emailRaw !== '—' ? `<a href="mailto:${escapeHtml(emailRaw)}?body=${emailBody}" style="color:var(--brown)">${emailDisplay}</a>` : emailDisplay;
    const phone = escapeHtml(o.phone||o.customerPhone||'—');
    const method = escapeHtml(o.method||'Pickup');
    const address = [o.address, o.city, o.state, o.zip].filter(Boolean).map(escapeHtml).join(', ') || '—';
@@ -325,7 +327,7 @@ async function renderAdmin(){
        <div>
          <div class="detail-section"><h4>Customer</h4>
            <div class="detail-row"><span class="label">Name</span><span class="value">${customer}</span></div>
-           <div class="detail-row"><span class="label">Email</span><span class="value"><a href="mailto:${emailMailto}?body=${encodeURIComponent('Hi there')}">${emailDisplay}</a></span></div>
+           <div class="detail-row"><span class="label">Email</span><span class="value">${emailLink}</span></div>
            <div class="detail-row"><span class="label">Phone</span><span class="value">${phone}</span></div>
          </div>
          <div class="detail-section"><h4>Order</h4>
@@ -354,7 +356,7 @@ async function renderAdmin(){
    return `<tr onclick="toggleDetails(this)" aria-expanded="false">
      <td class="order-id">${id}</td>
      <td>${customer}</td>
-     <td><a href="mailto:${emailMailto}?body=${encodeURIComponent('Hi there')}" style="color:var(--brown)">${emailDisplay}</a></td>
+     <td>${emailLink}</td>
      <td>${phone}</td>
      <td>${method}</td>
      <td style="white-space:nowrap">${schedule}</td>
