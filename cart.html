@@ -534,7 +534,7 @@ function validateCheckoutForm(){
            notes: values.notes,
            cart: cart,
            savedAt: new Date().toISOString()
-};
+         };
          return { valid: true, errors: [], checkout };
        }
 
@@ -583,29 +583,29 @@ function validateCheckoutForm(){
         return true;
       }
 
-      function validateAndTogglePayPal(){
-        const valid = areRequiredFieldsValid();
-        const wrapper = document.getElementById('paypal-wrapper');
-        const overlay = document.getElementById('paypal-overlay');
-        const helper = document.getElementById('payment-helper');
-        const container = document.getElementById('paypal-button-container');
-        if(!wrapper || !overlay || !helper || !container) return;
-        if(valid){
-          wrapper.classList.remove('paypal-disabled');
-          overlay.setAttribute('aria-hidden','true');
-          container.style.pointerEvents = 'auto';
-          container.style.opacity = '1';
-          helper.textContent = (helper.dataset.countPrefix||'') + 'Your order is ready for secure checkout.';
-        } else {
-          wrapper.classList.add('paypal-disabled');
-          overlay.setAttribute('aria-hidden','false');
-          container.style.pointerEvents = 'none';
-          container.style.opacity = '0.6';
-          helper.textContent = (helper.dataset.countPrefix||'') + 'Please complete all required information before proceeding to payment.';
-        }
-      }
+function validateAndTogglePayPal(){
+         const valid = areRequiredFieldsValid();
+         const wrapper = document.getElementById('paypal-wrapper');
+         const overlay = document.getElementById('paypal-overlay');
+         const helper = document.getElementById('payment-helper');
+         const container = document.getElementById('paypal-button-container');
+         if(!wrapper || !overlay || !helper || !container) return;
+         if(valid){
+           wrapper.classList.remove('paypal-disabled');
+           overlay.setAttribute('aria-hidden','true');
+           container.style.pointerEvents = 'auto';
+           container.style.opacity = '1';
+           helper.textContent = (helper.dataset.countPrefix||'') + 'Your order is ready for secure checkout.';
+         } else {
+           wrapper.classList.add('paypal-disabled');
+           overlay.setAttribute('aria-hidden','false');
+           container.style.pointerEvents = 'none';
+           container.style.opacity = '0.6';
+           helper.textContent = (helper.dataset.countPrefix||'') + 'Please complete all required information before proceeding to payment.';
+         }
+       }
 
-function setDeliveryVisibility(){
+       function setDeliveryVisibility(){
          const isDelivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
          document.getElementById('pickup-location-block').style.display = isDelivery ? 'none' : 'block';
          document.getElementById('delivery-address-block').style.display = isDelivery ? 'block' : 'none';
