@@ -262,12 +262,14 @@
       return first || 'there';
     }
 
-    function emailLink(email, name){
-      const emailValue = String(email || '').trim();
-      if(!emailValue || emailValue === '—') return '—';
-      const body = encodeURIComponent(`Hello ${getFirstName(name)}`);
-      return `<a href="mailto:${escapeHtml(emailValue)}?body=${body}" style="color:var(--brown)">${escapeHtml(emailValue)}</a>`;
-    }
+function emailLink(email, name){
+       const emailValue = String(email || '').trim();
+       if(!emailValue || emailValue === '—') return '—';
+       const firstName = String(name || '').trim().split(/\s+/)[0] || 'there';
+       const body = `Hello ${firstName},\n\nYour order is ready for pickup.\n\nThank you,\nB&KERY`;
+       const gmailLink = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(emailValue)}&su=${encodeURIComponent("Your B&KERY Order")}&body=${encodeURIComponent(body)}`;
+       return `<a href="${gmailLink}" target="_blank" style="color:var(--brown)">${escapeHtml(emailValue)}</a>`;
+     }
 
     function statusClass(status){
       switch((status||'').toLowerCase()){
