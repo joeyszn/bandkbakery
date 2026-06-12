@@ -599,33 +599,196 @@
 </footer>
 
 <script>
-(function(){
-  const bar = document.getElementById('progress-bar');
-  window.addEventListener('scroll', () => {
-    const st = document.documentElement.scrollTop;
-    const dh = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.width = (dh > 0 ? Math.min(100, (st / dh) * 100) : 0) + '%';
-  }, { passive: true });
-})();
-
 (function initMobileMenu(){
-  const toggle = document.querySelector('.mobile-menu-toggle');
-  const panel = document.getElementById('mobile-menu-panel');
-  const backdrop = document.getElementById('mobile-menu-backdrop');
-  const closeButton = document.querySelector('.mobile-menu-close');
-  if(!toggle || !panel || !backdrop || !closeButton) return;
+   const toggle = document.querySelector('.mobile-menu-toggle');
+   const panel = document.getElementById('mobile-menu-panel');
+   const backdrop = document.getElementById('mobile-menu-backdrop');
+   const closeButton = document.querySelector('.mobile-menu-close');
+   if(!toggle || !panel || !backdrop || !closeButton) return;
 
-  const setOpen = open => {
-    panel.classList.toggle('open', open);
-    backdrop.classList.toggle('open', open);
-    toggle.setAttribute('aria-expanded', String(open));
-    panel.setAttribute('aria-hidden', String(!open));
-  };
+   const setOpen = open => {
+     panel.classList.toggle('open', open);
+     backdrop.classList.toggle('open', open);
+     toggle.setAttribute('aria-expanded', String(open));
+     panel.setAttribute('aria-hidden', String(!open));
+   };
 
-  toggle.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
-  closeButton.addEventListener('click', () => setOpen(false));
-  backdrop.addEventListener('click', () => setOpen(false));
-  panel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+   toggle.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
+   closeButton.addEventListener('click', () => setOpen(false));
+   backdrop.addEventListener('click', () => setOpen(false));
+   panel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+})();
+</script>
+<script>
+(function initProductSearch(){
+   const searchToggles = Array.from(document.querySelectorAll('#search-toggle, #search-toggle-mobile'));
+   const searchContainer = document.getElementById('search-container');
+   const searchInput = document.getElementById('search-input');
+   const searchClear = document.getElementById('search-clear');
+   const searchResults = document.getElementById('search-results');
+   const searchHint = document.getElementById('search-hint');
+
+   if(searchToggles.length === 0 || !searchContainer || !searchInput || !searchResults) return;
+
+   const bakeryProducts = [
+     { name: 'Babka', id: 'babka' },
+     { name: 'Challah', id: 'challah' },
+     { name: 'Bagels', id: 'bagels' },
+     { name: 'Bialys', id: 'bialys' },
+     { name: 'Rugelach', id: 'rugelach' },
+     { name: 'Almond Thumbprint Cookies', id: 'almond-cookies' },
+     { name: 'Mandelbrot', id: 'mandelbrot' },
+     { name: 'Macarons', id: 'macarons' },
+     { name: 'Greater-Crumb Coffee Cake', id: 'coffee-cake' }
+   ];
+
+   let selectedIndex = -1;
+   let currentResults = [];
+
+   const toggleSearch = () => {
+     const isOpen = searchContainer.getAttribute('aria-hidden') === 'false';
+     if(isOpen){
+       closeSearch();
+     } else {
+       openSearch();
+     }
+   };
+
+   const openSearch = () => {
+     positionSearchContainer();
+     searchContainer.setAttribute('aria-hidden', 'false');
+     searchToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
+     searchInput.focus();
+   };
+
+   const getVisibleSearchToggle = () => searchToggles.find(toggle => {
+     const style = getComputedStyle(toggle);
+     return style.display !== 'none' && style.visibility !== 'hidden' && toggle.getClientRects().length > 0;
+   }) || searchToggles[0];
+
+   const positionSearchContainer = () => {
+     const toggle = getVisibleSearchToggle();
+     if(!toggle) return;
+     const toggleRect = toggle.getBoundingClientRect();
+     const width = Math.min(320, Math.max(260, window.innerWidth - 16));
+     const left = Math.max(8, toggleRect.right - width);
+     searchContainer.style.position = 'fixed';
+     searchContainer.style.top = `${toggleRect.bottom + 8}px`;
+     searchContainer.style.width = `${width}px`;
+     searchContainer.style.left = `${left}px`;
+     searchContainer.style.right = 'auto';
+   };
+
+   const closeSearch = () => {
+     searchContainer.setAttribute('aria-hidden', 'true');
+     searchToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
+     searchResults.innerHTML = '';
+     selectedIndex = -1;
+   };
+
+   const filterProducts = (query) => {
+     if(!query.trim()){
+       searchResults.innerHTML = '';
+       searchHint.style.display = 'block';
+       selectedIndex = -1;
+       return;
+     }
+
+     const lowerQuery = query.toLowerCase().trim();
+     currentResults = bakeryProducts.filter(product =>
+       product.name.toLowerCase().includes(lowerQuery)
+     );
+
+     selectedIndex = -1;
+     renderResults();
+   };
+
+   const renderResults = () => {
+     searchHint.style.display = 'none';
+     searchResults.innerHTML = '';
+
+     if(currentResults.length === 0){
+       const emptyMsg = document.createElement('div');
+       emptyMsg.className = 'search-empty';
+       emptyMsg.textContent = 'No matching treats found.';
+       searchResults.appendChild(emptyMsg);
+       return;
+     }
+
+     currentResults.forEach((product, index) => {
+       const item = document.createElement('button');
+       item.type = 'button';
+       item.className = 'search-result-item';
+       item.textContent = product.name;
+       item.setAttribute('data-index', index);
+       item.addEventListener('click', () => selectResult(index));
+       searchResults.appendChild(item);
+     });
+   };
+
+   const selectResult = (index) => {
+     if(index < 0 || index >= currentResults.length) return;
+     window.location.href = 'index.html#menu';
+     closeSearch();
+     searchInput.value = '';
+   };
+
+   searchToggles.forEach(toggle => toggle.addEventListener('click', toggleSearch));
+   window.addEventListener('resize', positionSearchContainer);
+
+   searchInput.addEventListener('input', (e) => {
+     filterProducts(e.target.value);
+   });
+
+   searchClear.addEventListener('click', (e) => {
+     e.preventDefault();
+     searchInput.value = '';
+     searchResults.innerHTML = '';
+     searchHint.style.display = 'block';
+     selectedIndex = -1;
+     searchInput.focus();
+   });
+
+   searchInput.addEventListener('keydown', (e) => {
+     if(e.key === 'Escape'){
+       closeSearch();
+       return;
+     }
+
+     if(e.key === 'ArrowDown'){
+       e.preventDefault();
+       updateSelection(selectedIndex + 1);
+       return;
+     }
+
+     if(e.key === 'ArrowUp'){
+       e.preventDefault();
+       updateSelection(selectedIndex - 1);
+       return;
+     }
+
+     if(e.key === 'Enter'){
+       e.preventDefault();
+       if(selectedIndex >= 0){
+         selectResult(selectedIndex);
+       }
+       return;
+     }
+   });
+
+   document.addEventListener('click', (e) => {
+     if(!searchContainer.contains(e.target) && !searchToggles.some(toggle => toggle.contains(e.target))){
+       if(searchContainer.getAttribute('aria-hidden') === 'false'){
+         closeSearch();
+       }
+     }
+   });
+
+   document.addEventListener('keydown', (e) => {
+     if(e.key === 'Escape' && searchContainer.getAttribute('aria-hidden') === 'false'){
+       closeSearch();
+     }
+   });
 })();
 </script>
 <script>

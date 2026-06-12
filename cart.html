@@ -237,14 +237,15 @@
             </div>
           </div>
 
-          <div style="margin-bottom:8px">
-            <label>Requested date (optional)</label>
-            <input id="cust-date" type="date" class="order-input" />
-          </div>
-          <div style="margin-bottom:8px">
-            <label>Requested time (optional)</label>
-            <input id="cust-time" type="time" class="order-input" />
-          </div>
+<div style="margin-bottom:8px">
+             <label>Requested date (optional)</label>
+             <input id="cust-date" type="date" class="order-input" />
+           </div>
+           <div style="margin-bottom:8px">
+             <label>Requested time (optional)</label>
+             <input id="cust-time" type="time" class="order-input" />
+           </div>
+           <div id="schedule-error" class="order-field-error" style="display:none;margin-bottom:8px"></div>
           <div style="margin-bottom:8px">
             <label>Special instructions (optional)</label>
             <textarea id="cust-notes" class="order-textarea" rows="3"></textarea>
@@ -510,42 +511,103 @@
       function isEmailValid(email){ return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email); }
 
 function validateCheckoutForm(){
-         const values = getCheckoutValues();
-         const cart = loadCart();
-         const errors = [];
-         if(!values.name) errors.push('Full Name is required.');
-         if(!values.phone) { errors.push('Phone Number is required.'); }
-         else if(!isCaliforniaPhoneNumber(values.phone)) { errors.push('Please enter a valid California phone number to complete checkout.'); }
-         if(!values.email) errors.push('Email Address is required.');
-         if(values.method === 'Pickup'){
-           if(!values.pickupLocation) errors.push('Please choose a pickup location.');
-         }
-         if(values.method === 'Delivery'){
-           if(!values.address) errors.push('Delivery address is required for delivery.');
-           if(!values.city) errors.push('Delivery city is required.');
-           if(!values.state) errors.push('Delivery state is required.');
-           if(!values.zip) errors.push('Delivery ZIP code is required.');
-         }
-         if(errors.length) return { valid: false, errors, checkout: null };
+        const values = getCheckoutValues();
+        const cart = loadCart();
+        const errors = [];
+        if(!values.name) errors.push('Full Name is required.');
+        if(!values.phone) { errors.push('Phone Number is required.'); }
+        else if(!isCaliforniaPhoneNumber(values.phone)) { errors.push('Please enter a valid California phone number to complete checkout.'); }
+        if(!values.email) errors.push('Email Address is required.');
+        if(values.method === 'Pickup'){
+          if(!values.pickupLocation) errors.push('Please choose a pickup location.');
+        }
+        if(values.method === 'Delivery'){
+          if(!values.address) errors.push('Delivery address is required for delivery.');
+          if(!values.city) errors.push('Delivery city is required.');
+          if(!values.state) errors.push('Delivery state is required.');
+          if(!values.zip) errors.push('Delivery ZIP code is required.');
+        }
+        if(values.date && values.time){
+          const scheduleValidation = validateScheduleDateTime(values.date, values.time);
+          if(!scheduleValidation.valid){
+            errors.push(scheduleValidation.error);
+          }
+        }
+        if(errors.length) return { valid: false, errors, checkout: null };
 
-         const checkout = {
-           name: values.name,
-           phone: values.phone,
-           email: values.email,
-           method: values.method,
-           address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
-           pickupLocation: values.pickupLocation,
-           city: values.city,
-           state: values.state,
-           zip: values.zip,
-           scheduleDate: values.date,
-           scheduleTime: values.time,
-           notes: values.notes,
-           cart: cart,
-           savedAt: new Date().toISOString()
-         };
-         return { valid: true, errors: [], checkout };
-       }
+        const checkout = {
+          name: values.name,
+          phone: values.phone,
+          email: values.email,
+          method: values.method,
+          address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
+          pickupLocation: values.pickupLocation,
+          city: values.city,
+          state: values.state,
+          zip: values.zip,
+          scheduleDate: values.date,
+          scheduleTime: values.time,
+          notes: values.notes,
+          cart: cart,
+          savedAt: new Date().toISOString()
+        };
+        return { valid: true, errors: [], checkout };
+      }
+
+      function validateScheduleDateTime(dateStr, timeStr){
+        if(!dateStr || !timeStr) return { valid: true };
+        const today = new Date();
+        const selectedDate = new Date(dateStr + 'T' + timeStr);
+        if(isNaN(selectedDate.getTime())){
+          return { valid: false, error: 'Please enter a valid date and time.' };
+        }
+        if(selectedDate < today){
+          return { valid: false, error: 'Cannot select a past date or time. Please choose a future date and time.' };
+        }
+        return { valid: true };
+      }
+
+      function updateScheduleValidation(){
+        const dateInput = document.getElementById('cust-date');
+        const timeInput = document.getElementById('cust-time');
+        const date = dateInput.value;
+        const time = timeInput.value;
+        const scheduleError = document.getElementById('schedule-error');
+        
+        if(date && time){
+          const result = validateScheduleDateTime(date, time);
+          if(!result.valid && scheduleError){
+            scheduleError.textContent = result.error;
+            scheduleError.style.display = 'block';
+          } else if(scheduleError){
+            scheduleError.style.display = 'none';
+          }
+        } else if(scheduleError){
+          scheduleError.style.display = 'none';
+        }
+      }
+
+      function setMinDateTime(){
+        const dateInput = document.getElementById('cust-date');
+        const timeInput = document.getElementById('cust-time');
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        dateInput.min = todayStr;
+        
+        dateInput.addEventListener('change', function(){
+          if(this.value === todayStr){
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            timeInput.min = hours + ':' + minutes;
+          } else {
+            timeInput.removeAttribute('min');
+          }
+          updateScheduleValidation();
+        });
+        
+        timeInput.addEventListener('change', updateScheduleValidation);
+        timeInput.min = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+      }
 
        function savePendingOrder(checkout){
          try {
@@ -578,19 +640,23 @@ function validateCheckoutForm(){
          } catch(e) { console.error('Failed to save pending order', e); }
        }
 
-       function areRequiredFieldsValid(){
-        const v = getCheckoutValues();
-        if(!v.name) return false;
-        if(!v.phone || !isCaliforniaPhoneNumber(v.phone)) return false;
-        if(!v.email || !isEmailValid(v.email)) return false;
-        if(!v.method) return false;
-        if(v.method === 'Pickup' && !v.pickupLocation) return false;
-        if(v.method === 'Delivery' && (!v.address || !v.city || !v.state || !v.zip)) return false;
-        const cart = loadCart();
-        const totalQty = cart.reduce((s,i)=>s+(i.quantity||0),0);
-        if(totalQty === 0) return false;
-        return true;
-      }
+function areRequiredFieldsValid(){
+         const v = getCheckoutValues();
+         if(!v.name) return false;
+         if(!v.phone || !isCaliforniaPhoneNumber(v.phone)) return false;
+         if(!v.email || !isEmailValid(v.email)) return false;
+         if(!v.method) return false;
+         if(v.method === 'Pickup' && !v.pickupLocation) return false;
+         if(v.method === 'Delivery' && (!v.address || !v.city || !v.state || !v.zip)) return false;
+         if(v.date && v.time){
+           const scheduleResult = validateScheduleDateTime(v.date, v.time);
+           if(!scheduleResult.valid) return false;
+         }
+         const cart = loadCart();
+         const totalQty = cart.reduce((s,i)=>s+(i.quantity||0),0);
+         if(totalQty === 0) return false;
+         return true;
+       }
 
 function validateAndTogglePayPal(){
          const valid = areRequiredFieldsValid();
@@ -621,20 +687,22 @@ function validateAndTogglePayPal(){
          updateSummary(null, isDelivery ? 5 : 0);
        }
 
-       form.addEventListener('change', (e)=>{
-         if(e.target.name === 'method') setDeliveryVisibility();
-         validateAndTogglePayPal();
-         if (areRequiredFieldsValid()) {
-           const { valid, checkout } = validateCheckoutForm();
-           if (valid && checkout) savePendingOrder(checkout);
-         }
-       });
-       form.addEventListener('input', (e) => {
-         validateAndTogglePayPal();
-         if (areRequiredFieldsValid()) {
-           const { valid, checkout } = validateCheckoutForm();
-           if (valid && checkout) savePendingOrder(checkout);
-         }
+form.addEventListener('change', (e)=>{
+          if(e.target.name === 'method') setDeliveryVisibility();
+          validateAndTogglePayPal();
+          updateScheduleValidation();
+          if (areRequiredFieldsValid()) {
+            const { valid, checkout } = validateCheckoutForm();
+            if (valid && checkout) savePendingOrder(checkout);
+          }
+        });
+        form.addEventListener('input', (e) => {
+          validateAndTogglePayPal();
+          updateScheduleValidation();
+          if (areRequiredFieldsValid()) {
+            const { valid, checkout } = validateCheckoutForm();
+            if (valid && checkout) savePendingOrder(checkout);
+          }
        });
 
       // Keep cart page in sync when other tabs/windows update the cart
@@ -821,9 +889,10 @@ function validateAndTogglePayPal(){
         }).catch(()=>{});
       }
 
-      // ─── Init ─────────────────────────────────────────────────────────────────
-      renderCart();
-      setDeliveryVisibility();
+// ─── Init ─────────────────────────────────────────────────────────────────
+       renderCart();
+       setDeliveryVisibility();
+       setMinDateTime();
 
       // Pre-populate cart from sessionStorage if user came from index.html order form
       try {

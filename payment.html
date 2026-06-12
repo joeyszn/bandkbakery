@@ -17,17 +17,37 @@
 
 <!-- Header -->
 <header id="header" aria-label="Site header">
-  <nav aria-label="Main navigation">
-    <div class="logo" aria-label="B&KERY Home">
-      <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
-    </div>
-    <div class="nav-actions">
-      <a href="index.html#menu" class="btn btn-ghost">Menu</a>
+<nav aria-label="Main navigation">
+     <div class="logo" aria-label="B&KERY Home">
+       <a href="/"><img src="Logo.png" width="140" alt="The B&KERY logo"></a>
+     </div>
+     <div class="nav-actions">
+       <button class="search-toggle" id="search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+           <circle cx="11" cy="11" r="8"></circle>
+           <path d="m21 21-4.35-4.35"></path>
+         </svg>
+       </button>
+       <div class="search-container" id="search-container" aria-hidden="true">
+         <div class="search-input-wrapper">
+           <input type="text" id="search-input" class="search-input payment-input" placeholder="Search treats..." autocomplete="off" aria-label="Search bakery products" aria-describedby="search-hint" aria-autocomplete="list" aria-controls="search-results" />
+           <button class="search-clear" id="search-clear" aria-label="Clear search" type="button">×</button>
+         </div>
+         <div class="search-hint" id="search-hint">Type to find your favorite treats</div>
+         <div class="search-results" id="search-results" role="listbox" aria-label="Search results"></div>
+       </div>
+       <a href="index.html#menu" class="btn btn-ghost">Menu</a>
       <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
       <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
       <a href="aboutus" class="btn btn-ghost">About Us</a>
     </div>
     <div class="mobile-nav">
+       <button class="search-toggle mobile-search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
+         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+           <circle cx="11" cy="11" r="8"></circle>
+           <path d="m21 21-4.35-4.35"></path>
+         </svg>
+       </button>
       <button class="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu-panel">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -283,12 +303,158 @@
     bar.style.width = (dh > 0 ? Math.min(100, (st / dh) * 100) : 0) + '%';
   }, { passive: true });
 
-  window.addEventListener('scroll', () => {
+window.addEventListener('scroll', () => {
     const nav = document.querySelector('nav');
     if (!nav) return;
     nav.style.boxShadow = window.scrollY > 200 ? '0 2px 20px rgba(82,47,28,.15)' : 'none';
   }, { passive: true });
-</script>
+ </script>
+ <script>
+ (function initProductSearch(){
+   const searchToggles = Array.from(document.querySelectorAll('#search-toggle, #search-toggle-mobile'));
+   const searchContainer = document.getElementById('search-container');
+   const searchInput = document.getElementById('search-input');
+   const searchClear = document.getElementById('search-clear');
+   const searchResults = document.getElementById('search-results');
+   const searchHint = document.getElementById('search-hint');
+
+   if(searchToggles.length === 0 || !searchContainer || !searchInput || !searchResults) return;
+
+   const bakeryProducts = [
+     { name: 'Babka', id: 'babka' },
+     { name: 'Challah', id: 'challah' },
+     { name: 'Bagels', id: 'bagels' },
+     { name: 'Bialys', id: 'bialys' },
+     { name: 'Rugelach', id: 'rugelach' },
+     { name: 'Almond Thumbprint Cookies', id: 'almond-cookies' },
+     { name: 'Mandelbrot', id: 'mandelbrot' },
+     { name: 'Macarons', id: 'macarons' },
+     { name: 'Greater-Crumb Coffee Cake', id: 'coffee-cake' }
+   ];
+
+   let selectedIndex = -1;
+   let currentResults = [];
+
+   const toggleSearch = () => {
+     const isOpen = searchContainer.getAttribute('aria-hidden') === 'false';
+     if(isOpen){ closeSearch(); } else { openSearch(); }
+   };
+
+   const openSearch = () => {
+     positionSearchContainer();
+     searchContainer.setAttribute('aria-hidden', 'false');
+     searchToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'true'));
+     searchInput.focus();
+   };
+
+   const getVisibleSearchToggle = () => searchToggles.find(toggle => {
+     const style = getComputedStyle(toggle);
+     return style.display !== 'none' && style.visibility !== 'hidden' && toggle.getClientRects().length > 0;
+   }) || searchToggles[0];
+
+   const positionSearchContainer = () => {
+     const toggle = getVisibleSearchToggle();
+     if(!toggle) return;
+     const toggleRect = toggle.getBoundingClientRect();
+     const width = Math.min(320, Math.max(260, window.innerWidth - 16));
+     const left = Math.max(8, toggleRect.right - width);
+     searchContainer.style.position = 'fixed';
+     searchContainer.style.top = toggleRect.bottom + 8 + 'px';
+     searchContainer.style.width = width + 'px';
+     searchContainer.style.left = left + 'px';
+     searchContainer.style.right = 'auto';
+   };
+
+   const closeSearch = () => {
+     searchContainer.setAttribute('aria-hidden', 'true');
+     searchToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
+     searchResults.innerHTML = '';
+     selectedIndex = -1;
+   };
+
+   const filterProducts = (query) => {
+     if(!query.trim()){
+       searchResults.innerHTML = '';
+       searchHint.style.display = 'block';
+       selectedIndex = -1;
+       return;
+     }
+     const lowerQuery = query.toLowerCase().trim();
+     currentResults = bakeryProducts.filter(product => product.name.toLowerCase().includes(lowerQuery));
+     selectedIndex = -1;
+     renderResults();
+   };
+
+   const renderResults = () => {
+     searchHint.style.display = 'none';
+     searchResults.innerHTML = '';
+     if(currentResults.length === 0){
+       const emptyMsg = document.createElement('div');
+       emptyMsg.className = 'search-empty';
+       emptyMsg.textContent = 'No matching treats found.';
+       searchResults.appendChild(emptyMsg);
+       return;
+     }
+     currentResults.forEach((product, index) => {
+       const item = document.createElement('button');
+       item.type = 'button';
+       item.className = 'search-result-item';
+       item.textContent = product.name;
+       item.setAttribute('data-index', index);
+       item.addEventListener('click', () => selectResult(index));
+       searchResults.appendChild(item);
+     });
+   };
+
+   const selectResult = (index) => {
+     if(index < 0 || index >= currentResults.length) return;
+     window.location.href = 'index.html#menu';
+     closeSearch();
+     searchInput.value = '';
+   };
+
+   const updateSelection = (newIndex) => {
+     if(currentResults.length === 0) return;
+     if(newIndex < 0) newIndex = currentResults.length - 1;
+     if(newIndex >= currentResults.length) newIndex = 0;
+     selectedIndex = newIndex;
+     document.querySelectorAll('.search-result-item[data-selected]').forEach(item => {
+       item.removeAttribute('data-selected');
+     });
+     const selected = document.querySelector(`.search-result-item[data-index="${selectedIndex}"]`);
+     if(selected){
+       selected.setAttribute('data-selected', '');
+       selected.scrollIntoView({ block: 'nearest' });
+     }
+   };
+
+   searchToggles.forEach(toggle => toggle.addEventListener('click', toggleSearch));
+   window.addEventListener('resize', positionSearchContainer);
+   searchInput.addEventListener('input', (e) => filterProducts(e.target.value));
+   searchClear.addEventListener('click', (e) => {
+     e.preventDefault();
+     searchInput.value = '';
+     searchResults.innerHTML = '';
+     searchHint.style.display = 'block';
+     selectedIndex = -1;
+     searchInput.focus();
+   });
+   searchInput.addEventListener('keydown', (e) => {
+     if(e.key === 'Escape'){ closeSearch(); return; }
+     if(e.key === 'ArrowDown'){ e.preventDefault(); updateSelection(selectedIndex + 1); return; }
+     if(e.key === 'ArrowUp'){ e.preventDefault(); updateSelection(selectedIndex - 1); return; }
+     if(e.key === 'Enter'){ e.preventDefault(); if(selectedIndex >= 0) selectResult(selectedIndex); return; }
+   });
+   document.addEventListener('click', (e) => {
+     if(!searchContainer.contains(e.target) && !searchToggles.some(toggle => toggle.contains(e.target))){
+       if(searchContainer.getAttribute('aria-hidden') === 'false'){ closeSearch(); }
+     }
+   });
+   document.addEventListener('keydown', (e) => {
+     if(e.key === 'Escape' && searchContainer.getAttribute('aria-hidden') === 'false'){ closeSearch(); }
+   });
+ })();
+ </script>
 
 </body>
 </html>
