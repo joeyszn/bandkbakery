@@ -196,6 +196,39 @@
         return;
       }
 
+      const formatCurrency = (value) => `$${(parseFloat(value)||0).toFixed(2)}`;
+      const formatScheduleTime = (scheduleStr) => {
+        if(!scheduleStr) return '';
+        const isoMatch = scheduleStr.match(/^(\d{4}-\d{2}-\d{2})\s*at\s*(\d{1,2}:\d{2})$/);
+        if(isoMatch){
+          const date = new Date(isoMatch[1] + 'T' + isoMatch[2]);
+          if(!isNaN(date.getTime())){
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const month = months[date.getMonth()];
+            const day = date.getDate();
+            const year = date.getFullYear();
+            let hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const minStr = minutes < 10 ? '0'+minutes : minutes;
+            return `${month} ${day}, ${year} at ${hours}:${minStr} ${ampm}`;
+          }
+        }
+        const d = new Date(scheduleStr);
+        if(isNaN(d.getTime())) return scheduleStr;
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const month = months[d.getMonth()];
+        const day = d.getDate();
+        const year = d.getFullYear();
+        let hours = d.getHours();
+        const minutes = d.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        const minStr = minutes < 10 ? '0'+minutes : minutes;
+        return `${month} ${day}, ${year} at ${hours}:${minStr} ${ampm}`;
+      };
+
       const totalPaid = order.total ? `$${order.total.toFixed(2)}` : '—';
       document.getElementById('order-id').textContent = order.orderId || '—';
       document.getElementById('customer-name').textContent = order.name || '—';
@@ -212,61 +245,16 @@
         itemEl.innerHTML = `<span class="item-label">${item.name}</span><span class="item-qty">${item.quantity} × ${formatCurrency(item.price)}</span>`;
         itemsContainer.appendChild(itemEl);
       });
-
       if (order.method === 'Delivery' && order.address) {
         document.getElementById('delivery-info').style.display = 'block';
         document.getElementById('order-address').textContent = order.address;
       }
+      document.getElementById('schedule-info').style.display = 'block';
+      document.getElementById('order-schedule').textContent = formatScheduleTime(order.schedule) || 'N/A — not specified';
+      try { localStorage.removeItem('bk_cart'); } catch (e) {}
+      try { localStorage.removeItem('bk_last_order'); } catch (e) {}
 
-document.getElementById('schedule-info').style.display = 'block';
-        document.getElementById('order-schedule').textContent = formatScheduleTime(order.schedule) || 'N/A — not specified';
-
-        try { localStorage.removeItem('bk_cart'); } catch (e) {}
-        try { localStorage.removeItem('bk_last_order'); } catch (e) {}
-
-        function formatScheduleTime(scheduleStr){
-          if(!scheduleStr) return '';
-          
-          // Handle "YYYY-MM-DD at HH:MM" format
-          if(scheduleStr.match(/^\d{4}-\d{2}-\d{2} at \d{1,2}:\d{2}$/)){
-            const [datePart, timePart] = scheduleStr.split(' at ');
-            const date = new Date(datePart + 'T' + timePart);
-            if(!isNaN(date.getTime())){
-              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-              const month = months[date.getMonth()];
-              const day = date.getDate();
-              const year = date.getFullYear();
-              let hours = date.getHours();
-              const minutes = date.getMinutes();
-              const ampm = hours >= 12 ? 'PM' : 'AM';
-              hours = hours % 12 || 12;
-              const minStr = minutes < 10 ? '0'+minutes : minutes;
-              return `${month} ${day}, ${year} at ${hours}:${minStr} ${ampm}`;
-            }
-          }
-          
-          // Handle "Month Day, Year at H:MM-H:MM AM/PM" format
-          if(scheduleStr.includes(' at ')){
-            const [datePart, timePart] = scheduleStr.split(' at ');
-            if(timePart && timePart.match(/\d/)){
-              const timeMatch = timePart.match(/(\d+):(\d+)\s*(.*)/);
-              if(timeMatch){
-                const hours = parseInt(timeMatch[1], 10);
-                const mins = parseInt(timeMatch[2], 10);
-                const ampm = hours >= 12 ? 'PM' : 'AM';
-                const hour12 = hours % 12 || 12;
-                const minStr = mins < 10 ? '0'+mins : mins;
-                return `${datePart} at ${hour12}:${minStr} ${ampm}`;
-              }
-            }
-            return scheduleStr;
-          }
-          return scheduleStr;
-        }
-
-        function formatCurrency(value) {
-         return `$${(parseFloat(value)||0).toFixed(2)}`;
-       }
+      });
      });
    </script>
  <script>

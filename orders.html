@@ -216,7 +216,7 @@
       return `${month} ${day}, ${year} at ${hours}:${minStr} ${ampm}`;
     }
 
-function formatScheduleTime(scheduleStr){
+    function formatScheduleTime(scheduleStr){
       if(!scheduleStr) return 'N/A — not specified';
       
       // Handle "YYYY-MM-DD at HH:MM" format
@@ -252,7 +252,7 @@ function formatScheduleTime(scheduleStr){
       return `${month} ${day}, ${year} at ${hours}:${minStr} ${ampm}`;
     }
 
-     function escapeHtml(str){
+    function escapeHtml(str){
       if(!str) return '';
       return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
