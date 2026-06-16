@@ -186,16 +186,16 @@
 <form id="customer-form">
            <div style="margin-bottom:8px">
              <label>Full name<span style="color:#dc2626;font-weight:700">*</span></label>
-             <input id="cust-name" required class="order-input" />
+              <input id="cust-name" autocomplete="name" required class="order-input" />
            </div>
            <div style="margin-bottom:8px">
              <label>Phone number<span style="color:#dc2626;font-weight:700">*</span></label>
-             <input id="cust-phone" type="tel" placeholder="e.g. 415-555-1234" required class="order-input" />
+              <input id="cust-phone" type="tel" placeholder="e.g. 415-555-1234" autocomplete="tel" required class="order-input" />
              <small style="display:block;color:rgba(0,0,0,0.6);margin-top:6px;font-size:0.92rem;">California phone numbers only</small>
            </div>
            <div style="margin-bottom:8px">
              <label>Email address<span style="color:#dc2626;font-weight:700">*</span></label>
-             <input id="cust-email" type="email" required class="order-input" />
+              <input id="cust-email" type="email" autocomplete="email" required class="order-input" />
            </div>
            <div id="save-pending-indicator" style="display:none;margin-bottom:8px;padding:8px 12px;border-radius:8px;background:rgba(249,199,95,0.15);color:var(--brown);font-size:0.85rem;font-weight:600">Your order is being saved...</div>
 
@@ -208,7 +208,7 @@
               </div>
             </div>
 <div id="pickup-location-block">
-               <select id="cust-pickup-location" class="order-input">
+                <select id="cust-pickup-location" autocomplete="off" class="order-input">
                  <option value="" disabled selected>Select a pickup location</option>
                  <option value="The B&K Bakery, Community Clubhouse, WOODBRIDGE MOBILE HOME PARK, 3051 Towers Lane, San Jose, CA 95121">The B&K Bakery — Community Clubhouse, WOODBRIDGE MOBILE HOME PARK, 3051 Towers Lane, San Jose, CA 95121</option>
                </select>
@@ -216,7 +216,7 @@
              <div id="bagel-type-block" style="display:none;margin-top:8px">
                <div style="margin-bottom:8px">
                   <label>Bagel Type (optional)</label>
-                  <select id="cust-bagel-type" class="order-input">
+                   <select id="cust-bagel-type" autocomplete="off" class="order-input">
                     <option value="" selected>Multiseeded (default)</option>
                     <option value="Plain Bagels">Plain Bagels</option>
                     <option value="Salt Bagels">Salt Bagels</option>
@@ -228,27 +228,27 @@
              <div id="delivery-address-block" style="display:none;margin-top:8px">
                <div style="margin-bottom:8px">
                   <label>Address<span style="color:#dc2626;font-weight:700">*</span></label>
-                 <input id="cust-address" class="order-input" />
+                  <input id="cust-address" autocomplete="address-line1" class="order-input" />
                </div>
                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
                  <div>
                     <label>City<span style="color:#dc2626;font-weight:700">*</span></label>
-                   <input id="cust-city" class="order-input" />
+                   <input id="cust-city" autocomplete="address-level2" class="order-input" />
                  </div>
                  <div>
                     <label>State<span style="color:#dc2626;font-weight:700">*</span></label>
-                   <input id="cust-state" class="order-input" />
+                   <input id="cust-state" autocomplete="off" class="order-input" />
                  </div>
                  <div>
                     <label>ZIP Code</label>
-                   <input id="cust-zip" class="order-input" />
+                   <input id="cust-zip" autocomplete="postal-code" class="order-input" />
                  </div>
                </div>
              </div>
              <div id="macaron-type-block" style="display:none;margin-top:8px">
                <div style="margin-bottom:8px">
                  <label>Macaron Type</label>
-                 <select id="cust-macaron-type" class="order-input">
+                  <select id="cust-macaron-type" autocomplete="off" class="order-input">
                    <option value="" selected>Select a macaron type</option>
                    <option value="Chocolate Macarons">Chocolate Macarons</option>
                    <option value="Lemon Macarons">Lemon Macarons</option>
@@ -259,16 +259,16 @@
 
 <div style="margin-bottom:8px">
              <label>Requested date (optional)</label>
-             <input id="cust-date" type="date" class="order-input" />
+              <input id="cust-date" type="date" autocomplete="off" class="order-input" />
            </div>
            <div style="margin-bottom:8px">
              <label>Requested time (optional)</label>
-             <input id="cust-time" type="time" class="order-input" />
+              <input id="cust-time" type="time" autocomplete="off" class="order-input" />
            </div>
            <div id="schedule-error" class="order-field-error" style="display:none;margin-bottom:8px"></div>
           <div style="margin-bottom:8px">
             <label>Special instructions (optional)</label>
-            <textarea id="cust-notes" class="order-textarea" rows="3"></textarea>
+              <textarea id="cust-notes" autocomplete="off" class="order-textarea" rows="3"></textarea>
           </div>
         </form>
 
@@ -1030,6 +1030,90 @@ form.addEventListener('change', (e)=>{
         setBagelTypeVisibility();
         setMacaronTypeVisibility();
         setMinDateTime();
+
+        // ── Session form persistence ────────────────────────────────────────
+        (function initSessionPersistence(){
+          const SESSION_KEY = 'bk_cart_form_session';
+          const form = document.getElementById('customer-form');
+          if(!form) return;
+
+          function buildFormData(){
+            const data = {
+              savedAt: Date.now(),
+              fields: {}
+            };
+            form.querySelectorAll('input, select, textarea').forEach(el => {
+              if(!el.id) return;
+              if(el.type === 'radio'){
+                if(el.checked) data.fields[el.id] = el.value;
+                return;
+              }
+              data.fields[el.id] = el.value;
+            });
+            return data;
+          }
+
+          function restoreFormData(){
+            try {
+              const raw = sessionStorage.getItem(SESSION_KEY);
+              if(!raw) return;
+              const data = JSON.parse(raw);
+              if(!data || !data.fields) return;
+              // Only restore if saved within the last 4 hours
+              const maxAge = 4 * 60 * 60 * 1000;
+              if(Date.now() - data.savedAt > maxAge) {
+                sessionStorage.removeItem(SESSION_KEY);
+                return;
+              }
+              Object.entries(data.fields).forEach(([id, value]) => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                if(el.type === 'radio'){
+                  const radio = form.querySelector(`input[name="${el.name}"][value="${value}"]`);
+                  if(radio) radio.checked = true;
+                  return;
+                }
+                if(el.tagName === 'SELECT'){
+                  // Only set if the option exists
+                  const exists = Array.from(el.options).some(o => o.value === value);
+                  if(exists) el.value = value;
+                  return;
+                }
+                el.value = value;
+              });
+              // Re-run visibility and validation after restoring
+              setDeliveryVisibility();
+              setBagelTypeVisibility();
+              setMacaronTypeVisibility();
+              validateAndTogglePayPal();
+            } catch(e) {}
+          }
+
+          function saveFormData(){
+            try {
+              sessionStorage.setItem(SESSION_KEY, JSON.stringify(buildFormData()));
+            } catch(e) {}
+          }
+
+          let saveTimeout;
+          function debouncedSave(){
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveFormData, 300);
+          }
+
+          form.addEventListener('input', debouncedSave);
+          form.addEventListener('change', debouncedSave);
+
+          // Restore on page load
+          restoreFormData();
+
+          // Clear on successful submission (handled after redirect, but clear here too if form is reset)
+          const origReset = form.reset.bind(form);
+          form.reset = function(){
+            origReset();
+            sessionStorage.removeItem(SESSION_KEY);
+          };
+        })();
 
       // Pre-populate cart from sessionStorage if user came from index.html order form
       try {
