@@ -215,7 +215,7 @@
              </div>
              <div id="bagel-type-block" style="display:none;margin-top:8px">
                <div style="margin-bottom:8px">
-                  <label>Bagel Type (optional - Multiseeded is default)</label>
+                  <label>Bagel Type (optional)</label>
                   <select id="cust-bagel-type" class="order-input">
                     <option value="" selected>Multiseeded (default)</option>
                     <option value="Plain Bagels">Plain Bagels</option>
@@ -225,27 +225,37 @@
                   </select>
                </div>
              </div>
-            <div id="delivery-address-block" style="display:none;margin-top:8px">
-              <div style="margin-bottom:8px">
-                 <label>Address<span style="color:#dc2626;font-weight:700">*</span></label>
-                <input id="cust-address" class="order-input" />
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-                <div>
-                   <label>City<span style="color:#dc2626;font-weight:700">*</span></label>
-                  <input id="cust-city" class="order-input" />
-                </div>
-                <div>
-                   <label>State<span style="color:#dc2626;font-weight:700">*</span></label>
-                  <input id="cust-state" class="order-input" />
-                </div>
-                <div>
-                  <label>ZIP Code</label>
-                  <input id="cust-zip" class="order-input" />
-                </div>
-              </div>
-            </div>
-          </div>
+             <div id="delivery-address-block" style="display:none;margin-top:8px">
+               <div style="margin-bottom:8px">
+                  <label>Address<span style="color:#dc2626;font-weight:700">*</span></label>
+                 <input id="cust-address" class="order-input" />
+               </div>
+               <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                 <div>
+                    <label>City<span style="color:#dc2626;font-weight:700">*</span></label>
+                   <input id="cust-city" class="order-input" />
+                 </div>
+                 <div>
+                    <label>State<span style="color:#dc2626;font-weight:700">*</span></label>
+                   <input id="cust-state" class="order-input" />
+                 </div>
+                 <div>
+                    <label>ZIP Code</label>
+                   <input id="cust-zip" class="order-input" />
+                 </div>
+               </div>
+             </div>
+             <div id="macaron-type-block" style="display:none;margin-top:8px">
+               <div style="margin-bottom:8px">
+                 <label>Macaron Type</label>
+                 <select id="cust-macaron-type" class="order-input">
+                   <option value="" selected>Select a macaron type</option>
+                   <option value="Chocolate Macarons">Chocolate Macarons</option>
+                   <option value="Lemon Macarons">Lemon Macarons</option>
+                 </select>
+               </div>
+             </div>
+           </div>
 
 <div style="margin-bottom:8px">
              <label>Requested date (optional)</label>
@@ -516,23 +526,25 @@
       const form = document.getElementById('customer-form');
 
 function getCheckoutValues(){
-         const method = form.querySelector('input[name="method"]:checked').value;
-         const bagelType = document.getElementById('cust-bagel-type')?.value || '';
-         return {
-           name: document.getElementById('cust-name').value.trim(),
-           phone: document.getElementById('cust-phone').value.trim(),
-           email: document.getElementById('cust-email').value.trim(),
-           method,
-           address: method === 'Delivery' ? document.getElementById('cust-address').value.trim() : '',
-           pickupLocation: method === 'Pickup' ? document.getElementById('cust-pickup-location').value.trim() : '',
-           city: document.getElementById('cust-city').value.trim(),
-           state: document.getElementById('cust-state').value.trim(),
-           zip: document.getElementById('cust-zip').value.trim(),
-           date: document.getElementById('cust-date').value,
-           time: document.getElementById('cust-time').value,
-           notes: document.getElementById('cust-notes').value.trim(),
-           bagelType: bagelType
-         };
+          const method = form.querySelector('input[name="method"]:checked').value;
+          const bagelType = document.getElementById('cust-bagel-type')?.value || '';
+          const macaronType = document.getElementById('cust-macaron-type')?.value || '';
+          return {
+            name: document.getElementById('cust-name').value.trim(),
+            phone: document.getElementById('cust-phone').value.trim(),
+            email: document.getElementById('cust-email').value.trim(),
+            method,
+            address: method === 'Delivery' ? document.getElementById('cust-address').value.trim() : '',
+            pickupLocation: method === 'Pickup' ? document.getElementById('cust-pickup-location').value.trim() : '',
+            city: document.getElementById('cust-city').value.trim(),
+            state: document.getElementById('cust-state').value.trim(),
+            zip: document.getElementById('cust-zip').value.trim(),
+            date: document.getElementById('cust-date').value,
+            time: document.getElementById('cust-time').value,
+            notes: document.getElementById('cust-notes').value.trim(),
+            bagelType: bagelType,
+            macaronType: macaronType
+          };
        }
 
       function isCaliforniaPhoneNumber(phone){
@@ -577,11 +589,14 @@ function validateCheckoutForm(){
          }
          if(errors.length) return { valid: false, errors, checkout: null };
 
-         // Combine bagel type with notes
-         let notes = values.notes;
-         if(values.bagelType){
-           notes = notes ? `${notes}; Bagel type: ${values.bagelType}` : `Bagel type: ${values.bagelType}`;
-         }
+          // Combine bagel type and macaron type with notes
+          let notes = values.notes;
+          if(values.bagelType){
+            notes = notes ? `${notes}; Bagel type: ${values.bagelType}` : `Bagel type: ${values.bagelType}`;
+          }
+          if(values.macaronType){
+            notes = notes ? `${notes}; Macaron type: ${values.macaronType}` : `Macaron type: ${values.macaronType}`;
+          }
 
          const checkout = {
            name: values.name,
@@ -595,9 +610,10 @@ function validateCheckoutForm(){
            zip: values.zip,
            scheduleDate: values.date,
            scheduleTime: values.time,
-           notes: notes,
-           bagelType: values.bagelType,
-           cart: cart,
+            notes: notes,
+            bagelType: values.bagelType,
+            macaronType: values.macaronType,
+            cart: cart,
            savedAt: new Date().toISOString()
          };
          return { valid: true, errors: [], checkout };
@@ -702,12 +718,19 @@ function setMinDateTime(){
          return { valid: true };
        }
 
-       function setBagelTypeVisibility(){
-         const cart = loadCart();
-         const hasBagels = cart.some(item => item.id === 'bagels' || item.id === 'bialys');
-         const bagelBlock = document.getElementById('bagel-type-block');
-         if(bagelBlock) bagelBlock.style.display = hasBagels ? 'block' : 'none';
-       }
+        function setBagelTypeVisibility(){
+          const cart = loadCart();
+          const hasBagels = cart.some(item => item.id === 'bagels' || item.id === 'bialys');
+          const bagelBlock = document.getElementById('bagel-type-block');
+          if(bagelBlock) bagelBlock.style.display = hasBagels ? 'block' : 'none';
+        }
+
+        function setMacaronTypeVisibility(){
+          const cart = loadCart();
+          const hasMacarons = cart.some(item => item.id === 'macarons');
+          const macaronBlock = document.getElementById('macaron-type-block');
+          if(macaronBlock) macaronBlock.style.display = hasMacarons ? 'block' : 'none';
+        }
 
        function savePendingOrder(checkout){
          try {
@@ -780,12 +803,13 @@ function validateAndTogglePayPal(){
          }
        }
 
-function setDeliveryVisibility(){
+        function setDeliveryVisibility(){
           const isDelivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
           document.getElementById('pickup-location-block').style.display = isDelivery ? 'none' : 'block';
           document.getElementById('delivery-address-block').style.display = isDelivery ? 'block' : 'none';
           updateSummary(null, isDelivery ? 5 : 0);
-setBagelTypeVisibility();
+          setBagelTypeVisibility();
+          setMacaronTypeVisibility();
         }
 
 form.addEventListener('change', (e)=>{
@@ -812,24 +836,25 @@ form.addEventListener('change', (e)=>{
        if(bc){
          bc.onmessage = (ev) => {
            try{
-             if(ev.data && ev.data.type === 'cart_update'){
-               renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility();
-             }
+            if(ev.data && ev.data.type === 'cart_update'){
+                renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility();
+              }
            }catch(e){}
          };
        }
        window.addEventListener('storage', (e) => {
-         if(e.key === STORAGE_KEY){
-           renderCart();
-           updateSummary();
-           validateAndTogglePayPal();
-           setBagelTypeVisibility();
-         }
+          if(e.key === STORAGE_KEY){
+            renderCart();
+            updateSummary();
+            validateAndTogglePayPal();
+            setBagelTypeVisibility();
+            setMacaronTypeVisibility();
+          }
        });
 
        // Refresh when returning to the page or when the tab gains focus
-       document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); } });
-       window.addEventListener('focus', () => { renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); });
+        document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); } });
+        window.addEventListener('focus', () => { renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); });
 
       // ─── Email confirmation ───────────────────────────────────────────────────
       async function sendOrderEmails(orderRecord){
@@ -873,6 +898,8 @@ form.addEventListener('change', (e)=>{
           scheduleDate,
           scheduleTime,
           notes: checkout.notes,
+          bagelType: checkout.bagelType,
+          macaronType: checkout.macaronType,
           items: cart,
           subtotal,
           deliveryFee,
@@ -995,6 +1022,7 @@ form.addEventListener('change', (e)=>{
         renderCart();
         setDeliveryVisibility();
         setBagelTypeVisibility();
+        setMacaronTypeVisibility();
         setMinDateTime();
 
       // Pre-populate cart from sessionStorage if user came from index.html order form

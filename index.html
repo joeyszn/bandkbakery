@@ -134,7 +134,7 @@
           <div class="menu-num" aria-hidden="true">1</div>
           <div class="menu-titles">
             <div class="menu-name">Babka</div>
-            <div class="menu-price">Price: $22 a loaf</div>
+            <div class="menu-price">Price: $0.10 a loaf</div>
           </div>
         </div>
         <p class="menu-desc">As yummy as it looks, that's how great it tastes. I got this recipe and improvised on it. The filling is a combination of cocoa and chocolate chips, chopped just before the chips get really chipped and where you may not see them. You can definitely see mine. Now take a look at the slices. they are light and airy and you can smell the yeast as it blends into the chocolate. It isn't your ordinary decadent gooey babka – it's perfect!</p>
@@ -146,7 +146,7 @@
             <p class="img-caption">This is a Babka loaf before slicing.</p>
             <div class="img-card">
               <img src="images/Babka.jpg" alt="Babka loaf before slicing" loading="eager"/>
-              <div class="price-badge" aria-label="Price $22">$22</div>
+              <div class="price-badge" aria-label="Price $0.10">$0.10</div>
             </div>
           </div>
           <div class="img-col">
@@ -319,7 +319,7 @@
             <div class="menu-price">Price: $12.00 for 10 sandwich cookies</div>
           </div>
         </div>
-        <p class="menu-desc">Shredded Coconut, Whipped Egg Whites, No sugar added, lemon and/or chocolate ganache. Called “Coconut Guiltless Macarons” Your guiltless pleasure – I believe very low in calories. What is a Macaron - a small round cake or cookie with a meringue-like consistency, made with egg whites, sugar, and powdered almonds or coconut and consisting of two halves sandwiching a creamy filling. What is my“Ganache” - a whipped filling of chocolate or white chocolate and water or lemon  juice, used in desserts such as cakes and truffles.</p>
+        <p class="menu-desc">Shredded Coconut, Whipped Egg Whites, No sugar added, lemon and/or chocolate ganache. Called “Coconut Guiltless Macarons” Your guiltless pleasure – I believe very low in calories. What is a Macaron - a small round cake or cookie with a meringue-like consistency, made with egg whites, sugar, and powdered almonds or coconut and consisting of two halves sandwiching a creamy filling. What is my“Ganache” - a whipped filling of chocolate or white chocolate and alternative sugar or no sugar added, used in desserts such as cakes and truffles.</p>
         <button type="button" class="btn btn-brown add-to-cart" style="align-self:flex-start">Add to Cart</button>
       </div>
       <div class="menu-images">
@@ -1101,12 +1101,13 @@ window.addEventListener('scroll',()=>{
      updateSelectedQuantity(menuItem, 1);
    }
 
- function formatAddedMessage(itemData){
-   if(isDozenItem(itemData.id)){
-     return `Added ${itemData.quantity} dozen${itemData.quantity === 1 ? '' : 's'} of ${itemData.name} to cart.`;
-   }
-   return `Added ${itemData.quantity} ${itemData.name}${itemData.quantity === 1 ? '' : 's'} to cart.`;
- }
+  function formatAddedMessage(itemData){
+    if(isDozenItem(itemData.id)){
+      return `Added ${itemData.quantity} dozen${itemData.quantity === 1 ? '' : 's'} of ${itemData.name} to cart.`;
+    }
+    const name = itemData.quantity === 1 && itemData.name.endsWith('s') ? itemData.name.slice(0, -1) : itemData.name;
+    return `Added ${itemData.quantity} ${name} to cart.`;
+  }
 
 document.addEventListener('click', (e) => {
      const button = e.target.closest('.qty-decrease, .qty-increase, .add-to-cart');
