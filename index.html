@@ -65,7 +65,7 @@
       <a href="#menu" class="btn btn-ghost">Menu</a>
       <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
       <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
-      <a href="aboutus" class="btn btn-ghost">About Us</a>
+      <a href="aboutus.html" class="btn btn-ghost">About Us</a>
     </div>
     <div class="mobile-nav">
         <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
@@ -86,7 +86,7 @@
     <a href="#menu" class="btn btn-ghost">Menu</a>
     <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
     <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
-    <a href="aboutus" class="btn btn-ghost">About Us</a>
+    <a href="aboutus.html" class="btn btn-ghost">About Us</a>
   </div>
   <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
 </header>
@@ -194,7 +194,7 @@
           <div class="menu-num" aria-hidden="true">3</div>
           <div class="menu-titles">
             <div class="menu-name">Bagels</div>
-            <div class="menu-price">Price: $26.00 for a Baker's dozen (13) and $2.75 for one</div>
+            <div class="menu-price">Price: $26.00 for a Baker's dozen (13)</div>
           </div>
         </div>
         <p class="menu-desc">Fresh large bagels (kind of crispy bottom half) made by a born and bred New York Mom – Crispy bottoms, but soft and "textury" inside. You can actually taste the love.<br><br>My bagels – I baked and baked and watched YouTube channels until I had created my own recipe. I wanted the bagels bigger than you can get in the bagel store with a crunchy bottom, that is different from your bagel store. I use more flour and ingredients so I can make the bagels bigger with a special softness inside. And yes, I am an old time native New Yorker and my bagels are dipped in boiling water before they are baked and this makes its consistency that of a perfect New York bagel.</p>
@@ -206,7 +206,7 @@
             <img src="images/Bagels.jpg" alt="Fresh bagels" loading="eager" style="height:240px;object-fit:cover;width:100%"/>
             <div class="price-badge" aria-label="Price $26">$26</div>
           </div>
-          <p class="img-caption">Get a Baker's Dozen (13) for $26 and $2.75 for one bagel.</p>
+          <p class="img-caption">Get a Baker's Dozen (13) for $26. Choose one bagel type for the full order, or order half and half: 1/2 Multiseeded and 1/2 Plain, or 1/2 Salt and 1/2 Plain. No other bagel varieties are available.</p>
         </div>
       </div>
     </article>
@@ -218,7 +218,7 @@
           <div class="menu-num" aria-hidden="true">4</div>
           <div class="menu-titles">
             <div class="menu-name">Bialys</div>
-            <div class="menu-price">Price: $26.00 for a Baker's dozen (13) and $2.75 for one</div>
+            <div class="menu-price">Price: $26.00 for a Baker's dozen (13)</div>
           </div>
         </div>
         <p class="menu-desc">I  pronounce it "Bee-ah-lies". And yes! - They smell good with Roasted Shallots center. Fresh large bialys (kind of crispy bottom half) made by a born and bred New York Mom – Crispy bottoms, but soft and chewy inside. You can actually taste the love. My bialys (unlike my bagels) are not water boiled. They are baked perfectly from a basic Polish recipe.
@@ -232,7 +232,7 @@
             <img src="images/Bialys.jpg" alt="Fresh bialys" loading="eager" style="height:240px;object-fit:cover;width:100%"/>
             <div class="price-badge" aria-label="Price $26">$26</div>
           </div>
-          <p class="img-caption">Get a Baker's Dozen (13) for $26 and $2.75 for one bialy.</p>
+          <p class="img-caption">Get a Baker's Dozen (13) for $26. All bialys in a dozen must be the same type.</p>
         </div>
       </div>
     </article>
@@ -883,8 +883,25 @@ window.addEventListener('scroll',()=>{
   const cartCountEls = Array.from(document.querySelectorAll('.cart-count'));
   const bc = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('bk_cart_channel') : null;
 
+  function isDozenItem(id){
+    return id === 'bagels' || id === 'bialys';
+  }
+
+  function normalizeCartQuantities(cart){
+    return (cart || []).map(item => {
+      if(!item) return item;
+      if(isDozenItem(item.id)){
+        const qty = parseInt(item.quantity, 10) || 0;
+        if(qty > 1 && qty % 12 === 0){
+          item.quantity = Math.max(1, Math.round(qty / 12));
+        }
+      }
+      return item;
+    });
+  }
+
   function loadCart(){
-    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; }
+    try{ return normalizeCartQuantities(JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')); }catch(e){ return []; }
   }
   function saveCart(cart){
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
@@ -976,7 +993,8 @@ window.addEventListener('scroll',()=>{
     const decrease = document.createElement('button');
     decrease.type = 'button';
     decrease.className = 'qty-btn qty-decrease';
-    decrease.setAttribute('aria-label', `Decrease quantity for ${name}`);
+    const isDozen = isDozenItem(id);
+    decrease.setAttribute('aria-label', `Decrease ${isDozen ? 'dozens for' : 'quantity for'} ${name}`);
     decrease.textContent = '-';
 
     const value = document.createElement('span');
@@ -989,7 +1007,7 @@ window.addEventListener('scroll',()=>{
     const increase = document.createElement('button');
     increase.type = 'button';
     increase.className = 'qty-btn qty-increase';
-    increase.setAttribute('aria-label', `Increase quantity for ${name}`);
+    increase.setAttribute('aria-label', `Increase ${isDozen ? 'dozens for' : 'quantity for'} ${name}`);
     increase.textContent = '+';
 
     quantitySelector.append(decrease, value, increase);
@@ -1000,7 +1018,7 @@ window.addEventListener('scroll',()=>{
     const labelEl = document.createElement('div');
     labelEl.className = 'quantity-label';
     labelEl.id = labelId;
-    labelEl.textContent = 'Quantity';
+    labelEl.textContent = isDozen ? 'Quantity (dozens)' : 'Quantity';
 
     qtyBlock.append(labelEl, quantitySelector);
     return qtyBlock;
@@ -1063,48 +1081,57 @@ window.addEventListener('scroll',()=>{
     document.querySelectorAll('.menu-item').forEach(renderMenuItemControls);
   }
 
-  function addToCartFromMenuItem(menuItem){
-    const quantity = getSelectedQuantity(menuItem);
-    const itemData = getMenuItemData(menuItem);
-    const cart = loadCart();
-    const existing = cart.find(i=>i.id===itemData.id);
+ function addToCartFromMenuItem(menuItem){
+     const quantity = getSelectedQuantity(menuItem);
+     const itemData = getMenuItemData(menuItem);
+     itemData.quantity = quantity;
 
-    if(existing){
-      existing.quantity += quantity;
-    } else {
-      cart.push({ ...itemData, quantity });
-    }
+     const cart = loadCart();
+     const existing = cart.find(i=>i.id===itemData.id);
 
-    saveCart(cart);
-    updateCartBadge(true);
-    showMiniToast(`Added ${quantity} ${itemData.name}${quantity === 1 ? '' : 's'} to cart.`);
-    updateSelectedQuantity(menuItem, 1);
-  }
+     if(existing){
+       existing.quantity += itemData.quantity;
+     } else {
+       cart.push(itemData);
+     }
 
-  document.addEventListener('click', (e) => {
-    const button = e.target.closest('.qty-decrease, .qty-increase, .add-to-cart');
-    if(!button) return;
-    e.preventDefault();
-    const menuItem = button.closest('.menu-item');
-    if(!menuItem) return;
+     saveCart(cart);
+     updateCartBadge(true);
+     showMiniToast(formatAddedMessage(itemData));
+     updateSelectedQuantity(menuItem, 1);
+   }
 
-    if(button.classList.contains('qty-decrease')){
-      const current = getSelectedQuantity(menuItem);
-      updateSelectedQuantity(menuItem, Math.max(1, current - 1));
-      return;
-    }
+ function formatAddedMessage(itemData){
+   if(isDozenItem(itemData.id)){
+     return `Added ${itemData.quantity} dozen${itemData.quantity === 1 ? '' : 's'} of ${itemData.name} to cart.`;
+   }
+   return `Added ${itemData.quantity} ${itemData.name}${itemData.quantity === 1 ? '' : 's'} to cart.`;
+ }
 
-    if(button.classList.contains('qty-increase')){
-      const current = getSelectedQuantity(menuItem);
-      updateSelectedQuantity(menuItem, current + 1);
-      return;
-    }
+document.addEventListener('click', (e) => {
+     const button = e.target.closest('.qty-decrease, .qty-increase, .add-to-cart');
+     if(!button) return;
+     e.preventDefault();
+     const menuItem = button.closest('.menu-item');
+     if(!menuItem) return;
 
-    if(button.classList.contains('add-to-cart')){
-      addToCartFromMenuItem(menuItem);
-      return;
-    }
-  });
+      if(button.classList.contains('qty-decrease')){
+        const current = getSelectedQuantity(menuItem);
+        updateSelectedQuantity(menuItem, Math.max(1, current - 1));
+        return;
+      }
+
+     if(button.classList.contains('qty-increase')){
+       const current = getSelectedQuantity(menuItem);
+       updateSelectedQuantity(menuItem, current + 1);
+       return;
+     }
+
+     if(button.classList.contains('add-to-cart')){
+       addToCartFromMenuItem(menuItem);
+       return;
+     }
+   });
 
   // initial render
   document.addEventListener('DOMContentLoaded', ()=> {

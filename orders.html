@@ -194,10 +194,53 @@
       }
     }
 
+    async function readGlobalOrdersForLastCustomer(){
+      try{
+        const lastOrder = JSON.parse(localStorage.getItem('bk_last_order') || 'null');
+        const email = lastOrder?.email;
+        if(!email) return [];
+        const resp = await fetch(`/api/orders?email=${encodeURIComponent(email)}`);
+        if(!resp.ok) return [];
+        const globalOrders = await resp.json();
+        return Array.isArray(globalOrders) ? globalOrders : [];
+      }catch(e){
+        return [];
+      }
+    }
+
+    async function readAllOrders(){
+      const localOrders = readOrders();
+      const globalOrders = await readGlobalOrdersForLastCustomer();
+      const byId = new Map();
+      for(const order of [...globalOrders, ...localOrders]){
+        const id = order.orderId || order.orderNumber || order.id || `${order.email || ''}-${order.createdAt || order.savedAt || ''}`;
+        byId.set(id, order);
+      }
+      return Array.from(byId.values());
+    }
+
     function formatCurrency(n){
       const num = Number(n);
       if(isNaN(num)) return '$0.00';
       return '$' + num.toFixed(2);
+    }
+
+    function getOrderItems(order){
+      return Array.isArray(order?.items)
+        ? order.items
+        : Array.isArray(order?.purchasedItems)
+          ? order.purchasedItems
+          : [];
+    }
+
+    function getOrderTotals(order){
+      const items = getOrderItems(order);
+      const itemSubtotal = items.reduce((sum, it) => sum + (Number(it?.price || it?.unitPrice || 0) * Number(it?.quantity || it?.qty || 1)), 0);
+      const storedSubtotal = Number(order?.subtotal ?? order?.subTotal);
+      const subtotal = items.length && Number.isFinite(itemSubtotal) ? itemSubtotal : (Number.isFinite(storedSubtotal) ? storedSubtotal : 0);
+      const deliveryFee = String(order?.method || order?.pickupOrDelivery || '').toLowerCase() === 'delivery' ? 5 : 0;
+      const total = items.length ? subtotal + deliveryFee : (Number(order?.total || order?.totalPaid || order?.amount || 0) || 0);
+      return { subtotal, deliveryFee, total };
     }
 
     function formatOrderDateTime(dateStr){
@@ -312,8 +355,8 @@ function emailLink(email, name){
         const card = document.createElement('article');
         card.className = 'order-card';
         const orderId = order.orderNumber || order.orderId || order.id || 'Pending';
-        const date = formatOrderDateTime(order.dateOrdered || order.date || order.savedAt);
-        const total = Number(order.totalPaid || order.total || 0);
+        const date = formatOrderDateTime(order.dateOrdered || order.date || order.savedAt || order.createdAt);
+        const { total } = getOrderTotals(order);
         const method = order.pickupOrDelivery || order.method || 'Pickup';
         const status = order.status || 'Order Received';
 
@@ -488,8 +531,8 @@ const orderInfo = `
       }
     }
 
-    function init(){
-      const all = readOrders();
+    async function init(){
+      const all = await readAllOrders();
       const searchInput = document.getElementById('orders-search');
       const filterBtns = document.querySelectorAll('.filter-btn');
 
@@ -508,23 +551,23 @@ const orderInfo = `
         applySearchAndFilter(all);
       }));
 
-      window.addEventListener('storage', (ev) => {
-        if(ev.key === STORAGE_KEY || ev.key === DRAFT_STORAGE_KEY){
-          const updated = readOrders();
+      window.addEventListener('storage', async (ev) => {
+        if(ev.key === STORAGE_KEY || ev.key === DRAFT_STORAGE_KEY || ev.key === 'bk_last_order'){
+          const updated = await readAllOrders();
           document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
           applySearchAndFilter(updated);
         }
       });
-      document.addEventListener('visibilitychange', () => {
+      document.addEventListener('visibilitychange', async () => {
         if(document.visibilityState === 'visible'){
-          const updated = readOrders();
+          const updated = await readAllOrders();
           document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
           applySearchAndFilter(updated);
         }
       });
     }
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => init());
    })();
  </script>
  <script>

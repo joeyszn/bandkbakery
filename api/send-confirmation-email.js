@@ -191,33 +191,23 @@ export default async function handler(req, res) {
     const bakeryHTML = generateBakeryEmailHTML(orderData, name, email, total);
 
     if (EMAIL_SERVICE === 'sendgrid' && process.env.SENDGRID_API_KEY) {
-      const data = JSON.stringify({
-        personalizations: [{ to: [{ email }] }, { to: [{ email: BAKERY_EMAIL }] }],
-        from: { email: BAKERY_EMAIL, name: BAKERY_NAME },
-        subject: `Order Confirmation - ${BAKERY_NAME}`,
-        content: [{ type: 'text/html', value: customerHTML + bakeryHTML }]
-      });
-
-      const options = {
-        hostname: 'api.sendgrid.com',
-        path: '/v3/mail/send',
+      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(data)
-        }
-      };
-
-      await new Promise((resolve, reject) => {
-        const req = require('https').request(options, (res) => {
-          if (res.statusCode >= 200 && res.statusCode < 300) resolve();
-          else reject(new Error(`SendGrid error: ${res.statusCode}`));
-        });
-        req.on('error', reject);
-        req.write(data);
-        req.end();
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email }] }, { to: [{ email: BAKERY_EMAIL }] }],
+          from: { email: BAKERY_EMAIL, name: BAKERY_NAME },
+          subject: `Order Confirmation - ${BAKERY_NAME}`,
+          content: [{ type: 'text/html', value: customerHTML + bakeryHTML }]
+        })
       });
+
+      if (!response.ok) {
+        throw new Error(`SendGrid error: ${response.status}`);
+      }
     } else {
       console.log('Email service not configured; skipping send.');
     }

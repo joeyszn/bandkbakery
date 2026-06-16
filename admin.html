@@ -207,6 +207,24 @@ function formatCurrency(n){
   return '$' + num.toFixed(2);
 }
 
+function getOrderItems(order){
+  return Array.isArray(order?.items)
+    ? order.items
+    : Array.isArray(order?.purchasedItems)
+      ? order.purchasedItems
+      : [];
+}
+
+function getOrderTotals(order){
+  const items = getOrderItems(order);
+  const itemSubtotal = items.reduce((sum, it) => sum + (Number(it?.price || it?.unitPrice || 0) * Number(it?.quantity || it?.qty || 1)), 0);
+  const storedSubtotal = Number(order?.subtotal ?? order?.subTotal);
+  const subtotal = items.length && Number.isFinite(itemSubtotal) ? itemSubtotal : (Number.isFinite(storedSubtotal) ? storedSubtotal : 0);
+  const deliveryFee = String(order?.method || '').toLowerCase() === 'delivery' ? 5 : 0;
+  const total = items.length ? subtotal + deliveryFee : (Number(order?.total || order?.totalPaid || order?.amount || 0) || 0);
+  return { subtotal, deliveryFee, total };
+}
+
 function formatDate(iso){
   if(!iso) return '—';
   try { return new Date(iso).toLocaleString(); } catch(e){ return iso; }
@@ -315,9 +333,10 @@ async function renderAdmin(){
    const address = [o.address, o.city, o.state, o.zip].filter(Boolean).map(escapeHtml).join(', ') || '—';
    const schedule = escapeHtml(o.schedule||'—');
    const notes = escapeHtml(o.notes||'');
-   const sub = formatCurrency(o.subtotal||0);
-   const fee = formatCurrency(o.deliveryFee||0);
-   const tot = formatCurrency(o.total||o.totalPaid||0);
+    const { subtotal, deliveryFee, total } = getOrderTotals(o);
+    const sub = formatCurrency(subtotal);
+    const fee = formatCurrency(deliveryFee);
+    const tot = formatCurrency(total);
    const payPalId = escapeHtml(o.paypalTransactionId||o.paymentId||o.transactionId||'—');
    const payStatus = escapeHtml(o.paymentStatus||o.status||'—');
    const created = formatDate(o.createdAt||o.dateOrdered||o.capturedAt);

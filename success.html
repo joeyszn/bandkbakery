@@ -196,7 +196,10 @@
         return;
       }
 
-      const formatCurrency = (value) => `$${(parseFloat(value)||0).toFixed(2)}`;
+      const formatCurrency = (value) => {
+        const n = Number(value);
+        return Number.isFinite(n) ? `$${n.toFixed(2)}` : '—';
+      };
       const formatScheduleTime = (scheduleStr) => {
         if(!scheduleStr) return '';
         const isoMatch = scheduleStr.match(/^(\d{4}-\d{2}-\d{2})\s*at\s*(\d{1,2}:\d{2})$/);
@@ -229,7 +232,7 @@
         return `${month} ${day}, ${year} at ${hours}:${minStr} ${ampm}`;
       };
 
-      const totalPaid = order.total ? `$${order.total.toFixed(2)}` : '—';
+      const totalPaid = formatCurrency(order.total || order.totalPaid || order.amount);
       document.getElementById('order-id').textContent = order.orderId || '—';
       document.getElementById('customer-name').textContent = order.name || '—';
       document.getElementById('order-method').textContent = order.method || 'Pickup';
@@ -252,10 +255,8 @@
       document.getElementById('schedule-info').style.display = 'block';
       document.getElementById('order-schedule').textContent = formatScheduleTime(order.schedule) || 'N/A — not specified';
       try { localStorage.removeItem('bk_cart'); } catch (e) {}
-      try { localStorage.removeItem('bk_last_order'); } catch (e) {}
 
-      });
-     });
+    });
    </script>
  <script>
  (function initProductSearch(){
