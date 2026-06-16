@@ -348,21 +348,27 @@
           console.error('Failed to save order to local orders list', e);
         }
 
-        try {
-          const resp = await fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderRecord)
-          });
-          if(!resp.ok){
-            const text = await resp.text();
-            throw new Error(text || `HTTP ${resp.status}`);
-          }
-          return true;
-        } catch (e) {
-          console.error('Could not save to global orders API', e);
-          return false;
-        }
+         try {
+           const resp = await fetch('/api/orders', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify(orderRecord)
+           });
+           if(!resp.ok){
+             const text = await resp.text();
+             const errMsg = text || `HTTP ${resp.status}`;
+             console.error('Could not save order to Supabase:', errMsg);
+             showMiniToast('⚠️ Order saved locally. If you refresh, your order may be lost. Please contact the bakery to confirm.');
+             throw new Error(errMsg);
+           }
+           const json = await resp.json();
+           console.log('Order saved to Supabase:', json);
+           return true;
+         } catch (e) {
+           console.error('Could not save to global orders API:', e);
+           showMiniToast('⚠️ Connection issue. Order saved locally. If you refresh, details may be lost. Please check your internet connection.');
+           return false;
+         }
       }
 
       function formatMoney(n){ return '$'+(n||0).toFixed(2); }

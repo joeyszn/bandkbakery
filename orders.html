@@ -194,17 +194,37 @@
       }
     }
 
+    async function readAllGlobalOrders(){
+      try {
+        const resp = await fetch('/api/orders');
+        if (resp.ok) {
+          const data = await resp.json();
+          return Array.isArray(data) ? data : [];
+        }
+        const errText = await resp.text().catch(() => 'Unknown error');
+        console.error('Failed to fetch global orders:', resp.status, errText);
+      } catch(e) {
+        console.error('Error fetching global orders:', e);
+      }
+      return [];
+    }
+
     async function readGlobalOrdersForLastCustomer(){
       try{
         const lastOrder = JSON.parse(localStorage.getItem('bk_last_order') || 'null');
         const email = lastOrder?.email;
-        if(!email) return [];
+        if(!email) return await readAllGlobalOrders();
         const resp = await fetch(`/api/orders?email=${encodeURIComponent(email)}`);
-        if(!resp.ok) return [];
+        if(!resp.ok){
+          const errText = await resp.text().catch(() => '');
+          console.error('Failed to fetch orders by email:', resp.status, errText);
+          return await readAllGlobalOrders();
+        }
         const globalOrders = await resp.json();
         return Array.isArray(globalOrders) ? globalOrders : [];
       }catch(e){
-        return [];
+        console.error('Error fetching orders by email:', e);
+        return await readAllGlobalOrders();
       }
     }
 
