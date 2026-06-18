@@ -103,7 +103,7 @@
         <hr style="border:none;border-top:1px solid #f2e9e0;margin:12px 0" />
         <div class="summary-totals">
           <div class="summary-row"><span>Subtotal</span><span id="summary-subtotal">$0.00</span></div>
-          <div class="summary-row" id="delivery-fee-row" style="display:none"><span>Delivery Fee</span><span id="summary-delivery-fee">$5.00</span></div>
+          <div class="summary-row" id="delivery-fee-row" style="display:none"><span>Delivery Fee</span><span id="summary-delivery-fee">$10.00</span></div>
           <div class="summary-row summary-total"><span>Total</span><span class="summary-value-total" id="payment-amount">$0.00</span></div>
         </div>
       </div>
@@ -264,7 +264,7 @@
 
     let deliveryFee = 0;
     if (orderData.method === 'Delivery') {
-      deliveryFee = 5.00;
+      deliveryFee = 10.00;
       const deliveryFeeRow = document.getElementById('delivery-fee-row');
       if (deliveryFeeRow) deliveryFeeRow.style.display = 'flex';
       const deliveryFeeEl = document.getElementById('summary-delivery-fee');
@@ -285,6 +285,74 @@
     if (orderData.email) document.getElementById('billing-email').value = orderData.email;
     if (orderData.phone) document.getElementById('billing-phone').value = orderData.phone;
     if (orderData.address) document.getElementById('billing-address').value = orderData.address;
+
+    (function initPaymentFormPersistence(){
+      const SESSION_KEY = 'bk_payment_form_session';
+      const form = document.getElementById('payment-form');
+      if(!form) return;
+
+      function isSensitiveField(el){
+        const field = `${el.id || ''} ${el.name || ''} ${el.type || ''}`.toLowerCase();
+        return field.includes('password') || field.includes('card') || field.includes('cvv') || field.includes('cvc') || field.includes('expiry') || field.includes('expiration');
+      }
+
+      function buildFormData(){
+        const data = { savedAt: Date.now(), fields: {} };
+        form.querySelectorAll('input, select, textarea').forEach(el => {
+          if(!el.id || el.disabled || isSensitiveField(el)) return;
+          if(el.type === 'radio' || el.type === 'checkbox'){
+            data.fields[el.id] = el.checked;
+            return;
+          }
+          data.fields[el.id] = el.value;
+        });
+        return data;
+      }
+
+      function restoreFormData(){
+        try {
+          const raw = sessionStorage.getItem(SESSION_KEY);
+          if(!raw) return;
+          const data = JSON.parse(raw);
+          if(!data || !data.fields) return;
+          Object.entries(data.fields).forEach(([id, value]) => {
+            const el = document.getElementById(id);
+            if(!el || isSensitiveField(el)) return;
+            if(el.type === 'radio' || el.type === 'checkbox'){
+              el.checked = Boolean(value);
+              return;
+            }
+            el.value = value;
+          });
+        } catch(e) {}
+      }
+
+      function saveFormData(){
+        try {
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify(buildFormData()));
+        } catch(e) {}
+      }
+
+      let saveTimeout;
+      function debouncedSave(){
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(saveFormData, 300);
+      }
+
+      form.addEventListener('input', () => {
+        saveFormData();
+        debouncedSave();
+      });
+      form.addEventListener('change', () => {
+        saveFormData();
+        debouncedSave();
+      });
+      window.addEventListener('beforeunload', saveFormData);
+      window.addEventListener('pagehide', saveFormData);
+      window.addEventListener('pageshow', restoreFormData);
+
+      restoreFormData();
+    })();
 
     document.getElementById('payment-submit-btn').disabled = false;
 

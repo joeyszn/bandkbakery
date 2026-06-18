@@ -217,7 +217,7 @@
              </div>
              <div id="bagel-type-block" style="display:none;margin-top:8px">
                <div style="margin-bottom:8px">
-                  <label>Bagel Type (optional)</label>
+                  <label>Bagel Type</label>
                    <select id="cust-bagel-type" autocomplete="off" class="order-input">
                     <option value="" selected>Multiseeded (default)</option>
                     <option value="Plain Bagels">Plain Bagels</option>
@@ -247,16 +247,26 @@
                  </div>
                </div>
              </div>
-             <div id="macaron-type-block" style="display:none;margin-top:8px">
-               <div style="margin-bottom:8px">
-                 <label>Macaron Type</label>
-                  <select id="cust-macaron-type" autocomplete="off" class="order-input">
-                   <option value="" selected>Select a macaron type</option>
-                   <option value="Chocolate Macarons">Chocolate Macarons</option>
-                   <option value="Lemon Macarons">Lemon Macarons</option>
-                 </select>
-               </div>
-             </div>
+<div id="macaron-type-block" style="display:none;margin-top:8px">
+                <div style="margin-bottom:8px">
+                  <label>Macaron Type</label>
+                   <select id="cust-macaron-type" autocomplete="off" class="order-input">
+                    <option value="" selected>Select a macaron type</option>
+                    <option value="Chocolate Macarons">Chocolate Macarons</option>
+                    <option value="Lemon Macarons">Lemon Macarons</option>
+                  </select>
+                </div>
+              </div>
+              <div id="rugelach-filling-block" style="display:none;margin-top:8px">
+                <div style="margin-bottom:8px">
+                  <label>Rugelach Filling</label>
+                   <select id="cust-rugelach-filling" autocomplete="off" class="order-input">
+                    <option value="" selected>Select a filling</option>
+                    <option value="Chocolate">Chocolate</option>
+                    <option value="Lemon Ganache">Lemon Ganache</option>
+                  </select>
+                </div>
+              </div>
            </div>
 
             <div style="margin-bottom:8px">
@@ -525,24 +535,26 @@
       const form = document.getElementById('customer-form');
 
 function getCheckoutValues(){
-          const method = form.querySelector('input[name="method"]:checked').value;
-          const bagelType = document.getElementById('cust-bagel-type')?.value || '';
-          const macaronType = document.getElementById('cust-macaron-type')?.value || '';
-          return {
-            name: document.getElementById('cust-name').value.trim(),
-            phone: document.getElementById('cust-phone').value.trim(),
-            email: document.getElementById('cust-email').value.trim(),
-            method,
-            address: method === 'Delivery' ? document.getElementById('cust-address').value.trim() : '',
-            pickupLocation: method === 'Pickup' ? document.getElementById('cust-pickup-location').value.trim() : '',
-            city: document.getElementById('cust-city').value.trim(),
-            state: document.getElementById('cust-state').value.trim(),
-            zip: document.getElementById('cust-zip').value.trim(),
-            notes: document.getElementById('cust-notes').value.trim(),
-            bagelType: bagelType,
-            macaronType: macaronType
-          };
-       }
+           const method = form.querySelector('input[name="method"]:checked').value;
+           const bagelType = document.getElementById('cust-bagel-type')?.value || '';
+           const macaronType = document.getElementById('cust-macaron-type')?.value || '';
+           const rugelachFilling = document.getElementById('cust-rugelach-filling')?.value || '';
+           return {
+             name: document.getElementById('cust-name').value.trim(),
+             phone: document.getElementById('cust-phone').value.trim(),
+             email: document.getElementById('cust-email').value.trim(),
+             method,
+             address: method === 'Delivery' ? document.getElementById('cust-address').value.trim() : '',
+             pickupLocation: method === 'Pickup' ? document.getElementById('cust-pickup-location').value.trim() : '',
+             city: document.getElementById('cust-city').value.trim(),
+             state: document.getElementById('cust-state').value.trim(),
+             zip: document.getElementById('cust-zip').value.trim(),
+             notes: document.getElementById('cust-notes').value.trim(),
+             bagelType: bagelType,
+             macaronType: macaronType,
+             rugelachFilling: rugelachFilling
+           };
+        }
 
       function isCaliforniaPhoneNumber(phone){
         const digits = (phone || '').replace(/[^0-9]/g, '');
@@ -579,31 +591,35 @@ function validateCheckoutForm(){
           }
           if(errors.length) return { valid: false, errors, checkout: null };
 
-          // Combine bagel type and macaron type with notes
-          let notes = values.notes;
-          if(values.bagelType){
-            notes = notes ? `${notes}; Bagel type: ${values.bagelType}` : `Bagel type: ${values.bagelType}`;
-          }
-          if(values.macaronType){
-            notes = notes ? `${notes}; Macaron type: ${values.macaronType}` : `Macaron type: ${values.macaronType}`;
-          }
+// Combine bagel type and macaron type with notes
+           let notes = values.notes;
+           if(values.bagelType){
+             notes = notes ? `${notes}; Bagel type: ${values.bagelType}` : `Bagel type: ${values.bagelType}`;
+           }
+           if(values.macaronType){
+             notes = notes ? `${notes}; Macaron type: ${values.macaronType}` : `Macaron type: ${values.macaronType}`;
+           }
+           if(values.rugelachFilling){
+             notes = notes ? `${notes}; Rugelach filling: ${values.rugelachFilling}` : `Rugelach filling: ${values.rugelachFilling}`;
+           }
 
-          const checkout = {
-            name: values.name,
-            phone: values.phone,
-            email: values.email,
-            method: values.method,
-            address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
-            pickupLocation: values.pickupLocation,
-            city: values.city,
-            state: values.state,
-            zip: values.zip,
-            notes: notes,
-            bagelType: values.bagelType,
-            macaronType: values.macaronType,
-            cart: cart,
-           savedAt: new Date().toISOString()
-          };
+const checkout = {
+             name: values.name,
+             phone: values.phone,
+             email: values.email,
+             method: values.method,
+             address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
+             pickupLocation: values.pickupLocation,
+             city: values.city,
+             state: values.state,
+             zip: values.zip,
+             notes: notes,
+             bagelType: values.bagelType,
+             macaronType: values.macaronType,
+             rugelachFilling: values.rugelachFilling,
+             cart: cart,
+             savedAt: new Date().toISOString()
+           };
          return { valid: true, errors: [], checkout };
        }
 
@@ -654,7 +670,7 @@ function validateCheckoutForm(){
          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
          const distance = R * c;
          if(distance > 5){
-           return { valid: false, error: `Delivery is only available within 5 miles of the bakery. Your location is approximately ${distance.toFixed(1)} miles away. Please select pickup instead.` };
+           return { valid: false, error: `Delivery is only available within 5 miles of the bakery for a $10.00 delivery fee. Your location is approximately ${distance.toFixed(1)} miles away. Please select pickup instead.` };
          }
          return { valid: true };
        }
@@ -666,12 +682,19 @@ function validateCheckoutForm(){
           if(bagelBlock) bagelBlock.style.display = hasBagels ? 'block' : 'none';
         }
 
-        function setMacaronTypeVisibility(){
-          const cart = loadCart();
-          const hasMacarons = cart.some(item => item.id === 'macarons');
-          const macaronBlock = document.getElementById('macaron-type-block');
-          if(macaronBlock) macaronBlock.style.display = hasMacarons ? 'block' : 'none';
-        }
+function setMacaronTypeVisibility(){
+           const cart = loadCart();
+           const hasMacarons = cart.some(item => item.id === 'macarons');
+           const macaronBlock = document.getElementById('macaron-type-block');
+           if(macaronBlock) macaronBlock.style.display = hasMacarons ? 'block' : 'none';
+         }
+
+         function setRugelachFillingVisibility(){
+           const cart = loadCart();
+           const hasRugelach = cart.some(item => item.id === 'rugelach');
+           const rugelachBlock = document.getElementById('rugelach-filling-block');
+           if(rugelachBlock) rugelachBlock.style.display = hasRugelach ? 'block' : 'none';
+         }
 
        function savePendingOrder(checkout){
          try {
@@ -737,14 +760,15 @@ function validateAndTogglePayPal(){
          }
        }
 
-        function setDeliveryVisibility(){
-          const isDelivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
-          document.getElementById('pickup-location-block').style.display = isDelivery ? 'none' : 'block';
-          document.getElementById('delivery-address-block').style.display = isDelivery ? 'block' : 'none';
-          updateSummary(null, isDelivery ? 5 : 0);
-          setBagelTypeVisibility();
-          setMacaronTypeVisibility();
-        }
+function setDeliveryVisibility(){
+           const isDelivery = form.querySelector('input[name="method"]:checked').value === 'Delivery';
+           document.getElementById('pickup-location-block').style.display = isDelivery ? 'none' : 'block';
+           document.getElementById('delivery-address-block').style.display = isDelivery ? 'block' : 'none';
+           updateSummary(null, isDelivery ? 10 : 0);
+           setBagelTypeVisibility();
+           setMacaronTypeVisibility();
+           setRugelachFillingVisibility();
+         }
 
 form.addEventListener('change', (e)=>{
           if(e.target.name === 'method') setDeliveryVisibility();
@@ -765,28 +789,29 @@ form.addEventListener('change', (e)=>{
 // Keep cart page in sync when other tabs/windows update the cart
        // BroadcastChannel updates (faster) and storage fallback
        const bc = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('bk_cart_channel') : null;
-       if(bc){
-         bc.onmessage = (ev) => {
-           try{
-            if(ev.data && ev.data.type === 'cart_update'){
-                renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility();
-              }
-           }catch(e){}
-         };
-       }
-       window.addEventListener('storage', (e) => {
-          if(e.key === STORAGE_KEY){
-            renderCart();
-            updateSummary();
-            validateAndTogglePayPal();
-            setBagelTypeVisibility();
-            setMacaronTypeVisibility();
-          }
-       });
+if(bc){
+          bc.onmessage = (ev) => {
+            try{
+             if(ev.data && ev.data.type === 'cart_update'){
+                 renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); setRugelachFillingVisibility();
+               }
+            }catch(e){}
+          };
+        }
+        window.addEventListener('storage', (e) => {
+           if(e.key === STORAGE_KEY){
+             renderCart();
+             updateSummary();
+             validateAndTogglePayPal();
+             setBagelTypeVisibility();
+             setMacaronTypeVisibility();
+             setRugelachFillingVisibility();
+           }
+        });
 
-       // Refresh when returning to the page or when the tab gains focus
-        document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); } });
-        window.addEventListener('focus', () => { renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); });
+        // Refresh when returning to the page or when the tab gains focus
+         document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); setRugelachFillingVisibility(); } });
+         window.addEventListener('focus', () => { renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); setRugelachFillingVisibility(); });
 
       // ─── Email confirmation ───────────────────────────────────────────────────
       async function sendOrderEmails(orderRecord){
@@ -809,36 +834,37 @@ form.addEventListener('change', (e)=>{
       // ─── Order record builder ─────────────────────────────────────────────────
       function buildOrderRecord(captureDetails, cart, checkout){
         const subtotal = cart.reduce((sum,item)=>sum + (parseFloat(item.price)||0)*(parseInt(item.quantity)||0),0);
-        const deliveryFee = checkout.method === 'Delivery' ? 5 : 0;
+        const deliveryFee = checkout.method === 'Delivery' ? 10 : 0;
         const total = subtotal + deliveryFee;
         const notes = checkout.notes || '';
         const orderId = `BK-${new Date().getFullYear()}-${Math.floor(Math.random()*9000)+1000}`;
-        const orderRecord = {
-          orderId,
-          name: checkout.name,
-          phone: checkout.phone,
-          email: checkout.email,
-          method: checkout.method,
-          address: checkout.address,
-          pickupLocation: checkout.pickupLocation || '',
-          city: checkout.city,
-          state: checkout.state,
-          zip: checkout.zip,
-          schedule: '',
-          scheduleDate: '',
-          scheduleTime: '',
-          notes: notes,
-          bagelType: checkout.bagelType,
-          macaronType: checkout.macaronType,
-          items: cart,
-          subtotal,
-          deliveryFee,
-          total,
-          paypalTransactionId: captureDetails.purchase_units?.[0]?.payments?.captures?.[0]?.id || captureDetails.id || '',
-          paymentStatus: captureDetails.status || 'COMPLETED',
-          capturedAt: new Date().toISOString(),
-          createdAt: new Date().toISOString()
-        };
+const orderRecord = {
+           orderId,
+           name: checkout.name,
+           phone: checkout.phone,
+           email: checkout.email,
+           method: checkout.method,
+           address: checkout.address,
+           pickupLocation: checkout.pickupLocation || '',
+           city: checkout.city,
+           state: checkout.state,
+           zip: checkout.zip,
+           schedule: '',
+           scheduleDate: '',
+           scheduleTime: '',
+           notes: notes,
+           bagelType: checkout.bagelType,
+           macaronType: checkout.macaronType,
+           rugelachFilling: checkout.rugelachFilling,
+           items: cart,
+           subtotal,
+           deliveryFee,
+           total,
+           paypalTransactionId: captureDetails.purchase_units?.[0]?.payments?.captures?.[0]?.id || captureDetails.id || '',
+           paymentStatus: captureDetails.status || 'COMPLETED',
+           capturedAt: new Date().toISOString(),
+           createdAt: new Date().toISOString()
+         };
         return orderRecord;
       }
 
@@ -851,6 +877,18 @@ form.addEventListener('change', (e)=>{
         script.onload = () => renderPayPalButtons();
         script.onerror = () => {};
         document.head.appendChild(script);
+      }
+
+      function getPayPalErrorMessage(err){
+        if(!err) return '';
+        if(typeof err === 'string') return err;
+        if(err.message) return err.message;
+        try { return JSON.stringify(err); } catch(e) { return String(err); }
+      }
+
+      function isMerchantAccountBlocked(err){
+        const message = getPayPalErrorMessage(err).toLowerCase();
+        return message.includes('associated with the merchant') || message.includes('different account');
       }
 
       function renderPayPalButtons(){
@@ -892,48 +930,60 @@ form.addEventListener('change', (e)=>{
             }
 
             const subtotal = cart.reduce((sum,item)=>sum + (parseFloat(item.price)||0)*(parseInt(item.quantity)||0),0);
-            const deliveryFee = checkout.method === 'Delivery' ? 5 : 0;
+            const deliveryFee = checkout.method === 'Delivery' ? 10 : 0;
             const total = subtotal + deliveryFee;
 
             localStorage.setItem('bk_checkout', JSON.stringify(checkout));
 
-            return actions.order.create({
-              purchase_units: [{
-                amount: {
-                  currency_code: 'USD',
-                  value: total.toFixed(2),
-                  breakdown: {
-                    item_total: { currency_code: 'USD', value: subtotal.toFixed(2) },
-                    shipping: { currency_code: 'USD', value: deliveryFee.toFixed(2) }
-                  }
-                },
-                items: cart.map(item => ({
-                  name: item.name || 'Bakery item',
-                  unit_amount: { currency_code: 'USD', value: (parseFloat(item.price)||0).toFixed(2) },
-                  quantity: String(item.quantity || 1),
-                  description: item.description || item.name || 'Bakery treat',
-                  sku: item.id || item.name || ''
-                }))
-              }],
-              application_context: {
-                brand_name: 'The B&KERY',
-                user_action: 'PAY_NOW',
-                landing_page: 'LOGIN'  // Forces PayPal login screen, not Guest Checkout
-              }
-            });
+            try {
+              return await actions.order.create({
+                purchase_units: [{
+                  amount: {
+                    currency_code: 'USD',
+                    value: total.toFixed(2),
+                    breakdown: {
+                      item_total: { currency_code: 'USD', value: subtotal.toFixed(2) },
+                      shipping: { currency_code: 'USD', value: deliveryFee.toFixed(2) }
+                    }
+                  },
+                  items: cart.map(item => ({
+                    name: item.name || 'Bakery item',
+                    unit_amount: { currency_code: 'USD', value: (parseFloat(item.price)||0).toFixed(2) },
+                    quantity: String(item.quantity || 1),
+                    description: item.description || item.name || 'Bakery treat',
+                    sku: item.id || item.name || ''
+                  }))
+                }],
+                application_context: {
+                  brand_name: 'The B&KERY',
+                  user_action: 'PAY_NOW',
+                  shipping_preference: 'NO_SHIPPING',
+                  landing_page: 'BILLING'
+                }
+              });
+            } catch(err) {
+              console.error('PayPal order creation failed:', err);
+              await showWarning('Payment Could Not Be Started', getPayPalErrorMessage(err) || 'PayPal could not start this payment. Please try again.');
+              throw err;
+            }
           },
 
           // ── Capture payment after buyer approves ──────────────────────────────
           onApprove: async (data, actions) => {
-            const captureDetails = await actions.order.capture();
-            const cart = loadCart();
-            const checkout = JSON.parse(localStorage.getItem('bk_checkout') || 'null') || {};
-            const orderRecord = buildOrderRecord(captureDetails, cart, checkout);
-            saveLastOrder(orderRecord);
-            await saveOrderToOrders(orderRecord);
-            await sendOrderEmails(orderRecord);
-            saveCart([]);
-            window.location.href = `success.html?orderId=${encodeURIComponent(orderRecord.orderId)}`;
+            try {
+              const captureDetails = await actions.order.capture();
+              const cart = loadCart();
+              const checkout = JSON.parse(localStorage.getItem('bk_checkout') || 'null') || {};
+              const orderRecord = buildOrderRecord(captureDetails, cart, checkout);
+              saveLastOrder(orderRecord);
+              await saveOrderToOrders(orderRecord);
+              await sendOrderEmails(orderRecord);
+              saveCart([]);
+              window.location.href = `success.html?orderId=${encodeURIComponent(orderRecord.orderId)}`;
+            } catch(err) {
+              console.error('PayPal capture failed:', err);
+              await showError('Payment Could Not Be Completed', getPayPalErrorMessage(err) || 'There was a problem capturing the PayPal payment. Please try again.');
+            }
           },
 
           onCancel: () => {
@@ -941,7 +991,11 @@ form.addEventListener('change', (e)=>{
           },
 
           onError: async (err) => {
-            await showError('Payment Could Not Be Completed', 'There was a problem with the PayPal checkout. Please try again.');
+            console.error('PayPal checkout error:', err);
+            const message = isMerchantAccountBlocked(err)
+              ? 'PayPal blocked this checkout because the PayPal account used is connected to the merchant account. Please use a different buyer PayPal account or pay with a debit/credit card.'
+              : 'There was a problem with the PayPal checkout. Please try again.';
+            await showError('Payment Could Not Be Completed', message);
           }
 
         }).render('#paypal-button-container').then(() => {
@@ -950,10 +1004,11 @@ form.addEventListener('change', (e)=>{
       }
 
 // ─── Init ─────────────────────────────────────────────────────────────────
-        renderCart();
-        setDeliveryVisibility();
-        setBagelTypeVisibility();
-        setMacaronTypeVisibility();
+         renderCart();
+         setDeliveryVisibility();
+         setBagelTypeVisibility();
+         setMacaronTypeVisibility();
+         setRugelachFillingVisibility();
 
         // ── Session form persistence ────────────────────────────────────────
         (function initSessionPersistence(){
@@ -961,13 +1016,18 @@ form.addEventListener('change', (e)=>{
           const form = document.getElementById('customer-form');
           if(!form) return;
 
+          function isSensitiveField(el){
+            const field = `${el.id || ''} ${el.name || ''} ${el.type || ''}`.toLowerCase();
+            return field.includes('password') || field.includes('card') || field.includes('cvv') || field.includes('cvc') || field.includes('expiry') || field.includes('expiration');
+          }
+
           function buildFormData(){
             const data = {
               savedAt: Date.now(),
               fields: {}
             };
             form.querySelectorAll('input, select, textarea').forEach(el => {
-              if(!el.id) return;
+              if(!el.id || el.disabled || isSensitiveField(el)) return;
               if(el.type === 'radio'){
                 if(el.checked) data.fields[el.id] = el.value;
                 return;
@@ -991,7 +1051,7 @@ form.addEventListener('change', (e)=>{
               }
               Object.entries(data.fields).forEach(([id, value]) => {
                 const el = document.getElementById(id);
-                if(!el) return;
+                if(!el || isSensitiveField(el)) return;
                 if(el.type === 'radio'){
                   const radio = form.querySelector(`input[name="${el.name}"][value="${value}"]`);
                   if(radio) radio.checked = true;
@@ -1005,11 +1065,12 @@ form.addEventListener('change', (e)=>{
                 }
                 el.value = value;
               });
-              // Re-run visibility and validation after restoring
-              setDeliveryVisibility();
-              setBagelTypeVisibility();
-              setMacaronTypeVisibility();
-              validateAndTogglePayPal();
+// Re-run visibility and validation after restoring
+               setDeliveryVisibility();
+               setBagelTypeVisibility();
+               setMacaronTypeVisibility();
+               setRugelachFillingVisibility();
+               validateAndTogglePayPal();
             } catch(e) {}
           }
 
@@ -1025,8 +1086,17 @@ form.addEventListener('change', (e)=>{
             saveTimeout = setTimeout(saveFormData, 300);
           }
 
-          form.addEventListener('input', debouncedSave);
-          form.addEventListener('change', debouncedSave);
+          form.addEventListener('input', () => {
+            saveFormData();
+            debouncedSave();
+          });
+          form.addEventListener('change', () => {
+            saveFormData();
+            debouncedSave();
+          });
+          window.addEventListener('beforeunload', saveFormData);
+          window.addEventListener('pagehide', saveFormData);
+          window.addEventListener('pageshow', restoreFormData);
 
           // Restore on page load
           restoreFormData();

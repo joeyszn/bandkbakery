@@ -204,7 +204,7 @@ styles.css                            # Added payment page styles (500+ lines)
 
 You can customize:
 1. **Email templates** - Edit HTML in send-confirmation-email.js
-2. **Delivery fee** - Change in payment.html (currently $5.00)
+2. **Delivery fee** - Change in payment.html, cart.html, orders.html, admin.html, and api/orders.js (currently $10.00)
 3. **PayPal settings** - Adjust brand name, return URLs
 4. **Colors** - Update CSS variables in styles.css
 5. **Trust badges** - Add/remove in order summary card

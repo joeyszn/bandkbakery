@@ -220,7 +220,7 @@ function getOrderTotals(order){
   const itemSubtotal = items.reduce((sum, it) => sum + (Number(it?.price || it?.unitPrice || 0) * Number(it?.quantity || it?.qty || 1)), 0);
   const storedSubtotal = Number(order?.subtotal ?? order?.subTotal);
   const subtotal = items.length && Number.isFinite(itemSubtotal) ? itemSubtotal : (Number.isFinite(storedSubtotal) ? storedSubtotal : 0);
-  const deliveryFee = String(order?.method || '').toLowerCase() === 'delivery' ? 5 : 0;
+  const deliveryFee = String(order?.method || '').toLowerCase() === 'delivery' ? 10 : 0;
   const total = items.length ? subtotal + deliveryFee : (Number(order?.total || order?.totalPaid || order?.amount || 0) || 0);
   return { subtotal, deliveryFee, total };
 }

@@ -42,7 +42,7 @@ function calculateTotals(order){
   const items = getItems(order);
   const itemSubtotal = items.reduce((sum, item) => sum + toNumber(item?.price || item?.unitPrice) * toNumber(item?.quantity || item?.qty || 1), 0);
   const subtotal = items.length ? itemSubtotal : toNumber(order?.subtotal ?? order?.subTotal, 0);
-  const deliveryFee = String(order?.method || order?.pickupOrDelivery || '').toLowerCase() === 'delivery' ? 5 : 0;
+  const deliveryFee = String(order?.method || order?.pickupOrDelivery || '').toLowerCase() === 'delivery' ? 10 : 0;
   const total = items.length ? subtotal + deliveryFee : toNumber(order?.total ?? order?.totalPaid ?? order?.amount, subtotal + deliveryFee);
   return { subtotal, deliveryFee, total };
 }

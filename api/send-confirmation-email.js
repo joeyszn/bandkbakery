@@ -78,7 +78,7 @@ function generateCustomerEmailHTML(orderData, customerName, customerEmail, total
           ${orderData.method === 'Delivery' ? `
           <tr>
             <td style="font-weight: 500;">Delivery Fee:</td>
-            <td class="total-amount">$5.00</td>
+            <td class="total-amount">$10.00</td>
           </tr>
           ` : ''}
           <tr class="total-row">
