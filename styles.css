@@ -33,6 +33,7 @@ html, body {
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 110px;
 }
 
 body {
@@ -783,6 +784,7 @@ nav {
 #our-process {
   background: var(--cream);
   padding: 80px 50px;
+  scroll-margin-top: 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -814,7 +816,7 @@ nav {
 .process-step {
   display: flex;
   gap: 20px;
-  align-items: flex-start;
+  align-items: center;
   padding: 20px;
   background: #fff;
   border-radius: 16px;
