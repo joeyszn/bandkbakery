@@ -199,7 +199,7 @@
              <label>Email address<span style="color:#dc2626;font-weight:700">*</span></label>
               <input id="cust-email" type="email" autocomplete="email" required class="order-input" />
            </div>
-           <div id="save-pending-indicator" style="display:none;margin-bottom:8px;padding:8px 12px;border-radius:8px;background:rgba(249,199,95,0.15);color:var(--brown);font-size:0.85rem;font-weight:600">Your order is being saved...</div>
+
 
           <div id="pickup-delivery-block" style="margin-bottom:8px">
             <div style="margin-bottom:8px">
@@ -282,6 +282,7 @@
             <div class="paypal-overlay" id="paypal-overlay" aria-hidden="true"></div>
           </div>
           <div id="payment-helper" class="payment-helper">Please complete all required information before proceeding to payment.</div>
+          <div id="save-pending-indicator" style="display:none;margin-top:10px;padding:8px 12px;border-radius:8px;background:rgba(249,199,95,0.15);color:var(--brown);font-size:0.85rem;font-weight:600">Your order is being saved...</div>
         </div>
       </aside>
     </div>
@@ -309,7 +310,7 @@
       const summarySubtotal = document.getElementById('summary-subtotal');
       const summaryDelivery = document.getElementById('summary-delivery');
       const summaryTotal = document.getElementById('summary-total');
-      const cartCountEl = document.getElementById('cart-count');
+      const cartCountEls = document.querySelectorAll('.cart-count');
 
       function isDozenItem(id){
         return id === 'bagels' || id === 'bialys';
@@ -465,7 +466,7 @@
         summarySubtotal.textContent = formatMoney(subtotal);
         summaryDelivery.textContent = formatMoney(delivery);
         summaryTotal.textContent = formatMoney(total);
-        if(cartCountEl){ cartCountEl.textContent = items; }
+        if(cartCountEls && cartCountEls.length){ cartCountEls.forEach(el => el.textContent = items); }
         // update payment helper prefix so messages include live cart count
         const helper = document.getElementById('payment-helper');
         if(helper){ helper.dataset.countPrefix = `${items} item${items===1? '':'s'} in cart. `; }
@@ -720,33 +721,31 @@ function setMacaronTypeVisibility(){
            if(rugelachBlock) rugelachBlock.style.display = hasRugelach ? 'block' : 'none';
          }
 
-       function savePendingOrder(checkout){
-         try {
-           const cart = loadCart();
-          const pendingOrder = {
-            id: 'pending-' + Date.now(),
-            customerName: checkout.name,
-            customerEmail: checkout.email,
-            customerPhone: checkout.phone,
-            pickupOrDelivery: checkout.method,
-            address: checkout.address,
-            pickupLocation: checkout.pickupLocation,
-            city: checkout.city,
-            state: checkout.state,
-            zip: checkout.zip,
-            notes: checkout.notes,
-            items: checkout.cart || cart,
-            savedAt: checkout.savedAt
-          };
-           const existing = JSON.parse(localStorage.getItem('bk_pending_orders') || '[]');
-           const idx = existing.findIndex(o => o.customerEmail === pendingOrder.customerEmail);
-           if (idx >= 0) existing[idx] = pendingOrder;
-           else existing.unshift(pendingOrder);
-           localStorage.setItem('bk_pending_orders', JSON.stringify(existing));
-           const indicator = document.getElementById('save-pending-indicator');
-           if (indicator) { indicator.style.display = 'block'; setTimeout(() => indicator.style.display = 'none', 2000); }
-         } catch(e) { console.error('Failed to save pending order', e); }
-       }
+        function savePendingOrder(checkout){
+          try {
+            const cart = loadCart();
+            const pendingOrder = {
+              id: 'pending-' + Date.now(),
+              customerName: checkout.name,
+              customerEmail: checkout.email,
+              customerPhone: checkout.phone,
+              pickupOrDelivery: checkout.method,
+              address: checkout.address,
+              pickupLocation: checkout.pickupLocation,
+              city: checkout.city,
+              state: checkout.state,
+              zip: checkout.zip,
+              notes: checkout.notes,
+              items: checkout.cart || cart,
+              savedAt: checkout.savedAt
+            };
+            const existing = JSON.parse(localStorage.getItem('bk_pending_orders') || '[]');
+            const idx = existing.findIndex(o => o.customerEmail === pendingOrder.customerEmail);
+            if (idx >= 0) existing[idx] = pendingOrder;
+            else existing.unshift(pendingOrder);
+            localStorage.setItem('bk_pending_orders', JSON.stringify(existing));
+          } catch(e) { console.error('Failed to save pending order', e); }
+        }
 
 function areRequiredFieldsValid(){
           const v = getCheckoutValues();
@@ -794,21 +793,65 @@ function setDeliveryVisibility(){
            setRugelachFillingVisibility();
          }
 
-form.addEventListener('change', (e)=>{
-          if(e.target.name === 'method') setDeliveryVisibility();
-          validateAndTogglePayPal();
-          if (areRequiredFieldsValid()) {
-            const { valid, checkout } = validateCheckoutForm();
-            if (valid && checkout) savePendingOrder(checkout);
-          }
+ function showSaveToast(){
+        const t = document.createElement('div');
+        t.textContent = 'Your order is saved';
+        Object.assign(t.style,{
+          position:'fixed',
+          right:'18px',
+          top:'80px',
+          background:'#e8f5e9',
+          color:'#2e7d32',
+          padding:'10px 14px',
+          borderRadius:'10px',
+          boxShadow:'0 8px 24px rgba(46,125,50,.16)',
+          zIndex:9999,
+          fontWeight:700,
+          letterSpacing:'0.01em'
         });
-        form.addEventListener('input', (e) => {
-          validateAndTogglePayPal();
-          if (areRequiredFieldsValid()) {
-            const { valid, checkout } = validateCheckoutForm();
-            if (valid && checkout) savePendingOrder(checkout);
+        document.body.appendChild(t);
+        t.animate([{opacity:0,transform:'translateY(-12px)'},{opacity:1,transform:'translateY(0)'}],{duration:240,easing:'cubic-bezier(.2,.8,.2,1)'});
+        setTimeout(()=>{
+          t.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-12px)'}],{duration:240,easing:'cubic-bezier(.4,.0,.6,1)'}).onfinish=()=>t.remove();
+        },2200);
+      }
+
+      let saveTimeout = null;
+      function schedulePendingSave(checkout){
+        if(saveTimeout) clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => savePendingOrder(checkout), 500);
+      }
+
+      function currentFormHasFocus(){
+        const active = document.activeElement;
+        return active && form.contains(active);
+      }
+
+      form.addEventListener('change', (e)=>{
+        if(e.target.name === 'method') setDeliveryVisibility();
+        validateAndTogglePayPal();
+        if (areRequiredFieldsValid()) {
+          const { valid, checkout } = validateCheckoutForm();
+          if (valid && checkout) schedulePendingSave(checkout);
+        }
+      });
+      form.addEventListener('input', (e) => {
+        validateAndTogglePayPal();
+        if (areRequiredFieldsValid()) {
+          const { valid, checkout } = validateCheckoutForm();
+          if (valid && checkout) schedulePendingSave(checkout);
+        }
+      });
+      form.addEventListener('blur', (e) => {
+        if(!currentFormHasFocus()){
+          if(saveTimeout){ clearTimeout(saveTimeout); saveTimeout = null; }
+          const { valid, checkout } = validateCheckoutForm();
+          if(valid && checkout){
+            savePendingOrder(checkout);
+            showSaveToast();
           }
-       });
+        }
+      }, true);
 
 // Keep cart page in sync when other tabs/windows update the cart
        // BroadcastChannel updates (faster) and storage fallback
@@ -1200,6 +1243,8 @@ const orderRecord = {
       } catch (e) {}
 
       loadPayPalSdk();
+
+      renderCart();
 
     })();
   </script>
