@@ -370,53 +370,53 @@ function emailLink(email, name){
       }
     }
 
-    function renderOrders(list, isPending = false){
-      const container = document.getElementById('orders-list');
-      container.innerHTML = '';
-      list.forEach(order => {
-        const card = document.createElement('article');
-        card.className = 'order-card';
-        const orderNumberDisplay = order.orderNumber ? `#${order.orderNumber}` : (order.orderId || order.id || 'Pending');
-        const date = formatOrderDateTime(order.dateOrdered || order.date || order.savedAt || order.createdAt);
-        const { total } = getOrderTotals(order);
-        const method = order.pickupOrDelivery || order.method || 'Pickup';
-        const status = order.status || 'Order Received';
+function renderOrders(list, isPending = false){
+       const container = document.getElementById('orders-list');
+       container.innerHTML = '';
+       list.forEach((order, index) => {
+         const card = document.createElement('article');
+         card.className = 'order-card';
+         const date = formatOrderDateTime(order.dateOrdered || order.date || order.savedAt || order.createdAt);
+         const { total } = getOrderTotals(order);
+         const method = order.pickupOrDelivery || order.method || 'Pickup';
+         const status = order.status || 'Order Received';
+         const displayOrderNum = index + 1;
 
-        if(isPending){
-          const subtotal = (order.items || []).reduce((sum, it) => sum + (Number(it.price) || 0) * (Number(it.quantity) || 1), 0);
-          const deliveryFee = method === 'Delivery' ? 10 : 0;
-          const computedTotal = subtotal + deliveryFee;
-          card.innerHTML = `
-            <div class="order-summary">
-              <div class="order-meta">
-                <div class="order-number">Incomplete Order</div>
-                <div class="order-date">${date}</div>
-                <div class="order-total">${formatCurrency(computedTotal)}</div>
-                <div class="order-method">${method}</div>
-              </div>
-            </div>
-            <div class="order-actions">
-              <div class="status-badge status-pending">Pending</div>
-              <button class="btn btn-outline continue-checkout" data-order-id="${order.id}">Continue Checkout</button>
-            </div>
-          `;
-        } else {
-          card.innerHTML = `
-            <div class="order-summary">
-              <div class="order-meta">
-                 <div class="order-number">${orderNumberDisplay}</div>
-                <div class="order-date">${date}</div>
-                <div class="order-total">${formatCurrency(total)}</div>
-                <div class="order-method">${method}</div>
-                <div class="notice">Karen will keep you updated by email as your order progresses.</div>
-              </div>
-            </div>
-            <div class="order-actions">
-              <div class="status-badge ${statusClass(status)}">${status}</div>
-              <button class="btn btn-outline details-toggle" aria-expanded="false">View Details</button>
-            </div>
-          `;
-        }
+         if(isPending){
+           const subtotal = (order.items || []).reduce((sum, it) => sum + (Number(it.price) || 0) * (Number(it.quantity) || 1), 0);
+           const deliveryFee = method === 'Delivery' ? 10 : 0;
+           const computedTotal = subtotal + deliveryFee;
+           card.innerHTML = `
+             <div class="order-summary">
+               <div class="order-meta">
+                 <div class="order-number">#${displayOrderNum}</div>
+                 <div class="order-date">${date}</div>
+                 <div class="order-total">${formatCurrency(computedTotal)}</div>
+                 <div class="order-method">${method}</div>
+               </div>
+             </div>
+             <div class="order-actions">
+               <div class="status-badge status-pending">Pending</div>
+               <button class="btn btn-outline continue-checkout" data-order-id="${order.id}">Continue Checkout</button>
+             </div>
+           `;
+         } else {
+           card.innerHTML = `
+             <div class="order-summary">
+               <div class="order-meta">
+                 <div class="order-number">#${displayOrderNum}</div>
+                 <div class="order-date">${date}</div>
+                 <div class="order-total">${formatCurrency(total)}</div>
+                 <div class="order-method">${method}</div>
+                 <div class="notice">Karen will keep you updated by email as your order progresses.</div>
+               </div>
+             </div>
+             <div class="order-actions">
+               <div class="status-badge ${statusClass(status)}">${status}</div>
+               <button class="btn btn-outline details-toggle" aria-expanded="false">View Details</button>
+             </div>
+           `;
+         }
 
         const details = document.createElement('div');
         details.className = 'details-panel';
