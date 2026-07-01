@@ -376,7 +376,7 @@ function emailLink(email, name){
       list.forEach(order => {
         const card = document.createElement('article');
         card.className = 'order-card';
-        const orderId = order.orderNumber || order.orderId || order.id || 'Pending';
+        const orderNumberDisplay = order.orderNumber ? `#${order.orderNumber}` : (order.orderId || order.id || 'Pending');
         const date = formatOrderDateTime(order.dateOrdered || order.date || order.savedAt || order.createdAt);
         const { total } = getOrderTotals(order);
         const method = order.pickupOrDelivery || order.method || 'Pickup';
@@ -404,7 +404,7 @@ function emailLink(email, name){
           card.innerHTML = `
             <div class="order-summary">
               <div class="order-meta">
-                <div class="order-number">${orderId}</div>
+                 <div class="order-number">${orderNumberDisplay}</div>
                 <div class="order-date">${date}</div>
                 <div class="order-total">${formatCurrency(total)}</div>
                 <div class="order-method">${method}</div>

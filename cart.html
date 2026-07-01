@@ -899,14 +899,26 @@ if(bc){
       }
 
       // ─── Order record builder ─────────────────────────────────────────────────
-      function buildOrderRecord(captureDetails, cart, checkout){
+      async function buildOrderRecord(captureDetails, cart, checkout){
         const subtotal = cart.reduce((sum,item)=>sum + (parseFloat(item.price)||0)*(parseInt(item.quantity)||0),0);
         const deliveryFee = checkout.method === 'Delivery' ? 10 : 0;
         const total = subtotal + deliveryFee;
         const notes = checkout.notes || '';
         const orderId = `BK-${new Date().getFullYear()}-${Math.floor(Math.random()*9000)+1000}`;
-const orderRecord = {
+        const existingLocal = JSON.parse(localStorage.getItem('bk_orders') || '[]');
+        let totalExisting = existingLocal.length;
+        try {
+          const resp = await fetch('/api/orders');
+          if (resp.ok) {
+            const data = await resp.json();
+            totalExisting += Array.isArray(data) ? data.length : 0;
+          }
+        } catch (e) {
+          console.error('Failed to count global orders', e);
+        }
+        const orderRecord = {
            orderId,
+           orderNumber: String(totalExisting + 1),
            name: checkout.name,
            phone: checkout.phone,
            email: checkout.email,
@@ -915,19 +927,19 @@ const orderRecord = {
            pickupLocation: checkout.pickupLocation || '',
            city: checkout.city,
            state: checkout.state,
-           zip: checkout.zip,
-           schedule: '',
-           scheduleDate: '',
-           scheduleTime: '',
-           notes: notes,
-           bagelType: checkout.bagelType,
-           macaronType: checkout.macaronType,
-           rugelachFilling: checkout.rugelachFilling,
-           items: cart,
-           subtotal,
-           deliveryFee,
-           total,
-           paypalTransactionId: captureDetails.purchase_units?.[0]?.payments?.captures?.[0]?.id || captureDetails.id || '',
+            zip: checkout.zip,
+            schedule: '',
+            scheduleDate: '',
+            scheduleTime: '',
+            notes: notes,
+            bagelType: checkout.bagelType,
+            macaronType: checkout.macaronType,
+            rugelachFilling: checkout.rugelachFilling,
+            items: cart,
+            subtotal,
+            deliveryFee,
+            total,
+            paypalTransactionId: captureDetails.purchase_units?.[0]?.payments?.captures?.[0]?.id || captureDetails.id || '',
            paymentStatus: captureDetails.status || 'COMPLETED',
            capturedAt: new Date().toISOString(),
            createdAt: new Date().toISOString()
@@ -1041,7 +1053,7 @@ const orderRecord = {
               const captureDetails = await actions.order.capture();
               const cart = loadCart();
               const checkout = JSON.parse(localStorage.getItem('bk_checkout') || 'null') || {};
-              const orderRecord = buildOrderRecord(captureDetails, cart, checkout);
+              const orderRecord = await buildOrderRecord(captureDetails, cart, checkout);
               saveLastOrder(orderRecord);
               await saveOrderToOrders(orderRecord);
               await sendOrderEmails(orderRecord);

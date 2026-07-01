@@ -235,7 +235,7 @@
       };
 
       const totalPaid = formatCurrency(order.total || order.totalPaid || order.amount);
-      document.getElementById('order-id').textContent = order.orderId || '—';
+      document.getElementById('order-id').textContent = order.orderNumber ? `#${order.orderNumber}` : (order.orderId || '—');
       document.getElementById('customer-name').textContent = order.name || '—';
       document.getElementById('order-method').textContent = order.method || 'Pickup';
       document.getElementById('payment-id').textContent = transactionId;

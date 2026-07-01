@@ -326,8 +326,8 @@ async function renderAdmin(){
    return;
   }
 
-  const rows = filtered.map((o, idx) => {
-   const id = o.orderId || o.orderNumber || `#${idx+1}`;
+   const rows = filtered.map((o, idx) => {
+    const id = o.orderNumber ? `#${o.orderNumber}` : (o.orderId || `#${idx+1}`);
    const customer = escapeHtml(o.name||'—');
    const emailRaw = o.email||'—';
    const emailDisplay = escapeHtml(emailRaw);
