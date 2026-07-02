@@ -37,8 +37,13 @@
   .status-completed{background:#4caf50;color:#fff}
   .status-pending{background:#ff9800;color:#fff}
 
-  .order-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
-  .details-panel{margin-top:12px;border-radius:12px;padding:12px;background:linear-gradient(180deg,rgba(249,199,95,0.04),#fff);display:none}
+.order-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+   .order-actions .btn{font-size:12px;padding:6px 12px;border-radius:999px;font-weight:600}
+   .btn-view{background:var(--yellow);color:#3d2113;border:none}
+   .btn-complete{background:#4caf50;color:#fff;border:none}
+   .btn-delete{background:#f44336;color:#fff;border:none}
+   .details-panel{margin-top:12px;border-radius:12px;padding:12px;background:linear-gradient(180deg,rgba(249,199,95,0.04),#fff);display:none}
+   .details-panel.active{display:block}
   .items-list{display:grid;gap:8px}
   .item-row{display:flex;justify-content:space-between;gap:12px}
   .item-left{color:var(--brown);font-weight:700}
@@ -361,7 +366,7 @@ function statusClass(status){
        }
      }
 
-    function renderOrders(list, isPending = false){
+function renderOrders(list, isPending = false){
        const container = document.getElementById('orders-list');
        if(!container) return;
        container.innerHTML = '';
@@ -370,6 +375,7 @@ function statusClass(status){
        list.forEach((order, idx) => {
          const card = document.createElement('div');
          card.className = 'order-card';
+         card.setAttribute('data-order-id', order.orderId || order.id);
 
          const orderNum = order.orderNumber ? `#${order.orderNumber}` : (order.orderId || `#${idx+1}`);
          const { subtotal, deliveryFee, total } = getOrderTotals(order);
@@ -378,6 +384,24 @@ function statusClass(status){
 
          const status = order.status || order.paymentStatus || (isPending ? 'Pending' : 'Order Received');
          const statusCls = statusClass(status);
+
+         // Build action buttons based on order type
+         let actionButtons = `<span class="status-badge ${statusCls}">${escapeHtml(status)}</span>`;
+
+         if(isPending){
+           // Pending orders: View Details, Complete Order, Delete
+           actionButtons = `
+             <button class="btn btn-view" data-action="view" data-idx="${idx}">View Details</button>
+             <button class="btn btn-complete" data-action="complete" data-idx="${idx}">Complete Order</button>
+             <button class="btn btn-delete" data-action="delete" data-idx="${idx}">Delete</button>
+           `;
+         } else {
+           // Active/other orders: View Details button
+           actionButtons = `
+             <button class="btn btn-view" data-action="view" data-idx="${idx}">View Details</button>
+             <span class="status-badge ${statusCls}">${escapeHtml(status)}</span>
+           `;
+         }
 
          card.innerHTML = `
            <div class="order-summary">
@@ -389,18 +413,168 @@ function statusClass(status){
              </div>
              <div class="item-name">${escapeHtml(itemNames)}</div>
            </div>
-           <div class="order-actions">
-             <span class="status-badge ${statusCls}">${escapeHtml(status)}</span>
-           </div>
+           <div class="order-actions">${actionButtons}</div>
+           <div class="details-panel" id="details-${order.orderId || order.id || idx}"></div>
          `;
 
          fragment.appendChild(card);
        });
 
-       container.appendChild(fragment);
+container.appendChild(fragment);
+
+       // Attach event handlers after rendering
+       attachOrderActionHandlers(list, isPending);
      }
 
-function applySearchAndFilter(all){
+     function attachOrderActionHandlers(orders, isPending){
+       const viewButtons = document.querySelectorAll('[data-action="view"]');
+       const completeButtons = document.querySelectorAll('[data-action="complete"]');
+       const deleteButtons = document.querySelectorAll('[data-action="delete"]');
+
+       viewButtons.forEach(btn => {
+         btn.addEventListener('click', (e) => {
+           const idx = parseInt(e.target.getAttribute('data-idx'));
+           const order = orders[idx];
+           if(order) toggleOrderDetails(order);
+         });
+       });
+
+       completeButtons.forEach(btn => {
+         btn.addEventListener('click', (e) => {
+           const idx = parseInt(e.target.getAttribute('data-idx'));
+           const order = orders[idx];
+           if(order) completePendingOrder(order);
+         });
+       });
+
+       deleteButtons.forEach(btn => {
+         btn.addEventListener('click', (e) => {
+           const idx = parseInt(e.target.getAttribute('data-idx'));
+           const order = orders[idx];
+           if(order) deletePendingOrder(order);
+         });
+       });
+     }
+
+     function toggleOrderDetails(order){
+       const panelId = `details-${order.orderId || order.id}`;
+       const panel = document.getElementById(panelId);
+       if(!panel) return;
+
+       const items = getOrderItems(order);
+       const { subtotal, deliveryFee, total } = getOrderTotals(order);
+
+       if(panel.classList.contains('active')){
+         panel.classList.remove('active');
+         panel.innerHTML = '';
+       } else {
+         panel.classList.add('active');
+         panel.innerHTML = `
+           <div class="detail-grid">
+             <div>
+               <div class="detail-section"><h4>Customer</h4>
+                 <div class="detail-row"><span class="label">Name</span><span class="value">${escapeHtml(order.name || order.customerName || '—')}</span></div>
+                 <div class="detail-row"><span class="label">Email</span><span class="value">${escapeHtml(order.email || order.customerEmail || '—')}</span></div>
+                 <div class="detail-row"><span class="label">Phone</span><span class="value">${escapeHtml(order.phone || order.customerPhone || '—')}</span></div>
+               </div>
+               <div class="detail-section"><h4>Order</h4>
+                 <div class="detail-row"><span class="label">Method</span><span class="value">${escapeHtml(order.method || order.pickupOrDelivery || '—')}</span></div>
+                 <div class="detail-row"><span class="label">Address</span><span class="value">${escapeHtml(order.address || order.pickupLocation || '—')}</span></div>
+                 ${order.notes ? `<div class="detail-row" style="display:block"><span class="label">Notes</span><div class="notes-box">${escapeHtml(order.notes)}</div></div>` : ''}
+               </div>
+             </div>
+             <div>
+               <div class="detail-section"><h4>Items</h4>
+                 ${getOrderDetailsItemsHtml(items)}
+                 <div class="detail-row" style="margin-top:10px"><span class="label">Subtotal</span><span class="value">${formatCurrency(subtotal)}</span></div>
+                 <div class="detail-row"><span class="label">Total</span><span class="value" style="font-weight:800">${formatCurrency(total)}</span></div>
+               </div>
+             </div>
+           </div>
+         `;
+       }
+     }
+
+     function getOrderDetailsItemsHtml(items){
+       if(!items || !items.length) return '<div style="color:var(--gray);font-style:italic">No items</div>';
+       return `
+         <table class="items-table">
+           <thead><tr><th>Item</th><th style="text-align:center">Qty</th><th style="text-align:right">Price</th></tr></thead>
+           <tbody>${items.map(it => `<tr><td>${escapeHtml(it.name || it.productName || '—')}</td><td style="text-align:center">${it.quantity || 1}</td><td style="text-align:right">${formatCurrency(it.price || it.unitPrice || 0)}</td></tr>`).join('')}</tbody>
+         </table>
+       `;
+     }
+
+     function completePendingOrder(order){
+       // Store the pending order to checkout and redirect to cart for payment
+       try {
+         const checkout = {
+           name: order.name || order.customerName || '',
+           phone: order.phone || order.customerPhone || '',
+           email: order.email || order.customerEmail || '',
+           method: order.method || order.pickupOrDelivery || 'Pickup',
+           pickupLocation: order.pickupLocation || '',
+           address: order.address || '',
+           city: order.city || '',
+           state: order.state || '',
+           zip: order.zip || '',
+           notes: order.notes || '',
+           bagelType: order.bagelType || '',
+           macaronType: order.macaronType || '',
+           rugelachFilling: order.rugelachFilling || ''
+         };
+         sessionStorage.setItem('bk_checkout', JSON.stringify(checkout));
+         if(order.items && order.items.length){
+           const cart = order.items.map(item => ({
+             id: item.id || item.productId || '',
+             name: item.name || item.productName || 'Item',
+             price: parseFloat(item.price || item.unitPrice || 0),
+             quantity: parseInt(item.quantity || 1),
+             image: item.image || ''
+           }));
+           localStorage.setItem('bk_cart', JSON.stringify(cart));
+         }
+         window.location.href = 'cart.html';
+       } catch(e) {
+         console.error('Error completing pending order:', e);
+         alert('Could not process order. Please try again.');
+       }
+     }
+
+     function deletePendingOrder(order){
+       if(!confirm('Are you sure you want to delete this pending order?')) return;
+       try {
+         const existing = JSON.parse(localStorage.getItem('bk_pending_orders') || '[]');
+         const id = order.orderId || order.id;
+         const filtered = existing.filter(o => (o.orderId || o.id) !== id);
+         localStorage.setItem('bk_pending_orders', JSON.stringify(filtered));
+         // Refresh the orders list
+         readAllOrders().then(orders => {
+           applySearchAndFilter(orders);
+           updateOrdersCount(orders);
+         });
+       } catch(e) {
+         console.error('Error deleting pending order:', e);
+       }
+     }
+
+     function updateOrdersCount(orders){
+       const filter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+       let count = orders.length;
+
+       // Adjust count based on filter
+       if(filter === 'active'){
+         count = orders.filter(o => !( (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered')).length;
+       } else if(filter === 'completed'){
+         count = orders.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered').length;
+       } else if(filter === 'pending'){
+         count = readPendingOrders().length;
+       }
+
+       document.querySelectorAll('.orders-count').forEach(el => el.textContent = count);
+     }
+
+     function applySearchAndFilter(all){
         const q = (document.getElementById('orders-search').value || '').trim().toLowerCase();
         const filter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
         let list = all.slice();
