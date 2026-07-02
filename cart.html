@@ -248,26 +248,28 @@
                </div>
              </div>
 <div id="macaron-type-block" style="display:none;margin-top:8px">
-                <div style="margin-bottom:8px">
-                  <label>Macaron Type</label>
-                   <select id="cust-macaron-type" autocomplete="off" class="order-input">
-                    <option value="" selected>Select a macaron type</option>
-                    <option value="Chocolate Macarons">Chocolate Macarons</option>
-                    <option value="Lemon Macarons">Lemon Macarons</option>
-                  </select>
+                 <div style="margin-bottom:8px">
+                   <label>Macaron Type</label>
+                    <select id="cust-macaron-type" autocomplete="off" class="order-input">
+                     <option value="" selected>Select a macaron type</option>
+                     <option value="Chocolate Macarons">Chocolate Macarons</option>
+                     <option value="Lemon Macarons">Lemon Macarons</option>
+                   </select>
+                 </div>
                 </div>
-              </div>
               <div id="rugelach-filling-block" style="display:none;margin-top:8px">
                 <div style="margin-bottom:8px">
-                  <label>Rugelach Filling</label>
-                   <select id="cust-rugelach-filling" autocomplete="off" class="order-input">
-                    <option value="" selected>Select a filling</option>
-                    <option value="Chocolate">Chocolate</option>
-                    <option value="Lemon Ganache">Lemon Ganache</option>
-                  </select>
+                   <label>Rugelach Filling</label>
+                    <select id="cust-rugelach-filling" autocomplete="off" class="order-input">
+                     <option value="" selected>Select a filling (optional)</option>
+                     <option value="Chocolate">Chocolate</option>
+                     <option value="Cinnamon Sugar">Cinnamon Sugar</option>
+                     <option value="Apricot">Apricot</option>
+                     <option value="Poppy Seed">Poppy Seed</option>
+                   </select>
                 </div>
-              </div>
-           </div>
+               </div>
+             </div>
 
             <div style="margin-bottom:8px">
               <label>Special instructions (optional)</label>
@@ -560,26 +562,25 @@
       const form = document.getElementById('customer-form');
 
 function getCheckoutValues(){
-           const method = form.querySelector('input[name="method"]:checked').value;
-           const bagelType = document.getElementById('cust-bagel-type')?.value || '';
-           const macaronType = document.getElementById('cust-macaron-type')?.value || '';
-           const rugelachFilling = document.getElementById('cust-rugelach-filling')?.value || '';
-           return {
-             name: document.getElementById('cust-name').value.trim(),
-             phone: document.getElementById('cust-phone').value.trim(),
-             email: document.getElementById('cust-email').value.trim(),
-             method,
-             address: method === 'Delivery' ? document.getElementById('cust-address').value.trim() : '',
-             pickupLocation: method === 'Pickup' ? document.getElementById('cust-pickup-location').value.trim() : '',
-             city: document.getElementById('cust-city').value.trim(),
-             state: document.getElementById('cust-state').value.trim(),
-             zip: document.getElementById('cust-zip').value.trim(),
-             notes: document.getElementById('cust-notes').value.trim(),
-             bagelType: bagelType,
-             macaronType: macaronType,
-             rugelachFilling: rugelachFilling
-           };
-        }
+            const method = form.querySelector('input[name="method"]:checked').value;
+            const bagelType = document.getElementById('cust-bagel-type')?.value || '';
+            const macaronType = document.getElementById('cust-macaron-type')?.value || '';
+            return {
+              name: document.getElementById('cust-name').value.trim(),
+              phone: document.getElementById('cust-phone').value.trim(),
+              email: document.getElementById('cust-email').value.trim(),
+              method,
+              address: method === 'Delivery' ? document.getElementById('cust-address').value.trim() : '',
+              pickupLocation: method === 'Pickup' ? document.getElementById('cust-pickup-location').value.trim() : '',
+              city: document.getElementById('cust-city').value.trim(),
+              state: document.getElementById('cust-state').value.trim(),
+              zip: document.getElementById('cust-zip').value.trim(),
+notes: document.getElementById('cust-notes').value.trim(),
+               bagelType: bagelType,
+               macaronType: macaronType,
+               rugelachFilling: document.getElementById('cust-rugelach-filling')?.value || ''
+             };
+         }
 
       function isCaliforniaPhoneNumber(phone){
         const digits = (phone || '').replace(/[^0-9]/g, '');
@@ -617,34 +618,34 @@ function validateCheckoutForm(){
           if(errors.length) return { valid: false, errors, checkout: null };
 
 // Combine bagel type and macaron type with notes
-           let notes = values.notes;
-           if(values.bagelType){
-             notes = notes ? `${notes}; Bagel type: ${values.bagelType}` : `Bagel type: ${values.bagelType}`;
-           }
-           if(values.macaronType){
-             notes = notes ? `${notes}; Macaron type: ${values.macaronType}` : `Macaron type: ${values.macaronType}`;
-           }
-           if(values.rugelachFilling){
-             notes = notes ? `${notes}; Rugelach filling: ${values.rugelachFilling}` : `Rugelach filling: ${values.rugelachFilling}`;
-           }
+            let notes = values.notes;
+            if(values.bagelType){
+              notes = notes ? `${notes}; Bagel type: ${values.bagelType}` : `Bagel type: ${values.bagelType}`;
+            }
+            if(values.macaronType){
+              notes = notes ? `${notes}; Macaron type: ${values.macaronType}` : `Macaron type: ${values.macaronType}`;
+            }
+            if(values.rugelachFilling){
+              notes = notes ? `${notes}; Rugelach filling: ${values.rugelachFilling}` : `Rugelach filling: ${values.rugelachFilling}`;
+            }
 
-const checkout = {
-             name: values.name,
-             phone: values.phone,
-             email: values.email,
-             method: values.method,
-             address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
-             pickupLocation: values.pickupLocation,
-             city: values.city,
-             state: values.state,
-             zip: values.zip,
-             notes: notes,
-             bagelType: values.bagelType,
-             macaronType: values.macaronType,
-             rugelachFilling: values.rugelachFilling,
-             cart: cart,
-             savedAt: new Date().toISOString()
-           };
+ const checkout = {
+               name: values.name,
+               phone: values.phone,
+               email: values.email,
+               method: values.method,
+               address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
+               pickupLocation: values.pickupLocation,
+               city: values.city,
+               state: values.state,
+               zip: values.zip,
+               notes: notes,
+               bagelType: values.bagelType,
+               macaronType: values.macaronType,
+               rugelachFilling: values.rugelachFilling,
+               cart: cart,
+               savedAt: new Date().toISOString()
+             };
          return { valid: true, errors: [], checkout };
        }
 
@@ -708,44 +709,47 @@ const checkout = {
         }
 
 function setMacaronTypeVisibility(){
-           const cart = loadCart();
-           const hasMacarons = cart.some(item => item.id === 'macarons');
-           const macaronBlock = document.getElementById('macaron-type-block');
-           if(macaronBlock) macaronBlock.style.display = hasMacarons ? 'block' : 'none';
-         }
-
-         function setRugelachFillingVisibility(){
-           const cart = loadCart();
-           const hasRugelach = cart.some(item => item.id === 'rugelach');
-           const rugelachBlock = document.getElementById('rugelach-filling-block');
-           if(rugelachBlock) rugelachBlock.style.display = hasRugelach ? 'block' : 'none';
-         }
-
-        function savePendingOrder(checkout){
-          try {
             const cart = loadCart();
-            const pendingOrder = {
-              id: 'pending-' + Date.now(),
-              customerName: checkout.name,
-              customerEmail: checkout.email,
-              customerPhone: checkout.phone,
-              pickupOrDelivery: checkout.method,
-              address: checkout.address,
-              pickupLocation: checkout.pickupLocation,
-              city: checkout.city,
-              state: checkout.state,
-              zip: checkout.zip,
-              notes: checkout.notes,
-              items: checkout.cart || cart,
-              savedAt: checkout.savedAt
-            };
-            const existing = JSON.parse(localStorage.getItem('bk_pending_orders') || '[]');
-            const idx = existing.findIndex(o => o.customerEmail === pendingOrder.customerEmail);
-            if (idx >= 0) existing[idx] = pendingOrder;
-            else existing.unshift(pendingOrder);
-            localStorage.setItem('bk_pending_orders', JSON.stringify(existing));
-          } catch(e) { console.error('Failed to save pending order', e); }
-        }
+            const hasMacarons = cart.some(item => item.id === 'macarons');
+            const macaronBlock = document.getElementById('macaron-type-block');
+             if(macaronBlock) macaronBlock.style.display = hasMacarons ? 'block' : 'none';
+           }
+
+          function setRugelachFillingVisibility(){
+            const cart = loadCart();
+            const hasRugelach = cart.some(item => item.id === 'rugelach');
+            const rugelachBlock = document.getElementById('rugelach-filling-block');
+            if(rugelachBlock) rugelachBlock.style.display = hasRugelach ? 'block' : 'none';
+          }
+
+function savePendingOrder(checkout){
+         try {
+           const cart = loadCart();
+           const pendingOrder = {
+             id: 'pending-' + Date.now(),
+             customerName: checkout.name,
+             customerEmail: checkout.email,
+             customerPhone: checkout.phone,
+             pickupOrDelivery: checkout.method,
+             address: checkout.address,
+             pickupLocation: checkout.pickupLocation,
+             city: checkout.city,
+             state: checkout.state,
+             zip: checkout.zip,
+             notes: checkout.notes,
+             bagelType: checkout.bagelType,
+             macaronType: checkout.macaronType,
+             rugelachFilling: checkout.rugelachFilling,
+             items: checkout.cart || cart,
+             savedAt: checkout.savedAt
+           };
+           const existing = JSON.parse(localStorage.getItem('bk_pending_orders') || '[]');
+           const idx = existing.findIndex(o => o.customerEmail === pendingOrder.customerEmail);
+           if (idx >= 0) existing[idx] = pendingOrder;
+           else existing.unshift(pendingOrder);
+           localStorage.setItem('bk_pending_orders', JSON.stringify(existing));
+         } catch(e) { console.error('Failed to save pending order', e); }
+       }
 
 function areRequiredFieldsValid(){
           const v = getCheckoutValues();
@@ -788,10 +792,9 @@ function setDeliveryVisibility(){
            document.getElementById('pickup-location-block').style.display = isDelivery ? 'none' : 'block';
            document.getElementById('delivery-address-block').style.display = isDelivery ? 'block' : 'none';
            updateSummary(null, isDelivery ? 10 : 0);
-           setBagelTypeVisibility();
-           setMacaronTypeVisibility();
-           setRugelachFillingVisibility();
-         }
+            setBagelTypeVisibility();
+            setMacaronTypeVisibility();
+          }
 
  function showSaveToast(){
         const t = document.createElement('div');
@@ -860,8 +863,8 @@ if(bc){
           bc.onmessage = (ev) => {
             try{
              if(ev.data && ev.data.type === 'cart_update'){
-                 renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); setRugelachFillingVisibility();
-               }
+                  renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility();
+                }
             }catch(e){}
           };
         }
@@ -870,15 +873,14 @@ if(bc){
              renderCart();
              updateSummary();
              validateAndTogglePayPal();
-             setBagelTypeVisibility();
-             setMacaronTypeVisibility();
-             setRugelachFillingVisibility();
-           }
+              setBagelTypeVisibility();
+              setMacaronTypeVisibility();
+            }
         });
 
-        // Refresh when returning to the page or when the tab gains focus
-         document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); setRugelachFillingVisibility(); } });
-         window.addEventListener('focus', () => { renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); setRugelachFillingVisibility(); });
+         // Refresh when returning to the page or when the tab gains focus
+          document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); } });
+          window.addEventListener('focus', () => { renderCart(); updateSummary(); validateAndTogglePayPal(); setBagelTypeVisibility(); setMacaronTypeVisibility(); });
 
       // ─── Email confirmation ───────────────────────────────────────────────────
       async function sendOrderEmails(orderRecord){

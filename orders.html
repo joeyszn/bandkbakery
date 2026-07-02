@@ -230,16 +230,18 @@
       }
     }
 
-    async function readAllOrders(){
-      const localOrders = readOrders();
-      const globalOrders = await readGlobalOrdersForLastCustomer();
-      const byId = new Map();
-      for(const order of [...globalOrders, ...localOrders]){
-        const id = order.orderId || order.orderNumber || order.id || `${order.email || ''}-${order.createdAt || order.savedAt || ''}`;
-        byId.set(id, order);
-      }
-      return Array.from(byId.values());
-    }
+async function readAllOrders(){
+       const localOrders = readOrders();
+       const pendingOrders = readPendingOrders();
+       const globalOrders = await readGlobalOrdersForLastCustomer();
+       const byId = new Map();
+       // Merge all orders: global -> local -> pending
+       for(const order of [...globalOrders, ...localOrders, ...pendingOrders]){
+         const id = order.orderId || order.orderNumber || order.id || `${order.email || ''}-${order.createdAt || order.savedAt || ''}`;
+         byId.set(id, order);
+       }
+       return Array.from(byId.values());
+     }
 
     function formatCurrency(n){
       const num = Number(n);
@@ -336,51 +338,106 @@ function emailLink(email, name){
        return `<a href="${gmailLink}" target="_blank" style="color:var(--brown)">${escapeHtml(emailValue)}</a>`;
      }
 
-    function statusClass(status){
-      switch((status||'').toLowerCase()){
-        case 'preparing': return 'status-preparing';
-        case 'ready for pickup': return 'status-ready';
-        case 'delivered': return 'status-completed';
-        case 'completed': return 'status-completed';
-        default: return 'status-order-received';
+function statusClass(status){
+       switch((status||'').toLowerCase()){
+         case 'preparing': return 'status-preparing';
+         case 'ready for pickup': return 'status-ready';
+         case 'delivered': return 'status-completed';
+         case 'completed': return 'status-completed';
+         case 'pending': return 'status-pending';
+         case 'draft': return 'status-pending';
+         case 'incomplete': return 'status-pending';
+         default: return 'status-order-received';
 }
-    }
-
-    function applySearchAndFilter(all){
-       const q = (document.getElementById('orders-search').value || '').trim().toLowerCase();
-       const filter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
-       let list = all.slice();
-       list.sort((a, b) => {
-         const da = new Date(b.createdAt || b.dateOrdered || b.date || b.savedAt || 0);
-         const db = new Date(a.createdAt || a.dateOrdered || a.date || a.savedAt || 0);
-         return da - db;
-       });
-       if(filter === 'active'){
-         list = list.filter(o => !( (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered'));
-       } else if(filter === 'completed'){
-         list = list.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered');
-       } else if(filter === 'pending'){
-         const pending = readPendingOrders();
-         if(!q && pending.length > 0){
-           list = pending.slice().sort((a, b) => new Date(b.savedAt || b.createdAt || 0) - new Date(a.savedAt || a.createdAt || 0));
-         } else if (pending.length > 0) {
-           list = pending.filter(o => {
-             const orderId = (o.id||'').toLowerCase();
-             const inItems = (o.items||[]).some(it => (it.name||'').toLowerCase().includes(q));
-             return orderId.includes(q) || inItems;
-           }).slice().sort((a, b) => new Date(b.savedAt || b.createdAt || 0) - new Date(a.savedAt || a.createdAt || 0));
-         }
-       }
-       if(q && filter !== 'pending'){
-         list = list.filter(o => {
-           const orderId = (o.orderNumber||o.orderId||'').toLowerCase();
-           const inItems = (o.purchasedItems||o.items||[]).some(it => (it.name||it.productName||'').toLowerCase().includes(q));
-           return orderId.includes(q) || inItems;
-         });
-       }
-       if(list.length === 0){ renderEmpty(); return; }
-       renderOrders(list, filter === 'pending');
      }
+
+    function renderEmpty(msg){
+       const container = document.getElementById('orders-list');
+       if(container){
+         container.innerHTML = `<div class="empty-state">
+           <div class="empty-ill">📭</div>
+           <h3 style="margin:0;color:var(--brown)">${escapeHtml(msg || 'No orders found')}</h3>
+         </div>`;
+       }
+     }
+
+    function renderOrders(list, isPending = false){
+       const container = document.getElementById('orders-list');
+       if(!container) return;
+       container.innerHTML = '';
+       const fragment = document.createDocumentFragment();
+
+       list.forEach((order, idx) => {
+         const card = document.createElement('div');
+         card.className = 'order-card';
+
+         const orderNum = order.orderNumber ? `#${order.orderNumber}` : (order.orderId || `#${idx+1}`);
+         const { subtotal, deliveryFee, total } = getOrderTotals(order);
+         const items = getOrderItems(order);
+         const itemNames = items.map(it => it.name || it.productName).join(', ') || '—';
+
+         const status = order.status || order.paymentStatus || (isPending ? 'Pending' : 'Order Received');
+         const statusCls = statusClass(status);
+
+         card.innerHTML = `
+           <div class="order-summary">
+             <div class="order-meta">
+               <span class="order-number">${escapeHtml(orderNum)}</span>
+               <span class="order-date">${formatOrderDateTime(order.createdAt || order.date || order.savedAt)}</span>
+               <span class="order-total">${formatCurrency(total)}</span>
+               <span class="order-method">${escapeHtml(order.method || order.pickupOrDelivery || '—')}</span>
+             </div>
+             <div class="item-name">${escapeHtml(itemNames)}</div>
+           </div>
+           <div class="order-actions">
+             <span class="status-badge ${statusCls}">${escapeHtml(status)}</span>
+           </div>
+         `;
+
+         fragment.appendChild(card);
+       });
+
+       container.appendChild(fragment);
+     }
+
+function applySearchAndFilter(all){
+        const q = (document.getElementById('orders-search').value || '').trim().toLowerCase();
+        const filter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+        let list = all.slice();
+        list.sort((a, b) => {
+          const da = new Date(b.createdAt || b.dateOrdered || b.date || b.savedAt || 0);
+          const db = new Date(a.createdAt || a.dateOrdered || a.date || a.savedAt || 0);
+          return da - db;
+        });
+        if(filter === 'active'){
+          list = list.filter(o => !( (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered'));
+        } else if(filter === 'completed'){
+          list = list.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered');
+        } else if(filter === 'pending'){
+          const pending = readPendingOrders();
+          if(!q && pending.length > 0){
+            list = pending.slice().sort((a, b) => new Date(b.savedAt || b.createdAt || 0) - new Date(a.savedAt || a.createdAt || 0));
+          } else if (pending.length > 0) {
+            list = pending.filter(o => {
+              const orderId = (o.id||o.orderId||'').toLowerCase();
+              const inItems = (o.items||[]).some(it => (it.name||'').toLowerCase().includes(q));
+              return orderId.includes(q) || inItems;
+            }).slice().sort((a, b) => new Date(b.savedAt || b.createdAt || 0) - new Date(a.savedAt || b.createdAt || 0));
+          } else {
+            // No pending orders - show empty state
+            list = [];
+          }
+        }
+        if(q && filter !== 'pending'){
+          list = list.filter(o => {
+            const orderId = (o.orderNumber||o.orderId||'').toLowerCase();
+            const inItems = (o.purchasedItems||o.items||[]).some(it => (it.name||it.productName||'').toLowerCase().includes(q));
+            return orderId.includes(q) || inItems;
+          });
+        }
+        if(list.length === 0){ renderEmpty(); return; }
+        renderOrders(list, filter === 'pending');
+      }
 
     function getSubmittedOrderCount(){
       try{
@@ -394,41 +451,45 @@ function emailLink(email, name){
       }
     }
 
-    async function init(){
-      const all = await readAllOrders();
-      const searchInput = document.getElementById('orders-search');
-      const filterBtns = document.querySelectorAll('.filter-btn');
+async function init(){
+       const all = await readAllOrders();
+       const searchInput = document.getElementById('orders-search');
+       const filterBtns = document.querySelectorAll('.filter-btn');
 
-      document.querySelectorAll('.cart-count').forEach(el => {
-        try{ const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]'); el.textContent = cart.reduce((s,it)=>s+(it.quantity||0),0); }catch(e){}
-      });
-      try { document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount()); } catch (e) {}
+       document.querySelectorAll('.cart-count').forEach(el => {
+         try{ const cart = JSON.parse(localStorage.getItem('bk_cart')||'[]'); el.textContent = cart.reduce((s,it)=>s+(it.quantity||0),0); }catch(e){}
+       });
+       try { document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount()); } catch (e) {}
 
-      if(!all || all.length === 0){ renderEmpty(); }
-      else { applySearchAndFilter(all); }
+       if(!all || all.length === 0){ renderEmpty('No orders yet. Your orders will appear here.'); }
+       else { applySearchAndFilter(all); }
 
-      searchInput.addEventListener('input', () => applySearchAndFilter(all));
-      filterBtns.forEach(btn => btn.addEventListener('click', (e) => {
-        filterBtns.forEach(b=>b.classList.remove('active'));
-        e.currentTarget.classList.add('active');
-        applySearchAndFilter(all);
-      }));
+       searchInput.addEventListener('input', async () => {
+         const updated = await readAllOrders();
+         applySearchAndFilter(updated);
+       });
+       filterBtns.forEach(btn => btn.addEventListener('click', async (e) => {
+         filterBtns.forEach(b=>b.classList.remove('active'));
+         e.currentTarget.classList.add('active');
+         const updated = await readAllOrders();
+         applySearchAndFilter(updated);
+       }));
 
-      window.addEventListener('storage', async (ev) => {
-        if(ev.key === STORAGE_KEY || ev.key === DRAFT_STORAGE_KEY || ev.key === 'bk_last_order'){
-          const updated = await readAllOrders();
-          document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
-          applySearchAndFilter(updated);
-        }
-      });
-      document.addEventListener('visibilitychange', async () => {
-        if(document.visibilityState === 'visible'){
-          const updated = await readAllOrders();
-          document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
-          applySearchAndFilter(updated);
-        }
-      });
-    }
+       window.addEventListener('storage', async (ev) => {
+         if(ev.key === STORAGE_KEY || ev.key === DRAFT_STORAGE_KEY || ev.key === 'bk_last_order'){
+           const updated = await readAllOrders();
+           document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
+           applySearchAndFilter(updated);
+         }
+       });
+       document.addEventListener('visibilitychange', async () => {
+         if(document.visibilityState === 'visible'){
+           const updated = await readAllOrders();
+           document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount());
+           applySearchAndFilter(updated);
+         }
+       });
+     }
 
 document.addEventListener('DOMContentLoaded', () => init());
    })();
