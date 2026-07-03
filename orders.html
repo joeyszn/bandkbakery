@@ -343,20 +343,42 @@ function emailLink(email, name){
        return `<a href="${gmailLink}" target="_blank" style="color:var(--brown)">${escapeHtml(emailValue)}</a>`;
      }
 
-function statusClass(status){
-       switch((status||'').toLowerCase()){
-         case 'preparing': return 'status-preparing';
-         case 'ready for pickup': return 'status-ready';
-         case 'delivered': return 'status-completed';
-         case 'completed': return 'status-completed';
-         case 'pending': return 'status-pending';
-         case 'draft': return 'status-pending';
-         case 'incomplete': return 'status-pending';
-         default: return 'status-order-received';
-}
-     }
+ function statusClass(status){
+        switch((status||'').toLowerCase()){
+          case 'preparing': return 'status-preparing';
+          case 'ready for pickup': return 'status-ready';
+          case 'delivered': return 'status-completed';
+          case 'completed': return 'status-completed';
+          case 'pending': return 'status-pending';
+          case 'draft': return 'status-pending';
+          case 'incomplete': return 'status-pending';
+          default: return 'status-order-received';
+ }
+      }
 
-    function renderEmpty(msg){
+      function isPendingOrder(order){
+        const pending = readPendingOrders();
+        const id = order.orderId || order.id;
+        return pending.some(o => (o.orderId || o.id) === id);
+      }
+
+      function isActiveOrder(order){
+        if(isPendingOrder(order)) return false;
+        const paymentStatus = (order.paymentStatus || '').toLowerCase();
+        const status = (order.status || '').toLowerCase();
+        if(paymentStatus.includes('pending') || paymentStatus.includes('draft') || paymentStatus.includes('incomplete') || paymentStatus.includes('failed')){
+          return false;
+        }
+        if(status === 'completed' || status === 'delivered'){
+          return false;
+        }
+        if(status.includes('pending') || status.includes('draft') || status.includes('incomplete')){
+          return false;
+        }
+        return true;
+      }
+
+      function renderEmpty(msg){
        const container = document.getElementById('orders-list');
        if(container){
          container.innerHTML = `<div class="empty-state">
@@ -382,7 +404,7 @@ function renderOrders(list, isPending = false){
          const items = getOrderItems(order);
          const itemNames = items.map(it => it.name || it.productName).join(', ') || '—';
 
-         const status = order.status || order.paymentStatus || (isPending ? 'Pending' : 'Order Received');
+         const status = order.status || order.paymentStatus || (isPending ? 'Pending' : 'Pending Order');
          const statusCls = statusClass(status);
 
          // Build action buttons based on order type
@@ -486,8 +508,8 @@ container.appendChild(fragment);
              <div>
                <div class="detail-section"><h4>Items</h4>
                  ${getOrderDetailsItemsHtml(items)}
-                 <div class="detail-row" style="margin-top:10px"><span class="label">Subtotal</span><span class="value">${formatCurrency(subtotal)}</span></div>
-                 <div class="detail-row"><span class="label">Total</span><span class="value" style="font-weight:800">${formatCurrency(total)}</span></div>
+                 <div class="detail-row" style="margin-top:10px"><span class="label">Subtotal: </span><span class="value">${formatCurrency(subtotal)}</span></div>
+                 <div class="detail-row"><span class="label">Total: </span><span class="value" style="font-weight:800">${formatCurrency(total)}</span></div>
                </div>
              </div>
            </div>
@@ -562,14 +584,14 @@ container.appendChild(fragment);
        const filter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
        let count = orders.length;
 
-       // Adjust count based on filter
-       if(filter === 'active'){
-         count = orders.filter(o => !( (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered')).length;
-       } else if(filter === 'completed'){
-         count = orders.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered').length;
-       } else if(filter === 'pending'){
-         count = readPendingOrders().length;
-       }
+        // Adjust count based on filter
+        if(filter === 'active'){
+          count = orders.filter(o => isActiveOrder(o)).length;
+        } else if(filter === 'completed'){
+          count = orders.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered').length;
+        } else if(filter === 'pending'){
+          count = readPendingOrders().length;
+        }
 
        document.querySelectorAll('.orders-count').forEach(el => el.textContent = count);
      }
@@ -584,7 +606,7 @@ container.appendChild(fragment);
           return da - db;
         });
         if(filter === 'active'){
-          list = list.filter(o => !( (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered'));
+          list = list.filter(o => isActiveOrder(o));
         } else if(filter === 'completed'){
           list = list.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered');
         } else if(filter === 'pending'){
