@@ -473,13 +473,13 @@ container.appendChild(fragment);
            <div class="detail-grid">
              <div>
                <div class="detail-section"><h4>Customer</h4>
-                 <div class="detail-row"><span class="label">Name</span><span class="value">${escapeHtml(order.name || order.customerName || '—')}</span></div>
-                 <div class="detail-row"><span class="label">Email</span><span class="value">${escapeHtml(order.email || order.customerEmail || '—')}</span></div>
-                 <div class="detail-row"><span class="label">Phone</span><span class="value">${escapeHtml(order.phone || order.customerPhone || '—')}</span></div>
+                 <div class="detail-row"><span class="label">Name: </span><span class="value">${escapeHtml(order.name || order.customerName || '—')}</span></div>
+                 <div class="detail-row"><span class="label">Email: </span><span class="value">${escapeHtml(order.email || order.customerEmail || '—')}</span></div>
+                 <div class="detail-row"><span class="label">Phone: </span><span class="value">${escapeHtml(order.phone || order.customerPhone || '—')}</span></div>
                </div>
                <div class="detail-section"><h4>Order</h4>
-                 <div class="detail-row"><span class="label">Method</span><span class="value">${escapeHtml(order.method || order.pickupOrDelivery || '—')}</span></div>
-                 <div class="detail-row"><span class="label">Address</span><span class="value">${escapeHtml(order.address || order.pickupLocation || '—')}</span></div>
+                 <div class="detail-row"><span class="label">Method: </span><span class="value">${escapeHtml(order.method || order.pickupOrDelivery || '—')}</span></div>
+                 <div class="detail-row"><span class="label">Address: </span><span class="value">${escapeHtml(order.address || order.pickupLocation || '—')}</span></div>
                  ${order.notes ? `<div class="detail-row" style="display:block"><span class="label">Notes</span><div class="notes-box">${escapeHtml(order.notes)}</div></div>` : ''}
                </div>
              </div>

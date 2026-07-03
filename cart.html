@@ -257,18 +257,7 @@
                    </select>
                  </div>
                 </div>
-              <div id="rugelach-filling-block" style="display:none;margin-top:8px">
-                <div style="margin-bottom:8px">
-                   <label>Rugelach Filling</label>
-                    <select id="cust-rugelach-filling" autocomplete="off" class="order-input">
-                     <option value="" selected>Select a filling (optional)</option>
-                     <option value="Chocolate">Chocolate</option>
-                     <option value="Cinnamon Sugar">Cinnamon Sugar</option>
-                     <option value="Apricot">Apricot</option>
-                     <option value="Poppy Seed">Poppy Seed</option>
-                   </select>
-                </div>
-               </div>
+
              </div>
 
             <div style="margin-bottom:8px">
@@ -561,26 +550,25 @@
       // ─── Customer form ────────────────────────────────────────────────────────
       const form = document.getElementById('customer-form');
 
-function getCheckoutValues(){
-            const method = form.querySelector('input[name="method"]:checked').value;
-            const bagelType = document.getElementById('cust-bagel-type')?.value || '';
-            const macaronType = document.getElementById('cust-macaron-type')?.value || '';
-            return {
-              name: document.getElementById('cust-name').value.trim(),
-              phone: document.getElementById('cust-phone').value.trim(),
-              email: document.getElementById('cust-email').value.trim(),
-              method,
-              address: method === 'Delivery' ? document.getElementById('cust-address').value.trim() : '',
-              pickupLocation: method === 'Pickup' ? document.getElementById('cust-pickup-location').value.trim() : '',
-              city: document.getElementById('cust-city').value.trim(),
-              state: document.getElementById('cust-state').value.trim(),
-              zip: document.getElementById('cust-zip').value.trim(),
-notes: document.getElementById('cust-notes').value.trim(),
+ function getCheckoutValues(){
+             const method = form.querySelector('input[name="method"]:checked').value;
+             const bagelType = document.getElementById('cust-bagel-type')?.value || '';
+             const macaronType = document.getElementById('cust-macaron-type')?.value || '';
+             return {
+               name: document.getElementById('cust-name').value.trim(),
+               phone: document.getElementById('cust-phone').value.trim(),
+               email: document.getElementById('cust-email').value.trim(),
+               method,
+               address: method === 'Delivery' ? document.getElementById('cust-address').value.trim() : '',
+               pickupLocation: method === 'Pickup' ? document.getElementById('cust-pickup-location').value.trim() : '',
+               city: document.getElementById('cust-city').value.trim(),
+               state: document.getElementById('cust-state').value.trim(),
+               zip: document.getElementById('cust-zip').value.trim(),
+               notes: document.getElementById('cust-notes').value.trim(),
                bagelType: bagelType,
-               macaronType: macaronType,
-               rugelachFilling: document.getElementById('cust-rugelach-filling')?.value || ''
+               macaronType: macaronType
              };
-         }
+          }
 
       function isCaliforniaPhoneNumber(phone){
         const digits = (phone || '').replace(/[^0-9]/g, '');
@@ -619,33 +607,29 @@ function validateCheckoutForm(){
 
 // Combine bagel type and macaron type with notes
             let notes = values.notes;
-            if(values.bagelType){
-              notes = notes ? `${notes}; Bagel type: ${values.bagelType}` : `Bagel type: ${values.bagelType}`;
-            }
-            if(values.macaronType){
-              notes = notes ? `${notes}; Macaron type: ${values.macaronType}` : `Macaron type: ${values.macaronType}`;
-            }
-            if(values.rugelachFilling){
-              notes = notes ? `${notes}; Rugelach filling: ${values.rugelachFilling}` : `Rugelach filling: ${values.rugelachFilling}`;
-            }
+             if(values.bagelType){
+               notes = notes ? `${notes}; Bagel type: ${values.bagelType}` : `Bagel type: ${values.bagelType}`;
+             }
+             if(values.macaronType){
+               notes = notes ? `${notes}; Macaron type: ${values.macaronType}` : `Macaron type: ${values.macaronType}`;
+             }
 
- const checkout = {
-               name: values.name,
-               phone: values.phone,
-               email: values.email,
-               method: values.method,
-               address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
-               pickupLocation: values.pickupLocation,
-               city: values.city,
-               state: values.state,
-               zip: values.zip,
-               notes: notes,
-               bagelType: values.bagelType,
-               macaronType: values.macaronType,
-               rugelachFilling: values.rugelachFilling,
-               cart: cart,
-               savedAt: new Date().toISOString()
-             };
+  const checkout = {
+                name: values.name,
+                phone: values.phone,
+                email: values.email,
+                method: values.method,
+                address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
+                pickupLocation: values.pickupLocation,
+                city: values.city,
+                state: values.state,
+                zip: values.zip,
+                notes: notes,
+                bagelType: values.bagelType,
+                macaronType: values.macaronType,
+                cart: cart,
+                savedAt: new Date().toISOString()
+              };
          return { valid: true, errors: [], checkout };
        }
 
@@ -715,12 +699,7 @@ function setMacaronTypeVisibility(){
              if(macaronBlock) macaronBlock.style.display = hasMacarons ? 'block' : 'none';
            }
 
-          function setRugelachFillingVisibility(){
-            const cart = loadCart();
-            const hasRugelach = cart.some(item => item.id === 'rugelach');
-            const rugelachBlock = document.getElementById('rugelach-filling-block');
-            if(rugelachBlock) rugelachBlock.style.display = hasRugelach ? 'block' : 'none';
-          }
+
 
 function savePendingOrder(checkout){
          try {
@@ -737,10 +716,9 @@ function savePendingOrder(checkout){
              state: checkout.state,
              zip: checkout.zip,
              notes: checkout.notes,
-             bagelType: checkout.bagelType,
-             macaronType: checkout.macaronType,
-             rugelachFilling: checkout.rugelachFilling,
-             items: checkout.cart || cart,
+              bagelType: checkout.bagelType,
+              macaronType: checkout.macaronType,
+              items: checkout.cart || cart,
              savedAt: checkout.savedAt
            };
            const existing = JSON.parse(localStorage.getItem('bk_pending_orders') || '[]');
@@ -934,10 +912,9 @@ if(bc){
             scheduleDate: '',
             scheduleTime: '',
             notes: notes,
-            bagelType: checkout.bagelType,
-            macaronType: checkout.macaronType,
-            rugelachFilling: checkout.rugelachFilling,
-            items: cart,
+             bagelType: checkout.bagelType,
+             macaronType: checkout.macaronType,
+             items: cart,
             subtotal,
             deliveryFee,
             total,
@@ -1085,11 +1062,10 @@ if(bc){
       }
 
 // ─── Init ─────────────────────────────────────────────────────────────────
-         renderCart();
-         setDeliveryVisibility();
-         setBagelTypeVisibility();
-         setMacaronTypeVisibility();
-         setRugelachFillingVisibility();
+          renderCart();
+          setDeliveryVisibility();
+          setBagelTypeVisibility();
+          setMacaronTypeVisibility();
 
         // ── Session form persistence ────────────────────────────────────────
         (function initSessionPersistence(){
@@ -1147,11 +1123,10 @@ if(bc){
                 el.value = value;
               });
 // Re-run visibility and validation after restoring
-               setDeliveryVisibility();
-               setBagelTypeVisibility();
-               setMacaronTypeVisibility();
-               setRugelachFillingVisibility();
-               validateAndTogglePayPal();
+                setDeliveryVisibility();
+                setBagelTypeVisibility();
+                setMacaronTypeVisibility();
+                validateAndTogglePayPal();
             } catch(e) {}
           }
 
