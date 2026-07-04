@@ -56,27 +56,6 @@
       .qty-btn{width:44px;height:44px;border-radius:12px}
     }
 
-    .bk-modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px);z-index:9999;opacity:0;transition:opacity .22s ease}
-    .bk-modal-overlay.open{display:flex;opacity:1}
-    .bk-modal{background:#fff;border-radius:24px;box-shadow:0 24px 80px rgba(0,0,0,.22);max-width:520px;width:100%;padding:34px;text-align:center;transform:scale(.95);opacity:0;transition:transform .22s ease,opacity .22s ease}
-    .bk-modal-overlay.open .bk-modal{transform:scale(1);opacity:1}
-    .bk-modal-icon{width:76px;height:76px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(249,199,95,0.18);color:#522f1c;font-size:32px}
-    .bk-modal h2{margin:0 0 14px;font-size:2rem;line-height:1.1;color:#522f1c}
-    .bk-modal-message{color:#4b3222;font-size:1rem;line-height:1.75;white-space:pre-wrap;margin-bottom:26px}
-    .bk-modal-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
-    .bk-modal-button{min-width:140px;padding:14px 22px;border-radius:999px;border:none;font-weight:700;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
-    .bk-modal-button:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(82,47,28,.12)}
-    .bk-modal-button:focus{outline:3px solid rgba(82,47,28,.22);outline-offset:3px}
-    .bk-modal-primary{background:#522f1c;color:#fff}
-    .bk-modal-secondary{background:#fff;color:#522f1c;border:2px solid #522f1c}
-      .bk-modal-close{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(82,47,28,.06);color:#522f1c;font-size:18px;cursor:pointer;transition:background .18s ease}
-      .bk-modal-close:hover{background:rgba(82,47,28,.1)}
-
-      @media(max-width:600px){
-      .bk-modal{padding:24px;max-width:90%}
-      .bk-modal-icon{width:60px;height:60px;font-size:28px}
-      .bk-modal-button{width:100%;min-width:auto}
-    }
     /* PayPal disabled visual state */
     .paypal-wrapper{position:relative}
     .paypal-overlay{position:absolute;inset:0;background:rgba(255,255,255,0.6);backdrop-filter:blur(2px);z-index:20;border-radius:8px;display:none}
