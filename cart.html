@@ -907,8 +907,8 @@ function validateCheckoutForm(){
                    Math.sin(dLng/2) * Math.sin(dLng/2);
          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
          const distance = R * c;
-          if(distance < 2 || distance > 5.5){
-            return { valid: false, error: `Delivery is only available between 2 and 5.5 miles of the bakery for a $10.00 delivery fee. Your location is approximately ${distance.toFixed(1)} miles away. Please select pickup instead.` };
+          if(distance < 2 || distance > 6){
+            return { valid: false, error: `Delivery is only available between 2 and 6 miles of the bakery for a $10.00 delivery fee. Your location is approximately ${distance.toFixed(1)} miles away. Please select pickup instead.` };
           }
          return { valid: true };
        }
