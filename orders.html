@@ -222,7 +222,7 @@
     }
 
     async function syncPendingOrdersToApi(orders){
-      const token = sessionStorage.getItem('bk_auth_token');
+      const token = localStorage.getItem('bk_auth_token');
       if(!token) return;
       try {
         await fetch('/api/pending-orders', {
@@ -234,7 +234,7 @@
     }
 
     async function loadPendingOrdersFromApi(){
-      const token = sessionStorage.getItem('bk_auth_token');
+      const token = localStorage.getItem('bk_auth_token');
       if(!token) return;
       try {
         const resp = await fetch('/api/pending-orders', { headers: { 'Authorization': `Bearer ${token}` } });
@@ -264,7 +264,7 @@
 
     async function readGlobalOrdersForLastCustomer(){
       try{
-        const token = sessionStorage.getItem('bk_auth_token');
+        const token = localStorage.getItem('bk_auth_token');
         const headers = {};
         if(token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -680,16 +680,16 @@ container.appendChild(fragment);
 
       // ─── Auth helpers ───────────────────────────────────────────────────────
       function getOrdersAuthToken(){
-        return sessionStorage.getItem('bk_auth_token') || null;
+        return localStorage.getItem('bk_auth_token') || null;
       }
 
       function getAuthUser(){
-        try { return JSON.parse(sessionStorage.getItem('bk_auth_user') || 'null'); } catch(e){ return null; }
+        try { return JSON.parse(localStorage.getItem('bk_auth_user') || 'null'); } catch(e){ return null; }
       }
 
       function clearAuth(){
-        sessionStorage.removeItem('bk_auth_token');
-        sessionStorage.removeItem('bk_auth_user');
+        localStorage.removeItem('bk_auth_token');
+        localStorage.removeItem('bk_auth_user');
       }
 
       function updateOrdersAuthUI(){
