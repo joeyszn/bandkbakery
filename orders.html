@@ -237,7 +237,7 @@
 
     async function readGlobalOrdersForLastCustomer(){
       try{
-        const token = localStorage.getItem('bk_auth_token');
+        const token = sessionStorage.getItem('bk_auth_token');
         const headers = {};
         if(token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -653,16 +653,16 @@ container.appendChild(fragment);
 
       // ─── Auth helpers ───────────────────────────────────────────────────────
       function getOrdersAuthToken(){
-        return localStorage.getItem('bk_auth_token') || null;
+        return sessionStorage.getItem('bk_auth_token') || null;
       }
 
       function getAuthUser(){
-        try { return JSON.parse(localStorage.getItem('bk_auth_user') || 'null'); } catch(e){ return null; }
+        try { return JSON.parse(sessionStorage.getItem('bk_auth_user') || 'null'); } catch(e){ return null; }
       }
 
       function clearAuth(){
-        localStorage.removeItem('bk_auth_token');
-        localStorage.removeItem('bk_auth_user');
+        sessionStorage.removeItem('bk_auth_token');
+        sessionStorage.removeItem('bk_auth_user');
       }
 
       function updateOrdersAuthUI(){
@@ -683,7 +683,6 @@ container.appendChild(fragment);
       function openProfileModal(){
         const user = getAuthUser();
         if(!user) return;
-        document.getElementById('profile-modal-subtitle').textContent = 'Manage your account';
         document.getElementById('profile-user-name').textContent = user.name || 'B&KERY Member';
         document.getElementById('profile-user-email').textContent = user.email || '';
         const overlay = document.getElementById('profile-modal-overlay');

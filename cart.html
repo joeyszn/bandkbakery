@@ -411,7 +411,7 @@
           console.error('Failed to save order to local orders list', e);
         }
 
-        const token = localStorage.getItem('bk_auth_token');
+        const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
         const headers = { 'Content-Type': 'application/json' };
         if(token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -468,10 +468,10 @@
       const AUTH_TOKEN_KEY = 'bk_auth_token';
       const AUTH_USER_KEY = 'bk_auth_user';
 
-      function getAuthToken(){ return localStorage.getItem(AUTH_TOKEN_KEY) || null; }
-      function getAuthUser(){ try { return JSON.parse(localStorage.getItem(AUTH_USER_KEY) || 'null'); } catch(e){ return null; } }
-      function setAuthUser(user){ localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user)); }
-      function clearAuth(){ localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); }
+      function getAuthToken(){ return sessionStorage.getItem(AUTH_TOKEN_KEY) || null; }
+      function getAuthUser(){ try { return JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || 'null'); } catch(e){ return null; } }
+      function setAuthUser(user){ sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(user)); }
+      function clearAuth(){ sessionStorage.removeItem(AUTH_TOKEN_KEY); sessionStorage.removeItem(AUTH_USER_KEY); }
 
       async function apiAuth(action, body = {}){
         const resp = await fetch('/api/auth', {
@@ -549,7 +549,7 @@
         try {
           const result = await apiAuth('signup', { email, password, name });
           if(result.session?.access_token){
-            localStorage.setItem(AUTH_TOKEN_KEY, result.session.access_token);
+            sessionStorage.setItem(AUTH_TOKEN_KEY, result.session.access_token);
             setAuthUser(result.user);
             updateAuthUI();
             closeAuthModal();
@@ -568,7 +568,7 @@
         try {
           const result = await apiAuth('login', { email, password });
           if(result.session?.access_token){
-            localStorage.setItem(AUTH_TOKEN_KEY, result.session.access_token);
+            sessionStorage.setItem(AUTH_TOKEN_KEY, result.session.access_token);
             setAuthUser(result.user);
             updateAuthUI();
             closeAuthModal();
