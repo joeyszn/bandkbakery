@@ -368,7 +368,32 @@
         });
       }
       function loadCart(){ try{ return normalizeCartQuantities(JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')); }catch(e){ return []; } }
-      function saveCart(cart){ localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }
+      function saveCart(cart){ localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); syncCartToApi(cart); }
+      async function syncCartToApi(cart){
+        const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
+        if(!token) return;
+        try {
+          await fetch('/api/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ items: cart })
+          });
+        } catch(e){ console.error('Failed to sync cart to API:', e); }
+      }
+      async function loadCartFromApi(){
+        const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
+        if(!token) return;
+        try {
+          const resp = await fetch('/api/cart', { headers: { 'Authorization': `Bearer ${token}` } });
+          if(resp.ok){
+            const data = await resp.json();
+            if(data.items && data.items.length > 0){
+              saveCart(data.items);
+              renderCart();
+            }
+          }
+        } catch(e){ console.error('Failed to load cart from API:', e); }
+      }
       function saveLastOrder(order){ localStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order)); }
       function getSubmittedOrderCount(){
         try {
@@ -532,6 +557,7 @@
             setAuthUser(result.user);
             updateAuthUI();
             closeAuthModal();
+            await loadCartFromApi();
             showMiniToast('Account created! Welcome to B&KERY.');
           }
         } catch(e){
@@ -551,6 +577,7 @@
             setAuthUser(result.user);
             updateAuthUI();
             closeAuthModal();
+            await loadCartFromApi();
             showMiniToast(`Welcome back, ${result.user?.name || result.user?.email || 'friend'}!`);
           }
         } catch(e){
@@ -564,7 +591,10 @@
           try { await apiAuth('logout'); } catch(e){}
         }
         clearAuth();
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem('bk_pending_orders');
         updateAuthUI();
+        renderCart();
         showMiniToast('You have been signed out.');
       }
 
