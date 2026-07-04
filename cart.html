@@ -144,6 +144,7 @@
       <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
       <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
       <a href="aboutus" class="btn btn-ghost">About Us</a>
+      <a href="cart.html#auth" class="btn btn-ghost">Sign In</a>
     </div>
     <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
   </header>
@@ -513,7 +514,6 @@
       function openProfileModal(){
         const user = getAuthUser();
         if(!user) return;
-        document.getElementById('profile-modal-subtitle').textContent = 'Manage your account';
         document.getElementById('profile-user-name').textContent = user.name || 'B&KERY Member';
         document.getElementById('profile-user-email').textContent = user.email || '';
         const overlay = document.getElementById('profile-modal-overlay');
@@ -1465,6 +1465,10 @@ if(bc){
           console.error('Auth session refresh failed:', e);
         }
       })();
+
+      if(window.location.hash === '#auth' && !getAuthUser()){
+        openAuthModal();
+      }
 
       document.getElementById('auth-toggle-btn')?.addEventListener('click', () => {
         const user = getAuthUser();
