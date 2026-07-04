@@ -165,6 +165,24 @@
 
   </main>
 
+  <div class="bk-modal-overlay" id="profile-modal-overlay" aria-hidden="true">
+    <div class="bk-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title" tabindex="-1" style="max-width:360px">
+      <button type="button" class="bk-modal-close" id="profile-modal-close" aria-label="Close dialog">×</button>
+      <div class="auth-modal-inner">
+        <div class="auth-header">
+          <div class="auth-header-icon">👤</div>
+          <h2 id="profile-modal-title">My Account</h2>
+          <p id="profile-modal-subtitle"></p>
+        </div>
+        <div style="text-align:center;margin-bottom:16px">
+          <p id="profile-user-name" style="font-weight:700;color:#522f1c;margin:0 0 4px"></p>
+          <p id="profile-user-email" style="margin:0;color:#6b4a38;font-size:0.92rem"></p>
+        </div>
+        <button type="button" class="auth-submit" id="profile-logout-btn" style="background:#c53030">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
   <footer id="footer" aria-label="Site footer">
     <div class="footer-content">
       <p>&copy; 2026. The B&KERY. You can taste the love! 💛</p>
@@ -652,13 +670,34 @@ container.appendChild(fragment);
         const btn = document.getElementById('orders-auth-btn');
         if(!btn) return;
         if(user){
-          btn.textContent = `Hi, ${(user.name || user.email || 'User').split(' ')[0]}`;
-          btn.onclick = () => {
-            if(confirm('Sign out?')){ clearAuth(); updateOrdersAuthUI(); }
-          };
+          btn.className = 'btn btn-auth-user';
+          btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Hi, ${(user.name || user.email || 'User').split(' ')[0]}`;
+          btn.onclick = () => openProfileModal();
         } else {
+          btn.className = 'btn btn-ghost';
           btn.textContent = 'Sign In';
           btn.onclick = () => { window.location.href = 'cart.html#auth'; };
+        }
+      }
+
+      function openProfileModal(){
+        const user = getAuthUser();
+        if(!user) return;
+        document.getElementById('profile-modal-subtitle').textContent = 'Manage your account';
+        document.getElementById('profile-user-name').textContent = user.name || 'B&KERY Member';
+        document.getElementById('profile-user-email').textContent = user.email || '';
+        const overlay = document.getElementById('profile-modal-overlay');
+        if(overlay){
+          overlay.classList.add('open');
+          overlay.setAttribute('aria-hidden', 'false');
+        }
+      }
+
+      function closeProfileModal(){
+        const overlay = document.getElementById('profile-modal-overlay');
+        if(overlay){
+          overlay.classList.remove('open');
+          overlay.setAttribute('aria-hidden', 'true');
         }
       }
 
@@ -742,10 +781,20 @@ async function init(){
         document.getElementById('orders-auth-btn')?.addEventListener('click', () => {
           const user = getAuthUser();
           if(user){
-            if(confirm('Sign out?')){ clearAuth(); updateOrdersAuthUI(); }
+            openProfileModal();
           } else {
             window.location.href = 'cart.html#auth';
           }
+        });
+
+        document.getElementById('profile-modal-close')?.addEventListener('click', closeProfileModal);
+        document.getElementById('profile-modal-overlay')?.addEventListener('click', (e) => {
+          if(e.target === e.currentTarget) closeProfileModal();
+        });
+        document.getElementById('profile-logout-btn')?.addEventListener('click', () => {
+          closeProfileModal();
+          clearAuth();
+          updateOrdersAuthUI();
         });
 
        window.addEventListener('storage', async (ev) => {
