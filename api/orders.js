@@ -25,6 +25,23 @@ const REVERSE_FIELD_MAP = Object.fromEntries(
   Object.entries(FIELD_MAP).map(([clientKey, dbKey]) => [dbKey, clientKey])
 );
 
+function getAuthHeader(req){
+  const header = req.headers['authorization'] || req.headers['Authorization'] || '';
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  return match ? match[1].trim() : null;
+}
+
+async function getUserFromToken(token){
+  if(!supabase || !token) return null;
+  try {
+    const { data, error } = await supabase.auth.getUser(token);
+    if(error || !data?.user) return null;
+    return data.user;
+  } catch(e){
+    return null;
+  }
+}
+
 function toNumber(value, fallback = 0){
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
@@ -47,7 +64,7 @@ function calculateTotals(order){
   return { subtotal, deliveryFee, total };
 }
 
-function normalizeForSupabase(order = {}){
+function normalizeForSupabase(order = {}, userId = null){
   const { subtotal, deliveryFee, total } = calculateTotals(order);
 
   return {
@@ -70,7 +87,8 @@ function normalizeForSupabase(order = {}){
     paypal_transaction_id: order.paypalTransactionId || order.paypal_transaction_id || order.paymentId || order.transactionId || null,
     payment_status: order.paymentStatus || order.payment_status || order.status || 'COMPLETED',
     captured_at: order.capturedAt || order.captured_at || null,
-    created_at: order.createdAt || order.created_at || new Date().toISOString()
+    created_at: order.createdAt || order.created_at || new Date().toISOString(),
+    user_id: userId
   };
 }
 
@@ -110,7 +128,7 @@ export default async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).json({});
@@ -121,13 +139,20 @@ export default async function handler(req, res) {
   }
 
   try {
+    const token = getAuthHeader(req);
+    const currentUser = await getUserFromToken(token);
+
     if (req.method === 'GET') {
       let query = supabase
         .from('orders')
         .select('*');
 
+      if (currentUser) {
+        query = query.eq('user_id', currentUser.id);
+      }
+
       const email = req.query?.email;
-      if (email) {
+      if (email && !currentUser) {
         query = query.eq('email', email);
       }
 
@@ -138,7 +163,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const order = normalizeForSupabase(req.body || {});
+      const order = normalizeForSupabase(req.body || {}, currentUser?.id || null);
 
       const { data, error } = await supabase
         .from('orders')

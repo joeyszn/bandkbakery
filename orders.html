@@ -151,6 +151,7 @@
       </div>
       <div class="orders-toolbar">
         <input id="orders-search" class="orders-search" placeholder="Search by order number or product" aria-label="Search orders" />
+        <button class="btn btn-ghost" id="orders-auth-btn">Sign In</button>
         <div class="orders-filters" role="tablist" aria-label="Filter orders">
           <button class="filter-btn active" data-filter="all">All Orders</button>
           <button class="filter-btn" data-filter="active">Active Orders</button>
@@ -218,15 +219,51 @@
 
     async function readGlobalOrdersForLastCustomer(){
       try{
+        const token = localStorage.getItem('bk_auth_token');
+        const headers = {};
+        if(token) headers['Authorization'] = `Bearer ${token}`;
+
         const lastOrder = JSON.parse(localStorage.getItem('bk_last_order') || 'null');
         const email = lastOrder?.email;
-        if(!email) return await readAllGlobalOrders();
-        const resp = await fetch(`/api/orders?email=${encodeURIComponent(email)}`);
-        if(!resp.ok){
-          const errText = await resp.text().catch(() => '');
-          console.error('Failed to fetch orders by email:', resp.status, errText);
-          return await readAllGlobalOrders();
+        if(email && !token){
+          const resp = await fetch(`/api/orders?email=${encodeURIComponent(email)}`, { headers });
+          if(!resp.ok){
+            const errText = await resp.text().catch(() => '');
+            console.error('Failed to fetch orders by email:', resp.status, errText);
+            return await readAllGlobalOrders(headers);
+          }
+          const globalOrders = await resp.json();
+          return Array.isArray(globalOrders) ? globalOrders : [];
         }
+
+        const resp = await fetch('/api/orders', { headers });
+        if(!resp.ok){
+          const errText = await resp.text().catch(() => 'Unknown error');
+          console.error('Failed to fetch global orders:', resp.status, errText);
+          return [];
+        }
+        const globalOrders = await resp.json();
+        return Array.isArray(globalOrders) ? globalOrders : [];
+      }catch(e){
+        console.error('Error fetching global orders:', e);
+        return [];
+      }
+    }
+
+    async function readAllGlobalOrders(headers = {}){
+      try {
+        const resp = await fetch('/api/orders', { headers });
+        if (resp.ok) {
+          const data = await resp.json();
+          return Array.isArray(data) ? data : [];
+        }
+        const errText = await resp.text().catch(() => 'Unknown error');
+        console.error('Failed to fetch global orders:', resp.status, errText);
+      } catch(e) {
+        console.error('Error fetching global orders:', e);
+      }
+      return [];
+    }
         const globalOrders = await resp.json();
         return Array.isArray(globalOrders) ? globalOrders : [];
       }catch(e){
@@ -580,21 +617,50 @@ container.appendChild(fragment);
        }
      }
 
-     function updateOrdersCount(orders){
-       const filter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
-       let count = orders.length;
+      function updateOrdersCount(orders){
+        const filter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+        let count = orders.length;
 
-        // Adjust count based on filter
-        if(filter === 'active'){
-          count = orders.filter(o => isActiveOrder(o)).length;
-        } else if(filter === 'completed'){
-          count = orders.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered').length;
-        } else if(filter === 'pending'){
-          count = readPendingOrders().length;
+         // Adjust count based on filter
+         if(filter === 'active'){
+           count = orders.filter(o => isActiveOrder(o)).length;
+         } else if(filter === 'completed'){
+           count = orders.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered').length;
+         } else if(filter === 'pending'){
+           count = readPendingOrders().length;
+         }
+
+        document.querySelectorAll('.orders-count').forEach(el => el.textContent = count);
+      }
+
+      // ─── Auth helpers ───────────────────────────────────────────────────────
+      function getOrdersAuthToken(){
+        return localStorage.getItem('bk_auth_token') || null;
+      }
+
+      function getAuthUser(){
+        try { return JSON.parse(localStorage.getItem('bk_auth_user') || 'null'); } catch(e){ return null; }
+      }
+
+      function clearAuth(){
+        localStorage.removeItem('bk_auth_token');
+        localStorage.removeItem('bk_auth_user');
+      }
+
+      function updateOrdersAuthUI(){
+        const user = getAuthUser();
+        const btn = document.getElementById('orders-auth-btn');
+        if(!btn) return;
+        if(user){
+          btn.textContent = `Hi, ${(user.name || user.email || 'User').split(' ')[0]}`;
+          btn.onclick = () => {
+            if(confirm('Sign out?')){ clearAuth(); updateOrdersAuthUI(); }
+          };
+        } else {
+          btn.textContent = 'Sign In';
+          btn.onclick = () => { window.location.href = 'cart.html#auth'; };
         }
-
-       document.querySelectorAll('.orders-count').forEach(el => el.textContent = count);
-     }
+      }
 
      function applySearchAndFilter(all){
         const q = (document.getElementById('orders-search').value || '').trim().toLowerCase();
@@ -657,19 +723,30 @@ async function init(){
        });
        try { document.querySelectorAll('.orders-count').forEach(el => el.textContent = getSubmittedOrderCount()); } catch (e) {}
 
+       updateOrdersAuthUI();
+
        if(!all || all.length === 0){ renderEmpty('No orders yet. Your orders will appear here.'); }
        else { applySearchAndFilter(all); }
 
-       searchInput.addEventListener('input', async () => {
-         const updated = await readAllOrders();
-         applySearchAndFilter(updated);
-       });
-       filterBtns.forEach(btn => btn.addEventListener('click', async (e) => {
-         filterBtns.forEach(b=>b.classList.remove('active'));
-         e.currentTarget.classList.add('active');
-         const updated = await readAllOrders();
-         applySearchAndFilter(updated);
-       }));
+        searchInput.addEventListener('input', async () => {
+          const updated = await readAllOrders();
+          applySearchAndFilter(updated);
+        });
+        filterBtns.forEach(btn => btn.addEventListener('click', async (e) => {
+          filterBtns.forEach(b=>b.classList.remove('active'));
+          e.currentTarget.classList.add('active');
+          const updated = await readAllOrders();
+          applySearchAndFilter(updated);
+        }));
+
+        document.getElementById('orders-auth-btn')?.addEventListener('click', () => {
+          const user = getAuthUser();
+          if(user){
+            if(confirm('Sign out?')){ clearAuth(); updateOrdersAuthUI(); }
+          } else {
+            window.location.href = 'cart.html#auth';
+          }
+        });
 
        window.addEventListener('storage', async (ev) => {
          if(ev.key === STORAGE_KEY || ev.key === DRAFT_STORAGE_KEY || ev.key === 'bk_last_order'){
