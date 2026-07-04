@@ -1455,13 +1455,15 @@ if(bc){
       // ─── Auth Init ─────────────────────────────────────────────────────────
       updateAuthUI();
       (async function refreshAuthSession(){
-        const user = await apiGetMe();
-        if(user){
-          setAuthUser(user);
-        } else {
-          clearAuth();
+        try {
+          const user = await apiGetMe();
+          if(user){
+            setAuthUser(user);
+            updateAuthUI();
+          }
+        } catch(e){
+          console.error('Auth session refresh failed:', e);
         }
-        updateAuthUI();
       })();
 
       document.getElementById('auth-toggle-btn')?.addEventListener('click', () => {
