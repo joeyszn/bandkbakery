@@ -132,7 +132,6 @@
 
 <script>
 const ADMIN_PASSWORD = 'bake';
-const STORAGE_KEY = 'bk_orders';
 
 function checkPassword(){
   const val = document.getElementById('admin-password').value;
@@ -242,40 +241,24 @@ function getItemsHtml(items){
   return `<table class="items-table"><thead><tr><th>Item</th><th style="text-align:center">Qty</th><th style="text-align:right">Unit Price</th><th style="text-align:right">Line Total</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-function loadOrders(){
-  const raw = localStorage.getItem(STORAGE_KEY);
-  let localOrders = [];
-  try { localOrders = JSON.parse(raw) || []; } catch(e) { localOrders = []; }
-  return { raw, localOrders };
+
+
+async function fetchGlobalOrders(){
+  try {
+    const resp = await fetch('/api/orders-admin');
+    if (resp.ok) {
+      const globalOrders = await resp.json();
+      if (Array.isArray(globalOrders)) return globalOrders;
+    }
+    console.error('Failed to fetch global orders:', resp.status);
+  } catch(e) {
+    console.error('Error fetching global orders:', e);
+  }
+  return [];
 }
 
- async function fetchGlobalOrders(){
-   try {
-     const resp = await fetch('/api/orders');
-     if (resp.ok) {
-       const globalOrders = await resp.json();
-       if (Array.isArray(globalOrders)) return globalOrders;
-     }
-     const errText = await resp.text().catch(() => 'Unknown error');
-     console.error('Failed to fetch global orders:', resp.status, errText);
-     document.getElementById('admin-meta').innerHTML = `<span style="color:#dc2626;font-weight:700">⚠️ Could not connect to Supabase (${resp.status}). Showing local orders only.</span>`;
-   } catch(e) {
-     console.error('Error fetching global orders:', e);
-     document.getElementById('admin-meta').innerHTML = `<span style="color:#dc2626;font-weight:700">⚠️ Network error — showing local orders only.</span>`;
-   }
-   return [];
- }
-
 async function renderAdmin(){
-  const globalOrders = await fetchGlobalOrders();
-  const { localOrders } = loadOrders();
-  let orders = [...globalOrders];
-  const globalIds = new Set(globalOrders.map(o => o.orderId));
-  for (const local of localOrders) {
-   if (!globalIds.has(local.orderId)) {
-    orders.push(local);
-   }
-  }
+   const orders = await fetchGlobalOrders();
   orders.sort((a, b) => {
    const da = new Date(b.createdAt || b.capturedAt || b.dateOrdered || 0);
    const db = new Date(a.createdAt || a.capturedAt || a.dateOrdered || 0);

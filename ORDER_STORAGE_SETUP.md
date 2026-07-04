@@ -41,13 +41,14 @@ create policy "Allow public insert" on orders for insert with check (true);
 ```
 
 2. **Add Vercel Environment Variables** - Go to your Vercel project Settings > Environment Variables:
-   - `SUPABASE_URL`: https://iqwhjqpwhmwipgtfrzoe.supabase.co
-   - `SUPABASE_ANON_KEY`: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlxd2hqcXB3aG13aXBndGZyem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzYzNzIsImV4cCI6MjA5NjYxMjM3Mn0.Qb3xv38v0LcGolhh87PrKMn7SJY4E-0MV-pij8IxYys
+    - `SUPABASE_URL`: https://iqwhjqpwhmwipgtfrzoe.supabase.co
+    - `SUPABASE_ANON_KEY`: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlxd2hqcXB3aG13aXBndGZyem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzYzNzIsImV4cCI6MjA5NjYxMjM3Mn0.Qb3xv38v0LcGolhh87PrKMn7SJY4E-0MV-pij8IxYys
+    - `ADMIN_PASSWORD`: bake (optional: change this for security)
 
 3. **Redeploy** - Push to your repo or manually redeploy on Vercel
 
 ## How it works
 
 - When an order is placed (cart.html), it saves to both localStorage AND `/api/orders`
-- When admin page loads, it fetches from `/api/orders` first, then merges with localStorage
+- The admin page fetches all orders from `/api/orders-admin` endpoint
 - All orders are now stored globally and visible to anyone accessing the admin page
