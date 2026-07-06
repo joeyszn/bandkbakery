@@ -401,7 +401,7 @@
 
     function escapeHtml(str){
       if(!str) return '';
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(str).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"');
     }
 
     function getFirstName(name){
@@ -441,12 +441,15 @@ function emailLink(email, name){
         if(isPendingOrder(order)) return false;
         const paymentStatus = (order.paymentStatus || '').toLowerCase();
         const status = (order.status || '').toLowerCase();
+        // Exclude orders with pending/draft/incomplete/failed payment
         if(paymentStatus.includes('pending') || paymentStatus.includes('draft') || paymentStatus.includes('incomplete') || paymentStatus.includes('failed')){
           return false;
         }
-        if(status === 'completed' || status === 'delivered'){
+        // Exclude completed/delivered orders (check both status and paymentStatus)
+        if(status === 'completed' || status === 'delivered' || paymentStatus === 'completed' || paymentStatus === 'delivered' || paymentStatus.includes('completed')){
           return false;
         }
+        // Exclude orders with pending/draft/incomplete status
         if(status.includes('pending') || status.includes('draft') || status.includes('incomplete')){
           return false;
         }
@@ -474,7 +477,8 @@ function renderOrders(list, isPending = false){
          card.className = 'order-card';
          card.setAttribute('data-order-id', order.orderId || order.id);
 
-         const orderNum = order.orderNumber ? `#${order.orderNumber}` : (order.orderId || `#${idx+1}`);
+         // Sequential numbering: oldest = #1, newest = last number
+         const orderNum = `#${list.length - idx}`;
          const { subtotal, deliveryFee, total } = getOrderTotals(order);
          const items = getOrderItems(order);
          const itemNames = items.map(it => it.name || it.productName).join(', ') || '—';
@@ -670,9 +674,30 @@ container.appendChild(fragment);
          if(filter === 'active'){
            count = orders.filter(o => isActiveOrder(o)).length;
          } else if(filter === 'completed'){
-           count = orders.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered').length;
+           count = orders.filter(o => {
+             const status = (o.status||'').toLowerCase();
+             const paymentStatus = (o.paymentStatus||'').toLowerCase();
+             return status === 'completed' || status === 'delivered' || 
+                    paymentStatus === 'completed' || paymentStatus === 'delivered' ||
+                    paymentStatus.includes('completed');
+           }).length;
          } else if(filter === 'pending'){
-           count = readPendingOrders().length;
+           const localPending = readPendingOrders();
+           const apiPending = orders.filter(o => {
+             const status = (o.status||'').toLowerCase();
+             const paymentStatus = (o.paymentStatus||'').toLowerCase();
+             return (status.includes('pending') || status.includes('draft') || status.includes('incomplete')) &&
+                    !(paymentStatus === 'completed' || paymentStatus === 'delivered' || paymentStatus.includes('completed'));
+           });
+           // Deduplicate
+           const allPending = [...localPending];
+           for (const apiOrder of apiPending) {
+             const id = apiOrder.orderId || apiOrder.id;
+             if (!allPending.some(p => (p.orderId || p.id) === id)) {
+               allPending.push(apiOrder);
+             }
+           }
+           count = allPending.length;
          }
 
         document.querySelectorAll('.orders-count').forEach(el => el.textContent = count);
@@ -739,19 +764,39 @@ container.appendChild(fragment);
         if(filter === 'active'){
           list = list.filter(o => isActiveOrder(o));
         } else if(filter === 'completed'){
-          list = list.filter(o => (o.status||'').toLowerCase() === 'completed' || (o.status||'').toLowerCase() === 'delivered');
+          list = list.filter(o => {
+            const status = (o.status||'').toLowerCase();
+            const paymentStatus = (o.paymentStatus||'').toLowerCase();
+            return status === 'completed' || status === 'delivered' || 
+                   paymentStatus === 'completed' || paymentStatus === 'delivered' ||
+                   paymentStatus.includes('completed');
+          });
         } else if(filter === 'pending'){
-          const pending = readPendingOrders();
-          if(!q && pending.length > 0){
-            list = pending.slice().sort((a, b) => new Date(b.savedAt || b.createdAt || 0) - new Date(a.savedAt || a.createdAt || 0));
-          } else if (pending.length > 0) {
-            list = pending.filter(o => {
-              const orderId = (o.id||o.orderId||'').toLowerCase();
-              const inItems = (o.items||[]).some(it => (it.name||'').toLowerCase().includes(q));
+          // Merge local draft orders with API orders that have pending status
+          const localPending = readPendingOrders();
+          const apiPending = all.filter(o => {
+            const status = (o.status||'').toLowerCase();
+            const paymentStatus = (o.paymentStatus||'').toLowerCase();
+            return (status.includes('pending') || status.includes('draft') || status.includes('incomplete')) &&
+                   !(paymentStatus === 'completed' || paymentStatus === 'delivered' || paymentStatus.includes('completed'));
+          });
+          // Deduplicate by ID
+          const allPending = [...localPending];
+          for (const apiOrder of apiPending) {
+            const id = apiOrder.orderId || apiOrder.id;
+            if (!allPending.some(p => (p.orderId || p.id) === id)) {
+              allPending.push(apiOrder);
+            }
+          }
+          if(!q && allPending.length > 0){
+            list = allPending.slice().sort((a, b) => new Date(b.savedAt || b.createdAt || b.dateOrdered || 0) - new Date(a.savedAt || a.createdAt || a.dateOrdered || 0));
+          } else if (allPending.length > 0) {
+            list = allPending.filter(o => {
+              const orderId = (o.id||o.orderId||o.orderNumber||'').toLowerCase();
+              const inItems = (o.items||o.purchasedItems||[]).some(it => (it.name||it.productName||'').toLowerCase().includes(q));
               return orderId.includes(q) || inItems;
-            }).slice().sort((a, b) => new Date(b.savedAt || b.createdAt || 0) - new Date(a.savedAt || b.createdAt || 0));
+            }).slice().sort((a, b) => new Date(b.savedAt || b.createdAt || b.dateOrdered || 0) - new Date(a.savedAt || a.createdAt || a.dateOrdered || 0));
           } else {
-            // No pending orders - show empty state
             list = [];
           }
         }
