@@ -9,10 +9,11 @@ You've already created the Supabase project 'bandkbakery' and connected it to Ve
 1. **Create the orders table in Supabase** - Go to SQL Editor and run:
 
 ```sql
--- Create orders table
-create table orders (
+-- Create orders table (with user_id column required by api/orders.js)
+create table if not exists orders (
   id bigint generated always as identity primary key,
   order_id text,
+  user_id uuid references auth.users(id),
   name text,
   email text,
   phone text,
@@ -24,20 +25,30 @@ create table orders (
   zip text,
   schedule text,
   notes text,
-  items jsonb,
-  subtotal numeric,
-  delivery_fee numeric,
-  total numeric,
+  bagel_type text,
+  macaron_type text,
+  items jsonb default '[]'::jsonb,
+  subtotal numeric default 0,
+  delivery_fee numeric default 0,
+  total numeric default 0,
   paypal_transaction_id text,
-  payment_status text,
-  captured_at timestamp,
-  created_at timestamp default now()
+  payment_status text default 'COMPLETED',
+  captured_at timestamp with time zone,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 -- Enable RLS and allow public access for the bakery order system
 alter table orders enable row level security;
+
+-- Drop existing policies if re-running
+drop policy if exists "Allow public read" on orders;
+drop policy if exists "Allow public insert" on orders;
+drop policy if exists "Service role full access orders" on orders;
+
+-- Allow public (unauthenticated) read and insert so orders work without login
 create policy "Allow public read" on orders for select using (true);
 create policy "Allow public insert" on orders for insert with check (true);
+create policy "Service role full access orders" on orders for all using (auth.role() = 'service_role');
 ```
 
 2. **Add Vercel Environment Variables** - Go to your Vercel project Settings > Environment Variables:

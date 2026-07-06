@@ -1229,7 +1229,7 @@ if(bc){
                     value: total.toFixed(2),
                     breakdown: {
                       item_total: { currency_code: 'USD', value: subtotal.toFixed(2) },
-                      shipping: { currency_code: 'USD', value: deliveryFee.toFixed(2) }
+                      delivery: { currency_code: 'USD', value: deliveryFee.toFixed(2) }
                     }
                   },
                   items: cart.map(item => ({
@@ -1243,7 +1243,7 @@ if(bc){
                 application_context: {
                   brand_name: 'The B&KERY',
                   user_action: 'PAY_NOW',
-                  shipping_preference: 'NO_SHIPPING',
+                  delivery_preference: 'NO_DELIVERY',
                   landing_page: 'BILLING'
                 }
               });
