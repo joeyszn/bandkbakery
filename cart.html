@@ -1232,10 +1232,10 @@ if(bc){
                   amount: {
                     currency_code: 'USD',
                     value: total.toFixed(2),
-                    breakdown: {
-                      item_total: { currency_code: 'USD', value: subtotal.toFixed(2) },
-                      delivery: { currency_code: 'USD', value: deliveryFee.toFixed(2) }
-                    }
+                  breakdown: {
+                    item_total: { currency_code: 'USD', value: subtotal.toFixed(2) },
+                    shipping: { currency_code: 'USD', value: deliveryFee.toFixed(2) }
+                  }
                   },
                   items: cart.map(item => ({
                     name: item.name || 'Bakery item',
