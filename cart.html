@@ -831,10 +831,8 @@ function validateCheckoutForm(){
             if(!values.city) errors.push('Delivery city is required.');
             if(!values.state) errors.push('Delivery state is required.');
             if(!values.zip) errors.push('Delivery ZIP code is required.');
-            const distanceValid = validateDeliveryDistance(values.zip);
-            if(!distanceValid.valid){
-              errors.push(distanceValid.error);
-            }
+            // Distance check is now performed asynchronously in validateCheckoutFormAsync
+            // and stored in a global variable for later use.
           }
           if(errors.length) return { valid: false, errors, checkout: null };
 
@@ -874,49 +872,214 @@ function validateCheckoutForm(){
           return;
         }
 
-       // Bakery location: 3051 Towers Lane, San Jose, CA 95121
-       const BAKERY_LOCATION = { lat: 37.3066031, lng: -121.8180063 };
+        // ─── Async form validation with distance check ──────────────────────────
+        let lastDistanceError = null;
 
-       function validateDeliveryDistance(zip){
-         if(!zip) return { valid: true };
-         const zipToCoords = {
-           '95121': { lat: 37.3066031, lng: -121.8180063 },
-           '95122': { lat: 37.314103, lng: -121.850722 },
-           '95123': { lat: 37.325103, lng: -121.878722 },
-           '95124': { lat: 37.322103, lng: -121.862722 },
-           '95125': { lat: 37.310103, lng: -121.860722 },
-           '95126': { lat: 37.330103, lng: -121.880722 },
-           '95127': { lat: 37.340103, lng: -121.890722 },
-           '95128': { lat: 37.350103, lng: -121.900722 },
-           '95129': { lat: 37.360103, lng: -121.910722 },
-           '95130': { lat: 37.370103, lng: -121.920722 },
-           '95131': { lat: 37.380103, lng: -121.930722 },
-           '95132': { lat: 37.390103, lng: -121.940722 },
-           '95133': { lat: 37.400103, lng: -121.950722 },
-           '95134': { lat: 37.410103, lng: -121.960722 },
-           '95135': { lat: 37.420103, lng: -121.970722 },
-           '95136': { lat: 37.430103, lng: -121.980722 },
-           '95138': { lat: 37.440103, lng: -121.990722 },
-           '95139': { lat: 37.450103, lng: -121.900722 },
-           '95148': { lat: 37.460103, lng: -121.910722 }
-         };
-         const coords = zipToCoords[zip];
-         if(!coords){
-           return { valid: true, warning: 'ZIP code not recognized for distance check. Delivery may be confirmed manually.' };
-         }
-         const R = 3959; // Earth radius in miles
-         const dLat = (coords.lat - BAKERY_LOCATION.lat) * Math.PI / 180;
-         const dLng = (coords.lng - BAKERY_LOCATION.lng) * Math.PI / 180;
-         const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                   Math.cos(BAKERY_LOCATION.lat * Math.PI / 180) * Math.cos(coords.lat * Math.PI / 180) *
-                   Math.sin(dLng/2) * Math.sin(dLng/2);
-         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-         const distance = R * c;
-          if(distance < 0 || distance > 6){
-            return { valid: false, error: `Delivery is only available between 0 and 6 miles of the bakery for a $10.00 delivery fee. Your location is approximately ${distance.toFixed(1)} miles away. Please select pickup instead.` };
+        async function validateCheckoutFormAsync(){
+          const values = getCheckoutValues();
+          const cart = loadCart();
+          const errors = [];
+          if(!values.name) errors.push('Full Name is required.');
+          if(!values.phone) { errors.push('Phone Number is required.'); }
+          else if(!isCaliforniaPhoneNumber(values.phone)) { errors.push('Please enter a valid California phone number to complete checkout.'); }
+          if(!values.email) errors.push('Email Address is required.');
+          if(values.method === 'Pickup'){
+            if(!values.pickupLocation) errors.push('Please choose a pickup location.');
           }
-         return { valid: true };
-       }
+          if(values.method === 'Delivery'){
+            if(!values.address) errors.push('Delivery address is required for delivery.');
+            if(!values.city) errors.push('Delivery city is required.');
+            if(!values.state) errors.push('Delivery state is required.');
+            if(!values.zip) errors.push('Delivery ZIP code is required.');
+            // Perform the async distance check for delivery
+            if(values.address && values.city && values.state && values.zip){
+              const distanceResult = await validateDeliveryDistance(values.address, values.city, values.state, values.zip);
+              if(!distanceResult.valid){
+                errors.push(distanceResult.error);
+                lastDistanceError = distanceResult.error;
+              } else {
+                lastDistanceError = null;
+              }
+            }
+          }
+          if(errors.length) return { valid: false, errors, checkout: null };
+
+          let notes = values.notes;
+          if(values.bagelType){
+            notes = notes ? `${notes}; Bagel type: ${values.bagelType}` : `Bagel type: ${values.bagelType}`;
+          }
+          if(values.macaronType){
+            notes = notes ? `${notes}; Macaron type: ${values.macaronType}` : `Macaron type: ${values.macaronType}`;
+          }
+
+          const checkout = {
+            name: values.name,
+            phone: values.phone,
+            email: values.email,
+            method: values.method,
+            address: values.method === 'Delivery' ? `${values.address}, ${values.city}, ${values.state} ${values.zip}` : values.pickupLocation,
+            pickupLocation: values.pickupLocation,
+            city: values.city,
+            state: values.state,
+            zip: values.zip,
+            notes: notes,
+            bagelType: values.bagelType,
+            macaronType: values.macaronType,
+            cart: cart,
+            savedAt: new Date().toISOString()
+          };
+          return { valid: true, errors: [], checkout };
+        }
+
+        // ─── BAKERY LOCATION ─────────────────────────────────────────────────────
+        // The B&KERY at Community Clubhouse, WOODBRIDGE MOBILE HOME PARK
+        // 3066 Oakbridge Drive, San Jose, CA 95121
+        const BAKERY_LOCATION = { lat: 37.3066666, lng: -121.8153502 };
+        const BAKERY_ADDRESS = '3066 Oakbridge Drive, San Jose, CA 95121';
+        const MAX_DELIVERY_MILES = 6;
+        const DELIVERY_FEE = 10;
+
+        // ─── Haversine distance (miles) ──────────────────────────────────────────
+        function haversineMiles(lat1, lng1, lat2, lng2){
+          const R = 3959; // Earth radius in miles
+          const dLat = (lat2 - lat1) * Math.PI / 180;
+          const dLng = (lng2 - lng1) * Math.PI / 180;
+          const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLng/2) * Math.sin(dLng/2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+          return R * c;
+        }
+
+        // ─── Geocode address via Nominatim (OpenStreetMap, free, no API key) ─────
+        let geocodeCache = {};
+        async function geocodeAddress(address){
+          if(!address) return null;
+          const key = address.toLowerCase().trim();
+          if(geocodeCache[key]) return geocodeCache[key];
+          try {
+            const url = 'https://nominatim.openstreetmap.org/search?' +
+              'q=' + encodeURIComponent(address) +
+              '&format=json&limit=1&addressdetails=1';
+            const resp = await fetch(url, {
+              headers: { 'Accept-Language': 'en' }
+            });
+            if(!resp.ok) return null;
+            const data = await resp.json();
+            if(!data || data.length === 0) return null;
+            const result = {
+              lat: parseFloat(data[0].lat),
+              lng: parseFloat(data[0].lon),
+              displayName: data[0].display_name
+            };
+            geocodeCache[key] = result;
+            return result;
+          } catch(e){
+            console.error('Geocode failed:', e);
+            return null;
+          }
+        }
+
+        // ─── Browser geolocation (with user permission) ──────────────────────────
+        function getBrowserLocation(){
+          return new Promise((resolve) => {
+            if(!navigator.geolocation) return resolve(null);
+            navigator.geolocation.getCurrentPosition(
+              (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+              () => resolve(null),
+              { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+            );
+          });
+        }
+
+        // ─── Real San Jose ZIP code coordinates (approximate centroids) ──────────
+        const ZIP_COORDS = {
+          '95121': { lat: 37.3067, lng: -121.8154 },
+          '95122': { lat: 37.3300, lng: -121.8400 },
+          '95123': { lat: 37.2500, lng: -121.8300 },
+          '95124': { lat: 37.2600, lng: -121.9200 },
+          '95125': { lat: 37.3000, lng: -121.8900 },
+          '95126': { lat: 37.3300, lng: -121.9100 },
+          '95127': { lat: 37.3700, lng: -121.8200 },
+          '95128': { lat: 37.3200, lng: -121.9400 },
+          '95129': { lat: 37.3000, lng: -122.0000 },
+          '95130': { lat: 37.2800, lng: -121.9900 },
+          '95131': { lat: 37.3900, lng: -121.8900 },
+          '95132': { lat: 37.4100, lng: -121.8600 },
+          '95133': { lat: 37.3700, lng: -121.8700 },
+          '95134': { lat: 37.4200, lng: -121.9500 },
+          '95135': { lat: 37.3000, lng: -121.7600 },
+          '95136': { lat: 37.2700, lng: -121.8500 },
+          '95138': { lat: 37.2600, lng: -121.7700 },
+          '95139': { lat: 37.2300, lng: -121.7700 },
+          '95148': { lat: 37.3400, lng: -121.7800 },
+          '95111': { lat: 37.2900, lng: -121.8500 },
+          '95112': { lat: 37.3400, lng: -121.8800 },
+          '95116': { lat: 37.3500, lng: -121.8600 },
+          '95117': { lat: 37.3100, lng: -121.9600 },
+          '95118': { lat: 37.2800, lng: -121.8900 },
+          '95119': { lat: 37.2300, lng: -121.7900 },
+          '95120': { lat: 37.2200, lng: -121.8700 },
+          '95140': { lat: 37.3700, lng: -121.6400 },
+          '95141': { lat: 37.3400, lng: -121.8800 }
+        };
+
+        // ─── Validate delivery distance using multiple methods ───────────────────
+        let deliveryDistanceResult = null; // cached result for current form state
+
+        async function validateDeliveryDistance(address, city, state, zip){
+          // Build full address string
+          const fullAddress = [address, city, state, zip].filter(Boolean).join(', ');
+          if(!fullAddress) return { valid: true, distance: null };
+
+          let coords = null;
+          let method = '';
+
+          // Method 1: Try geocoding the full address (most accurate)
+          if(address && city){
+            const geo = await geocodeAddress(fullAddress);
+            if(geo){
+              coords = { lat: geo.lat, lng: geo.lng };
+              method = 'geocode';
+            }
+          }
+
+          // Method 2: Fall back to ZIP code centroid
+          if(!coords && zip && ZIP_COORDS[zip]){
+            coords = ZIP_COORDS[zip];
+            method = 'zip';
+          }
+
+          // Method 3: Try browser geolocation (with user permission)
+          if(!coords){
+            const browserLoc = await getBrowserLocation();
+            if(browserLoc){
+              coords = browserLoc;
+              method = 'browser';
+            }
+          }
+
+          if(!coords){
+            return { valid: true, distance: null, warning: 'Could not determine your location for distance check. Delivery will be confirmed manually.' };
+          }
+
+          const distance = haversineMiles(
+            BAKERY_LOCATION.lat, BAKERY_LOCATION.lng,
+            coords.lat, coords.lng
+          );
+
+          deliveryDistanceResult = { distance, method, coords };
+
+          if(distance < 0 || distance > MAX_DELIVERY_MILES){
+            return {
+              valid: false,
+              distance,
+              error: `Delivery is only available within ${MAX_DELIVERY_MILES} miles of the bakery for a $${DELIVERY_FEE}.00 delivery fee. Your location is approximately ${distance.toFixed(1)} miles away. Please select pickup instead.`
+            };
+          }
+
+          return { valid: true, distance };
+        }
 
         function setBagelTypeVisibility(){
           const cart = loadCart();
@@ -1196,7 +1359,7 @@ if(bc){
 
           // ── Validate before opening PayPal popup ──────────────────────────────
           onClick: async (data, actions) => {
-            const { valid, errors } = validateCheckoutForm();
+            const { valid, errors } = await validateCheckoutFormAsync();
             if(!valid){
               await showWarning('Missing Information', errors.join('\n'));
               return actions.reject();
@@ -1204,9 +1367,7 @@ if(bc){
             return actions.resolve();
           },
 
-          // ── FIX: Always create order client-side — no server needed ───────────
-          // landing_page: 'LOGIN' forces the PayPal login screen instead of
-          // defaulting to Guest Checkout / credit card entry.
+          // ── Always create order client-side — no server needed ────────────────
           createOrder: async (data, actions) => {
             const cart = loadCart();
             if(!cart || cart.length === 0){
@@ -1214,7 +1375,7 @@ if(bc){
               throw new Error('Cart is empty');
             }
 
-            const { valid, checkout, errors } = validateCheckoutForm();
+            const { valid, checkout, errors } = await validateCheckoutFormAsync();
             if(!valid){
               await showWarning('Missing Information', errors.join('\n'));
               throw new Error('Checkout form validation failed');
