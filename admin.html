@@ -25,7 +25,7 @@
   .orders-table-wrap{overflow-x:auto;background:#fff;border-radius:18px;box-shadow:0 12px 30px rgba(82,47,28,0.08);margin-top:18px}
   .orders-table-wrap::-webkit-scrollbar{height:10px}
   .orders-table-wrap::-webkit-scrollbar-thumb{background:rgba(82,47,28,.18);border-radius:999px}
-  .orders-table{width:100%;border-collapse:collapse;font-size:14px;min-width:1400px}
+  .orders-table{width:100%;border-collapse:collapse;font-size:14px;min-width:1500px}
   table.orders-table thead{background:var(--cream)}
   table.orders-table th{padding:14px 16px;text-align:left;font-weight:700;color:var(--brown);font-size:13px;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid rgba(82,47,28,.08);white-space:nowrap}
   table.orders-table td{padding:14px 16px;border-bottom:1px solid rgba(82,47,28,.05);vertical-align:top;color:var(--black)}
@@ -40,6 +40,7 @@
   .status-completed{background:#6ee7b7;color:#065f46}
   .status-paid{background:#a7f3d0;color:#065f46}
   .status-failed{background:#fecaca;color:#991b1b}
+  .status-pending{background:#fef3c7;color:#92400e}
 
   .empty-state{display:flex;flex-direction:column;align-items:center;gap:18px;padding:60px;text-align:center}
   .empty-ill{width:160px;height:130px;background:linear-gradient(180deg,#fff,rgba(249,199,95,0.06));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:56px}
@@ -69,9 +70,18 @@
   .btn-brown:hover{opacity:.9}
   .btn-ghost{background:transparent;color:var(--brown);text-decoration:none}
   .btn-ghost:hover{opacity:.75}
+  .btn-green{background:#065f46;color:#fff}
+  .btn-green:hover{opacity:.9}
+  .btn-sm{padding:6px 14px;font-size:12px}
 
   .admin-meta-bar{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;font-size:13px;color:var(--lighter-black)}
   .admin-meta-bar strong{color:var(--brown)}
+
+  .action-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+  .action-complete{background:#6ee7b7;color:#065f46}
+  .action-complete:hover{background:#34d399}
+  .action-pending{background:#fef3c7;color:#92400e}
+  .action-pending:hover{background:#fde68a}
 
   @media(max-width:900px){
     .detail-grid{grid-template-columns:1fr}
@@ -110,7 +120,7 @@
   <div class="admin-header">
     <div>
       <h1 class="admin-title">📦 Order Management</h1>
-      <p class="admin-sub">All orders made by customers.</p>
+      <p class="admin-sub">All orders made by customers. New orders appear as <strong>Pending</strong> — mark them as Completed when fulfilled.</p>
     </div>
     <div class="admin-toolbar">
       <input id="admin-search" class="admin-search" placeholder="Search by ID, name, email, or item…" oninput="renderAdmin()" />
@@ -185,7 +195,7 @@ function statusBadge(status){
     'preparing': 'status-preparing',
     'order received': 'status-order-received',
     'paid': 'status-paid',
-    'pending': 'status-failed',
+    'pending': 'status-pending',
     'failed': 'status-failed',
     'captured': 'status-paid',
     'approved': 'status-paid'
@@ -197,7 +207,7 @@ function statusBadge(status){
 
 function escapeHtml(str){
   if(!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"');
 }
 
 function formatCurrency(n){
@@ -241,7 +251,39 @@ function getItemsHtml(items){
   return `<table class="items-table"><thead><tr><th>Item</th><th style="text-align:center">Qty</th><th style="text-align:right">Unit Price</th><th style="text-align:right">Line Total</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+async function updateOrderStatus(orderId, newStatus){
+  try {
+    const resp = await fetch('/api/orders-admin', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order_id: orderId, admin_status: newStatus })
+    });
+    if (!resp.ok) {
+      const err = await resp.json();
+      alert('Failed to update order: ' + (err.error || 'Unknown error'));
+      return false;
+    }
+    return true;
+  } catch(e) {
+    console.error('Error updating order status:', e);
+    alert('Network error updating order status');
+    return false;
+  }
+}
 
+async function handleMarkCompleted(orderId, event){
+  event.stopPropagation();
+  if(!confirm('Mark this order as Completed?')) return;
+  const success = await updateOrderStatus(orderId, 'completed');
+  if(success) renderAdmin();
+}
+
+async function handleMarkPending(orderId, event){
+  event.stopPropagation();
+  if(!confirm('Move this order back to Pending?')) return;
+  const success = await updateOrderStatus(orderId, 'pending');
+  if(success) renderAdmin();
+}
 
 async function fetchGlobalOrders(){
   try {
@@ -280,13 +322,13 @@ async function renderAdmin(){
    filtered = orders.filter(o => (o.method||'').toLowerCase() === 'delivery');
   } else if(activeFilter === 'Pending'){
    filtered = orders.filter(o => {
-    const s = (o.status||o.paymentStatus||'').toLowerCase();
-    return !(s.includes('completed') || s.includes('delivered'));
+    const s = (o.adminStatus||'').toLowerCase();
+    return s === 'pending' || s === '' || s === null || s === undefined;
    });
   } else if(activeFilter === 'Completed'){
    filtered = orders.filter(o => {
-    const s = (o.status||o.paymentStatus||'').toLowerCase();
-    return s.includes('completed') || s.includes('delivered');
+    const s = (o.adminStatus||'').toLowerCase();
+    return s === 'completed' || s === 'delivered';
    });
   }
 
@@ -330,6 +372,16 @@ const rows = filtered.map((o, idx) => {
    const payStatus = escapeHtml(o.paymentStatus||o.status||'—');
    const created = formatDate(o.createdAt||o.dateOrdered||o.capturedAt);
 
+   // Admin status display
+   const adminStatus = (o.adminStatus||'pending').toLowerCase();
+   const isPending = adminStatus === 'pending' || adminStatus === '' || adminStatus === null || adminStatus === undefined;
+   const adminStatusLabel = isPending ? 'Pending' : 'Completed';
+   const adminStatusClass = isPending ? 'status-pending' : 'status-completed';
+
+   const actionButton = isPending
+     ? `<button class="action-btn action-complete" onclick="handleMarkCompleted('${escapeHtml(o.orderId)}', event)">✓ Mark Completed</button>`
+     : `<button class="action-btn action-pending" onclick="handleMarkPending('${escapeHtml(o.orderId)}', event)">↩ Move to Pending</button>`;
+
    const details = `
      <div class="detail-grid">
        <div>
@@ -358,6 +410,12 @@ const rows = filtered.map((o, idx) => {
            ${o.deliveryFee?`<div class="detail-row"><span class="label">Delivery Fee</span><span class="value">${fee}</span></div>`:''}
            <div class="detail-row"><span class="label" style="font-weight:800">Total</span><span class="value" style="font-weight:800;font-size:15px">${tot}</span></div>
          </div>
+         <div class="detail-section" style="margin-top:16px">
+           <h4>Admin Action</h4>
+           <div style="display:flex;gap:8px;align-items:center;padding:8px 0">
+             ${actionButton}
+           </div>
+         </div>
        </div>
      </div>`;
 
@@ -370,18 +428,19 @@ return `<tr onclick="toggleDetails(this)" aria-expanded="false">
       <td>${method}</td>
       <td style="white-space:nowrap">${schedule}</td>
       <td style="white-space:nowrap">${escapeHtml(o.pickupLocation||'')}</td>
-      <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${escapeHtml(o.notes||'')}">${notes||''}</td>
+      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${escapeHtml(o.notes||'')}">${notes||''}</td>
       <td class="order-total">${tot}</td>
       <td>${statusBadge(payStatus)}</td>
+      <td><span class="status-pill ${adminStatusClass}">${adminStatusLabel}</span></td>
       <td style="text-align:right;font-size:16px;color:var(--brown)">▼</td>
-    </tr><tr class="detail-row-wrapper"><td colspan="12" style="padding:0"><div class="detail-panel" style="display:none">${details}</div></td></tr>`;
+    </tr><tr class="detail-row-wrapper"><td colspan="13" style="padding:0"><div class="detail-panel" style="display:none">${details}</div></td></tr>`;
   }).join('');
 
   document.getElementById('admin-content').innerHTML = `
     <div class="orders-table-wrap">
       <table class="orders-table">
 <thead><tr>
-           <th>#</th><th>Order ID</th><th>Customer</th><th>Email</th><th>Phone</th><th>Method</th><th>Schedule</th><th>Pickup/Address</th><th>Notes</th><th>Total</th><th>Payment</th><th style="text-align:right"></th>
+           <th>#</th><th>Order ID</th><th>Customer</th><th>Email</th><th>Phone</th><th>Method</th><th>Schedule</th><th>Pickup/Address</th><th>Notes</th><th>Total</th><th>Payment</th><th>Status</th><th style="text-align:right"></th>
          </tr></thead>
         <tbody>${rows}</tbody>
       </table>

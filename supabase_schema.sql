@@ -22,6 +22,7 @@ create table if not exists orders (
   total numeric default 0,
   paypal_transaction_id text,
   payment_status text default 'COMPLETED',
+  admin_status text default 'pending',
   captured_at timestamp with time zone,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );

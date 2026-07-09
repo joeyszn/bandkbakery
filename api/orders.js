@@ -86,6 +86,7 @@ function normalizeForSupabase(order = {}, userId = null){
     total,
     paypal_transaction_id: order.paypalTransactionId || order.paypal_transaction_id || order.paymentId || order.transactionId || null,
     payment_status: order.paymentStatus || order.payment_status || order.status || 'COMPLETED',
+    admin_status: order.adminStatus || order.admin_status || 'pending',
     captured_at: order.capturedAt || order.captured_at || null,
     created_at: order.createdAt || order.created_at || new Date().toISOString(),
     user_id: userId
