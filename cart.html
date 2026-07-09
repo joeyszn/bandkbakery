@@ -1316,6 +1316,7 @@ if(bc){
             total,
             paypalTransactionId: captureDetails.purchase_units?.[0]?.payments?.captures?.[0]?.id || captureDetails.id || '',
            paymentStatus: captureDetails.status || 'COMPLETED',
+           adminStatus: 'pending',
            capturedAt: new Date().toISOString(),
            createdAt: new Date().toISOString()
          };
