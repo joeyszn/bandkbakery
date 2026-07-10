@@ -136,6 +136,11 @@
   window.BK_openProfileModal = function(){
     const user = window.BK_getAuthUser();
     if(!user) return;
+
+    if(!document.getElementById('profile-modal-overlay')){
+      injectAuthModals();
+    }
+
     const profName = document.getElementById('profile-user-name');
     const profEmail = document.getElementById('profile-user-email');
     if(profName) profName.textContent = user.name || 'B&KERY Member';
@@ -423,12 +428,29 @@
     window.BK_updateAllAuthUI();
 
     // Bind auth toggle buttons
-    document.getElementById('auth-toggle-btn')?.addEventListener('click', () => {
-      const user = window.BK_getAuthUser();
-      if(!user){
-        window.BK_openAuthModal();
-      }
-    });
+    const authToggleBtn = document.getElementById('auth-toggle-btn');
+    if(authToggleBtn){
+      authToggleBtn.onclick = () => {
+        const user = window.BK_getAuthUser();
+        if(user){
+          window.BK_openProfileModal();
+        } else {
+          window.BK_openAuthModal();
+        }
+      };
+    }
+
+    const ordersAuthBtn = document.getElementById('orders-auth-btn');
+    if(ordersAuthBtn){
+      ordersAuthBtn.onclick = () => {
+        const user = window.BK_getAuthUser();
+        if(user){
+          window.BK_openProfileModal();
+        } else {
+          window.BK_openAuthModal();
+        }
+      };
+    }
 
     // Handle #auth hash
     if(window.location.hash === '#auth' && !window.BK_getAuthUser()){
