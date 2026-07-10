@@ -473,9 +473,9 @@
             return false;
           }
         }
-       }
+       
 
-      function formatMoney(n){ return '$'+(n||0).toFixed(2); }
+      function formatMoney(n){ return '$'+((n||0).toFixed(2)); }
 
       function showMiniToast(message){
         const t = document.createElement('div');
