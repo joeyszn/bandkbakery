@@ -9,6 +9,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
+<!-- Supabase client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const _supabase = supabase.createClient(
+    'https://iqwhjqpwhmwipgtfrzoe.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlxd2hqcXB3aG13aXBndGZyem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzYzNzIsImV4cCI6MjA5NjYxMjM3Mn0.Qb3xv38v0LcGolhh87PrKMn7SJY4E-0MV-pij8IxYys'
+  );
+</script>
 <style>
   .admin-shell{max-width:1400px;margin:106px auto;padding:20px}
   .admin-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:24px}
@@ -253,18 +261,16 @@ function getItemsHtml(items){
 
 async function updateOrderStatus(orderId, newStatus){
   try {
-    const resp = await fetch('/api/orders-admin', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order_id: orderId, admin_status: newStatus })
-    });
-    if (!resp.ok) {
-      const err = await resp.json();
-      alert('Failed to update order: ' + (err.error || 'Unknown error'));
+    const { error } = await _supabase
+      .from('orders')
+      .update({ admin_status: newStatus })
+      .eq('order_id', orderId);
+    if(error){
+      alert('Failed to update order: ' + error.message);
       return false;
     }
     return true;
-  } catch(e) {
+  } catch(e){
     console.error('Error updating order status:', e);
     alert('Network error updating order status');
     return false;
@@ -294,8 +300,38 @@ async function fetchGlobalOrders(){
     }
     console.error('Failed to fetch global orders:', resp.status);
   } catch(e) {
-    console.error('Error fetching global orders:', e);
-  }
+      const { data, error } = await _supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if(error){ console.error('Supabase fetch error:', error); return []; }
+    // Remap snake_case from Supabase to camelCase the admin expects
+    return (data || []).map(o => ({
+      ...o,
+      orderId:            o.order_id,
+      orderNumber:        o.order_id,
+      name:               o.name,
+      email:              o.email,
+      phone:              o.phone,
+      method:             o.method,
+      address:            o.address,
+      pickupLocation:     o.pickup_location,
+      city:               o.city,
+      state:              o.state,
+      zip:                o.zip,
+      notes:              o.notes,
+      items:              typeof o.items === 'string' ? JSON.parse(o.items) : (o.items || []),
+      subtotal:           o.subtotal,
+      deliveryFee:        o.delivery_fee,
+      total:              o.total,
+      paypalTransactionId: o.paypal_transaction_id,
+      paymentStatus:      o.payment_status,
+      adminStatus:        o.admin_status,
+      capturedAt:         o.captured_at,
+      createdAt:          o.created_at
+    }));
+  } catch(e){
+    console.error('Error fetching orders:', e);
   return [];
 }
 
