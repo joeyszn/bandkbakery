@@ -64,6 +64,14 @@
     .paypal-disabled #paypal-button-container{filter:grayscale(60%);opacity:0.6}
     .payment-helper{font-size:0.95rem;color:#6b4a38;margin-top:8px}
   </style>
+  <!-- Supabase client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const _supabase = supabase.createClient(
+        'https://iqwhjqpwhmwipgtfrzoe.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlxd2hqcXB3aG13aXBndGZyem9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzYzNzIsImV4cCI6MjA5NjYxMjM3Mn0.Qb3xv38v0LcGolhh87PrKMn7SJY4E-0MV-pij8IxYys'
+      );
+    </script>
 </head>
 <body class="alan-sans">
   <header id="header" aria-label="Site header">
@@ -414,39 +422,57 @@
       }
 
       async function saveOrderToOrders(orderRecord){
+        // Always save locally first as a backup
         try {
           const existing = JSON.parse(localStorage.getItem('bk_orders') || '[]');
           existing.unshift(orderRecord);
           localStorage.setItem('bk_orders', JSON.stringify(existing));
         } catch (e) {
-          console.error('Failed to save order to local orders list', e);
+          console.error('Failed to save orders locally', e);
         }
 
-        const token = localStorage.getItem(AUTH_TOKEN_KEY);
-        const headers = { 'Content-Type': 'application/json' };
-        if(token) headers['Authorization'] = `Bearer ${token}`;
+        // Now insert directly into Supabase
+          try {
+            const { data, error } = await _supabase
+              .from('orders')
+              .insert([{
+                order_id:              orderRecord.orderId,
+                user_id: (typeof window.BK_getAuthUser === 'function' ? window.BK_getAuthUser()?.id : null) || null,
+                name:                  orderRecord.name,
+                email:                 orderRecord.email,
+                phone:                 orderRecord.phone,
+                method:                orderRecord.method,
+                address:               orderRecord.address,
+                pickup_location:       orderRecord.pickupLocation || '',
+                city:                  orderRecord.city || '',
+                state:                 orderRecord.state || '',
+                zip:                   orderRecord.zip || '',
+                notes:                 orderRecord.notes || '',
+                items:                 JSON.stringify(orderRecord.items),
+                subtotal:              orderRecord.subtotal,
+                delivery_fee:          orderRecord.deliveryFee,
+                total:                 orderRecord.total,
+                paypal_transaction_id: orderRecord.paypalTransactionId || '',
+                payment_status:        orderRecord.paymentStatus || 'COMPLETED',
+                admin_status:          'pending',
+                captured_at:           orderRecord.capturedAt,
+                created_at:            orderRecord.createdAt
+              }]);
 
-         try {
-            const resp = await fetch('/api/orders', {
-              method: 'POST',
-              headers,
-              body: JSON.stringify(orderRecord)
-            });
-              if(!resp.ok){
-                const text = await resp.text();
-                const errMsg = text || `HTTP ${resp.status}`;
-                console.error('Could not save order to Supabase:', errMsg);
-                showMiniToast('⚠️ Order saved locally. If you refresh, your order may be lost. Please contact the bakery to confirm.');
-                return false;
-              }
-            const json = await resp.json();
-            console.log('Order saved to Supabase:', json);
+            if (error) {
+              console.error('Supabase insert error:', error);
+              showMiniToast('⚠️ Order saved locally. Contact the bakery to confirm.');
+              return false;
+            }
+
+            console.log('Order saved to Supabase ✓', data);
             return true;
           } catch (e) {
-            console.error('Could not save to global orders API:', e);
-            showMiniToast('⚠️ Connection issue. Order saved locally. If you refresh, details may be lost. Please check your internet connection.');
+            console.error('Supabase insert failed:', e);
+            showMiniToast('⚠️ Connection issue. Order saved locally. Please contact the bakery to confirm.');
             return false;
           }
+        }
        }
 
       function formatMoney(n){ return '$'+(n||0).toFixed(2); }
