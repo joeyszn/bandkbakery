@@ -8,8 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<style>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="js/auth.js" defer></script>
+  <style>
   .about-hero {
     background: var(--beige);
     padding: 165px 40px 70px;
@@ -379,9 +380,9 @@
       <a href="index.html#menu" class="btn btn-ghost">Menu</a>
       <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
       <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span id="cart-count" class="cart-count">0</span>)</a>
-      <a href="aboutus" class="btn btn-ghost">About Us</a>
-      <a href="cart.html#auth" class="btn btn-ghost">Sign In</a>
-    </div>
+        <a href="aboutus" class="btn btn-ghost">About Us</a>
+        <button class="btn btn-ghost" id="auth-toggle-btn">Sign In</button>
+      </div>
     <div class="mobile-nav">
         <button class="search-toggle mobile-search-toggle" id="search-toggle-mobile" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -401,9 +402,9 @@
     <a href="index.html#menu" class="btn btn-ghost">Menu</a>
     <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
     <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
-    <a href="aboutus" class="btn btn-ghost">About Us</a>
-    <a href="cart.html#auth" class="btn btn-ghost">Sign In</a>
-    </div>
+      <a href="aboutus" class="btn btn-ghost">About Us</a>
+      <button class="btn btn-ghost" id="auth-toggle-btn">Sign In</button>
+      </div>
   <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
 </header>
 

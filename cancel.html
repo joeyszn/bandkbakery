@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="js/auth.js" defer></script>
   <style>
     .cancel-shell{max-width:860px;margin:72px auto;margin-top: 100px;padding:0 18px;}
     .cancel-card{background:#fff;border-radius:24px;box-shadow:0 18px 44px rgba(82,47,28,0.12);overflow:hidden}
@@ -47,7 +48,7 @@
         <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
         <a href="cart.html" id="cart-link" class="btn btn-ghost" aria-label="View cart">Cart (<span class="cart-count">0</span>)</a>
         <a href="aboutus" class="btn btn-ghost">About Us</a>
-        <a href="cart.html#auth" class="btn btn-ghost">Sign In</a>
+        <button class="btn btn-ghost" id="auth-toggle-btn">Sign In</button>
       </div>
       <div class="mobile-nav">
         <button class="search-toggle mobile-search-toggle" aria-label="Toggle product search" aria-expanded="false" aria-controls="search-container">
@@ -69,8 +70,8 @@
     <a href="index.html#our-process" class="btn btn-ghost">Our Process</a>
     <a href="orders.html" class="btn btn-ghost">Orders (<span class="orders-count">0</span>)</a>
     <a href="cart.html" class="btn btn-ghost">Cart (<span class="cart-count">0</span>)</a>
-    <a href="aboutus" class="btn btn-ghost">About Us</a>
-    <a href="cart.html#auth" class="btn btn-ghost">Sign In</a>
+      <a href="aboutus" class="btn btn-ghost">About Us</a>
+      <button class="btn btn-ghost" id="auth-toggle-btn">Sign In</button>
     </div>
     <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
   </header>

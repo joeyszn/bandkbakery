@@ -8,8 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<style>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="js/auth.js"></script>
+  <style>
   /* Orders page specific styles — follow B&KERY theme */
   .orders-shell{max-width:1100px;margin:106px auto;padding:20px}
   .orders-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
@@ -728,7 +729,7 @@ container.appendChild(fragment);
         } else {
           btn.className = 'btn btn-ghost';
           btn.textContent = 'Sign In';
-          btn.onclick = () => { window.location.href = 'cart.html#auth'; };
+          btn.onclick = () => { window.BK_openAuthModal(); };
         }
       }
 
@@ -861,7 +862,7 @@ async function init(){
           if(user){
             openProfileModal();
           } else {
-            window.location.href = 'cart.html#auth';
+            window.BK_openAuthModal();
           }
         });
 
