@@ -293,46 +293,39 @@ async function handleMarkPending(orderId, event){
 
 async function fetchGlobalOrders(){
   try {
-    const resp = await fetch('/api/orders-admin');
-    if (resp.ok) {
-      const globalOrders = await resp.json();
-      if (Array.isArray(globalOrders)) return globalOrders;
-    }
-    console.error('Failed to fetch global orders:', resp.status);
-  } catch(e) {
-      const { data, error } = await _supabase
+    const { data, error } = await _supabase
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false });
     if(error){ console.error('Supabase fetch error:', error); return []; }
-    // Remap snake_case from Supabase to camelCase the admin expects
     return (data || []).map(o => ({
       ...o,
-      orderId:            o.order_id,
-      orderNumber:        o.order_id,
-      name:               o.name,
-      email:              o.email,
-      phone:              o.phone,
-      method:             o.method,
-      address:            o.address,
-      pickupLocation:     o.pickup_location,
-      city:               o.city,
-      state:              o.state,
-      zip:                o.zip,
-      notes:              o.notes,
-      items:              typeof o.items === 'string' ? JSON.parse(o.items) : (o.items || []),
-      subtotal:           o.subtotal,
-      deliveryFee:        o.delivery_fee,
-      total:              o.total,
+      orderId:             o.order_id,
+      orderNumber:         o.order_id,
+      name:                o.name,
+      email:               o.email,
+      phone:               o.phone,
+      method:              o.method,
+      address:             o.address,
+      pickupLocation:      o.pickup_location,
+      city:                o.city,
+      state:               o.state,
+      zip:                 o.zip,
+      notes:               o.notes,
+      items:               typeof o.items === 'string' ? JSON.parse(o.items) : (o.items || []),
+      subtotal:            o.subtotal,
+      deliveryFee:         o.delivery_fee,
+      total:               o.total,
       paypalTransactionId: o.paypal_transaction_id,
-      paymentStatus:      o.payment_status,
-      adminStatus:        o.admin_status,
-      capturedAt:         o.captured_at,
-      createdAt:          o.created_at
+      paymentStatus:       o.payment_status,
+      adminStatus:         o.admin_status,
+      capturedAt:          o.captured_at,
+      createdAt:           o.created_at
     }));
   } catch(e){
     console.error('Error fetching orders:', e);
-  return [];
+    return [];
+  }
 }
 
 async function renderAdmin(){
