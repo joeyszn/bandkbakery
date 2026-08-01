@@ -125,6 +125,20 @@
       }
     }
 
+    // Update mobile menu auth button if it exists
+    const mobileBtn = document.getElementById('auth-toggle-btn-mobile');
+    if(mobileBtn){
+      if(user){
+        mobileBtn.className = 'btn btn-auth-user';
+        mobileBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Hi, ${(user.name || user.email || 'User').split(' ')[0]}`;
+        mobileBtn.onclick = () => window.BK_openProfileModal();
+      } else {
+        mobileBtn.className = 'btn btn-ghost';
+        mobileBtn.textContent = 'Sign In';
+        mobileBtn.onclick = () => window.BK_openAuthModal();
+      }
+    }
+
     // Update profile modal if visible
     const profName = document.getElementById('profile-user-name');
     const profEmail = document.getElementById('profile-user-email');
@@ -431,6 +445,18 @@
     const authToggleBtn = document.getElementById('auth-toggle-btn');
     if(authToggleBtn){
       authToggleBtn.onclick = () => {
+        const user = window.BK_getAuthUser();
+        if(user){
+          window.BK_openProfileModal();
+        } else {
+          window.BK_openAuthModal();
+        }
+      };
+    }
+
+    const authToggleBtnMobile = document.getElementById('auth-toggle-btn-mobile');
+    if(authToggleBtnMobile){
+      authToggleBtnMobile.onclick = () => {
         const user = window.BK_getAuthUser();
         if(user){
           window.BK_openProfileModal();
