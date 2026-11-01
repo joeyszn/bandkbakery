@@ -1109,6 +1109,111 @@ nav {
   font-weight: 400;
 }
 
+.menu-option-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 320px;
+  color: var(--brown);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.color-picker-field {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.color-picker-field legend {
+  margin-bottom: 8px;
+  color: var(--brown);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.color-choice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.color-choice input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.color-swatch {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgba(82, 47, 28, .2);
+  border-radius: 50%;
+  background: var(--swatch-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .16);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.color-choice input:checked + .color-swatch {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--brown);
+  transform: scale(1.05);
+}
+
+.color-choice input:focus-visible + .color-swatch {
+  outline: 3px solid var(--yellow);
+  outline-offset: 4px;
+}
+
+.color-picker-selection {
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--brown);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.menu-illustration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  color: var(--brown);
+  background: radial-gradient(circle at 50% 35%, #fff 0, var(--cream) 72%);
+  text-align: center;
+}
+
+.menu-illustration-title {
+  font-family: "Alan Sans", sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.menu-illustration-icon {
+  font-size: 64px;
+  line-height: 1;
+}
+
+.menu-illustration-caption {
+  font-size: 13px;
+  font-weight: 600;
+}
+
 /* Menu image cluster */
 .menu-images {
   flex: 0 0 520px;
